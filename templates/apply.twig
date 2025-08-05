@@ -1,0 +1,269 @@
+{% extends 'partials/base.twig' %}
+{% block content %}
+    {#Main section from side bar on the right #}
+    <div id="main-content" class="container-fluid">
+        <div class="columns">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-white">Home</a></li>
+                            <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                        </ul>
+                    </nav>
+                    <div class="box">
+                        {% set loan_amount = 3000 %}
+                        {% set duration_months = 3 %}
+                        {% set monthly_installment = loan_amount / duration_months %}
+
+                        <section class="section">
+                            <div class="container">
+                                <h1 class="title is-size-5">Loan Details</h1>
+                                <form  id="calculator" class="" action="" method="POST">
+                                    <div class="columns is-multiline">
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <label class="" for="title">Product</label>
+                                                <div class="select is-info is-normal is-fullwidth">
+                                                    <select name="product" id="product" required onchange="updateRate()">
+                                                        {% for product in products %}
+                                                            <option
+                                                                    value="{{ product.product_name }}"
+                                                                    data-rate="{{ product.rate }}"
+                                                                    data-min-amount="{{ product.min_amount }}"
+                                                                    data-max-amount="{{ product.max_amount }}"
+                                                                    data-min-period="{{ product.min_period }}"
+                                                                    data-max-period="{{ product.max_period }}"
+                                                            >
+                                                                {{ product.product_name | capitalize }}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="min_amount" name="min_amount">
+                                        <input type="hidden" id="max_amount" name="max_amount">
+                                        <input type="hidden" id="min_period" name="min_period">
+                                        <input type="hidden" id="max_period" name="max_period">
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <label class="" for="phone">Rate (%)</label>
+                                                <input type="number" id="rate" name="rate" class="input is-normal is-info" readonly required>
+                                                <small id="errorRate" class="has-text-danger"></small>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <label class="" for="phone">Amount (ZMW)</label>
+                                                <input type="number" id="amount" name="amount" class="input is-normal is-info" required>
+                                                <small id="amountError" class="has-text-danger"></small>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <label class="" for="phone">Period (eg. 2 for 2 month)</label>
+                                                <input type="number" id="period" name="period" class="input is-normal is-info" required>
+                                                <small id="periodError" class="has-text-danger"></small>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <label class="" for="phone">Total Payable (ZMW)</label>
+                                                <input type="number" id="totalPayable" name="totalPayable" class="input is-normal is-info" readonly required>
+                                                <small id="errorTotalPayable" class="has-text-danger"></small>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <label class="" for="phone">Monthly Installment (ZMW)</label>
+                                                <input type="number" id="installment" name="installment" class="input is-normal is-info" readonly required>
+                                                <small id="errorInstallment" class="has-text-danger"></small>
+                                            </div>
+                                        </div>
+                                        <div class="column is-2">
+                                            <div class="field mt-3">
+                                                <div class="control">
+                                                    <button type="submit" name="next" class="button is-normal is-info is-focused is-fullwidth" onclick="showLoadingOverlay(event)">
+                                                        <span>Next</span>
+                                                        <span class="mdi mdi-chevron-right is-size-3"></span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </section>
+
+{#                        <script>#}
+{#                            function applyRepayment() {#}
+{#                                let amount = parseFloat(document.getElementById("repaymentAmount").value);#}
+{#                                if (isNaN(amount) || amount <= 0) return;#}
+
+{#                                const rows = document.querySelectorAll("#scheduleTable tbody tr");#}
+
+{#                                for (const row of rows) {#}
+{#                                    const dueCell = row.querySelector(".due");#}
+{#                                    const paidCell = row.querySelector(".paid");#}
+{#                                    const statusCell = row.querySelector(".status");#}
+
+{#                                    let due = parseFloat(dueCell.textContent.replace(/,/g, ''));#}
+{#                                    let paid = parseFloat(paidCell.textContent);#}
+
+{#                                    if (paid >= due) continue; // already paid#}
+
+{#                                    let remaining = due - paid;#}
+
+{#                                    if (amount >= remaining) {#}
+{#                                        paid += remaining;#}
+{#                                        amount -= remaining;#}
+{#                                        statusCell.textContent = "Paid";#}
+{#                                    } else {#}
+{#                                        paid += amount;#}
+{#                                        amount = 0;#}
+{#                                        statusCell.textContent = "Partial";#}
+{#                                    }#}
+
+{#                                    paidCell.textContent = paid.toFixed(2);#}
+{#                                    if (paid >= due) {#}
+{#                                        statusCell.textContent = "Paid";#}
+{#                                    }#}
+
+{#                                    if (amount <= 0) break;#}
+{#                                }#}
+
+{#                                document.getElementById("repaymentAmount").value = "";#}
+{#                            }#}
+{#                        </script>#}
+                        <script>
+                            function updateRate() {
+                                const select = document.getElementById('product');
+                                const rateInput = document.getElementById('rate');
+
+                                const selectedOption = select.options[select.selectedIndex];
+                                const rate = selectedOption.getAttribute('data-rate');
+
+                                // Hidden fields
+                                document.getElementById('min_amount').value = selectedOption.getAttribute('data-min-amount') || '';
+                                document.getElementById('max_amount').value = selectedOption.getAttribute('data-max-amount') || '';
+                                document.getElementById('min_period').value = selectedOption.getAttribute('data-min-period') || '';
+                                document.getElementById('max_period').value = selectedOption.getAttribute('data-max-period') || '';
+
+                                if (rate) {
+                                    rateInput.value = rate;
+                                    rateInput.style.borderColor = 'green';
+                                } else {
+                                    rateInput.value = '';
+                                    rateInput.style.borderColor = 'red';
+                                }
+
+                                // Trigger calculation after values are set
+                                //calculateTotal();
+                            }
+                            // Run on load in case of pre-filled form
+                            document.addEventListener('DOMContentLoaded', updateRate);
+                        </script>
+                        <script>
+                            // Get form inputs
+                            const form = document.getElementById('calculator');
+                            const productInput   = document.getElementById('product');
+                            const amountInput = document.getElementById('amount');
+                            const periodInput = document.getElementById('period');
+                            const monthlyInput = document.getElementById('installment');
+                            const totalInput   = document.getElementById('totalPayable');
+                            const rateInput = document.getElementById('rate');
+                            const amountError  = document.getElementById('amountError');
+                            const periodError = document.getElementById('periodError');
+
+                            const minAmountInput = document.getElementById('min_amount');
+                            const maxAmountInput = document.getElementById('max_amount');
+                            const minPeriodInput = document.getElementById('min_period');
+                            const maxPeriodInput = document.getElementById('max_period');
+
+
+                            // Function to live calculate the total payable
+                            const calculateTotal = () => {
+                                const amount     = parseFloat(amountInput.value) || 0;
+                                const period     = parseFloat(periodInput.value) || 0;
+                                const minAmount  = parseFloat(minAmountInput.value);
+                                const maxAmount  = parseFloat(maxAmountInput.value);
+                                const minPeriod  = parseFloat(minPeriodInput.value);
+                                const maxPeriod  = parseFloat(maxPeriodInput.value);
+                                const rate       = parseFloat(rateInput.value) || 0;
+
+                                let valid = true;
+
+                                // Validate amount
+                                if (amount < minAmount || amount > maxAmount) {
+                                    amountError.textContent = `Amount must be between ${minAmount} and ${maxAmount}`;
+                                    amountInput.classList.add('invalid');
+                                    amountInput.style.borderColor = 'red';
+                                    valid = false;
+                                } else {
+                                    amountError.textContent = '';
+                                    amountInput.classList.remove('invalid');
+                                    amountInput.style.borderColor = 'green';
+                                }
+
+                                // Validate period
+                                if (period < minPeriod || period > maxPeriod) {
+                                    periodError.textContent = `Period must be between ${minPeriod} and ${maxPeriod} months`;
+                                    periodInput.classList.add('invalid');
+                                    periodInput.style.borderColor = 'red';
+                                    valid = false;
+                                } else {
+                                    periodError.textContent = '';
+                                    periodInput.classList.remove('invalid');
+                                    periodInput.style.borderColor = 'green';
+                                }
+
+                                if (!valid || rate === 0 || amount === 0 || period === 0) {
+                                    monthlyInput.value = '';
+                                    totalInput.value = '';
+                                    return;
+                                }
+
+                                const interestRate = rate / 100;
+                                let totalInterest = 0;
+                                let balance = amount;
+
+                                for (let i = 0; i < period; i++) {
+                                    const interest = balance * interestRate;
+                                    totalInterest += interest;
+                                    balance -= amount / period;
+                                }
+
+                                const totalPayable = amount + totalInterest;
+                                const monthlyPayment = totalPayable / period;
+
+                                const total = parseFloat(totalPayable.toFixed(2));
+                                const monthly = parseFloat(monthlyPayment.toFixed(2));
+
+                                monthlyInput.value = monthly.toFixed(2);
+                                totalInput.value = total.toFixed(2);
+                            };
+
+
+                            // Add event listeners to form inputs
+                            amountInput.addEventListener('input', calculateTotal);
+                            periodInput.addEventListener('input', calculateTotal);
+                            productInput.addEventListener('change', calculateTotal);
+
+                            // Validate form on submit
+                            form.addEventListener('submit', (e) => {
+                                // Perform validation on all fields
+                                calculateTotal();
+                                // Check if any input fields have validation errors
+                                if (form.querySelectorAll('.invalid').length > 0) {
+                                    e.preventDefault(); // Prevent form submission if there are errors
+                                }
+                            });
+                        </script>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}

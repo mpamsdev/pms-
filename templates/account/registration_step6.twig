@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <link href="../views/images/original-logo.jpg" rel="icon" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/site.webmanifest">
+</head>
+<body class="">
+<!-- NAVBAR -->
+<div class="section is-small is-fullheight">
+    <div class="container has-text-centered">
+        <div class="columns is-centered">
+            <div class="column is-two-fifths">
+                <figure class="image is-64x64" style="margin: 0 auto; border: 2px solid dodgerblue; border-radius: 50%">
+                    <img class="is-rounded" src="/assets/img/logo.png">
+                </figure>
+                <h1 class="has-text-centered has-text-weight-bold is-size-5 pt-4">{{ pageName }}</h1>
+                {% if errors|length > 0 %}
+                    <div class="notification is-danger">
+                        {% for error in errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <form  class="" id="login" action="" method="POST" onsubmit="return validate()">
+                    <div class="field">
+                        <label class="">Password</label>
+                        <div class="control has-icons-left has-icons-right">
+                            <input id="password" class="input is-normal is-primary" type="password" name="password" placeholder="********" required>
+                            <span class="icon is-small is-left">
+                                                    <i class="mdi mdi-lock-outline"></i>
+                                                </span>
+                            <span class="icon is-small is-right" onclick="togglePassword()">
+                                                    <i class="mdi mdi-eye-off" id="toggleIcon" style="cursor: pointer;"></i>
+                                                </span>
+                            {#                                        <input  class="input is-medium is-link " id="password" name="password" type="password" placeholder="Enter your password">#}
+                            <small class="errors has-text-danger" id="passwordError"></small>
+                        </div>
+                    </div>
+
+                    <div class="field mt-4">
+                        <div class="control">
+                            <div class="buttons">
+                                <button type="button" id="openModalButton" class="button is-normal is-link is-focused is-fullwidth">
+                                    Complete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--MODAL-->
+                    <div id="myModal" class="modal">
+                        <div class="modal-background"></div>
+                        <div class="modal-card">
+                            <header class="modal-card-head has-background-info">
+                                <p class="modal-card-title has-text-white">Terms and Conditions</p>
+                                <button class="delete" aria-label="close" onclick="closeModal()"></button>
+                            </header>
+                            <section class="modal-card-body">
+                                <div class="container">
+                                    <div class="columns is-centered">
+                                        <div class="column is-full">
+                                            <h5 class="is-size-4 has-text-weight-bold has-text-left mt-6 mb-5 has-text-centered">Terms and Conditions</h5>
+                                            <p class="has-text-left has-text-centered">
+                                                These terms and conditions ("Terms") constitute a legal agreement between Chalom Investments Limited (referred to as the "Lender," "we," "our," or "us") and the borrower (referred to as the "Borrower",”Client” or "you").
+                                                <br>
+                                                <br>
+                                                By accessing our services or accepting a loan from us, you acknowledge that you have read, understood, and agreed to these Terms.
+                                                <br>
+                                                <br>
+                                                Please read these Terms carefully;
+                                            <div class="content has-text-justified">
+                                                <ul>
+                                                    <li>We check and submit your details to credit reference bureau (CRB) to establish creditworthiness.</li>
+                                                    <li>The collateral submitted belongs to you and is registered in your names (in case of paper work) unless otherwise stated or put in writing and signed by the owner authorizing the use of the property or asset.</li>
+                                                    <li>The client to pay the monthly installments on or before the repayment dates as calculated by the system before the interest can be accumulated. However, this may follow a grace period of five (5) days given to the client in which payments must be made.</li>
+                                                    <li>A charge of K100 shall be applied as processing fee regardless of the loan amount being acquired. </li>
+                                                    <li>The loan application will include a review process in which your credit history, income and other relevant factors shall be determined.</li>
+                                                    <li>Loan terms, including the loan amount, interest rate, repayment schedule, and fees, will be specified on the system.</li>
+                                                    <li>We reserve the right to approve or deny loan applications at our discretion and submission of a loan application does not guarantee approval.</li>
+                                                    <li>The client is at liberty to cut the loan tenure short which will be re-calculated by the system.</li>
+                                                    <li>In the event of default, we may take legal action to collect outstanding debts and may repossess collateral, if applicable.</li>
+                                                    <li>You provide accurate and complete information during loan application process.</li>
+                                                    <li>You are to meet any other additional eligibility criteria specified by us.</li>
+                                                </ul>
+                                            </div>
+                                            </p>
+                                            <h5 class="is-size-5 has-text-weight-bold has-text-left mt-6 mb-5 has-text-centered-mobile">Updates</h5>
+                                            <p class=" has-text-left has-text-centered-mobile">
+                                                These terms and conditions are subject to review, updates, modification and amendments at our discretion. We will notify the clients whenever such amendments have been made through the website
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <footer class="modal-card-foot">
+                                <button type="submit" name="complete" class="button is-large is-info" onclick="showLoadingOverlay()">Agree</button>
+                                <button class="button is-large" onclick="closeModal()">Cancel</button>
+                            </footer>
+                        </div>
+                    </div>
+                </form>
+                <p class="mt-6">
+                    Already have an account? <a href="/">Sign In</a>
+                </p>
+                <hr>
+                <p class="mt-5">All rights reserved, Copyright &copy; {{ "now"|date("Y") }} . Chalom Investments Limited</p>
+                <p><strong>Powered By:</strong> <a href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies</a></p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // Toggle mobile navigation menu
+    document.addEventListener('DOMContentLoaded', function ()
+    {
+        var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        if ($navbarBurgers.length > 0) {
+            $navbarBurgers.forEach(function ($el) {
+                $el.addEventListener('click', function () {
+                    var target = $el.dataset.target;
+                    var $target = document.getElementById(target);
+                    $el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+                });
+            });
+        }
+    });
+</script>
+<script>
+    document.getElementById('openModalButton').addEventListener('click', function () {
+        document.getElementById('myModal').classList.add('is-active');
+    });
+
+    function closeModal() {
+        document.getElementById('myModal').classList.remove('is-active');
+    }
+
+    function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.getElementById("toggleIcon");
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("mdi-eye-off");
+            icon.classList.add("mdi-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("mdi-eye");
+            icon.classList.add("mdi-eye-off");
+        }
+    }
+
+    setTimeout(() => {
+        const notif = document.getElementById('errorNotification');
+        if (notif) {
+            notif.style.transition = 'opacity 0.5s ease';
+            notif.style.opacity = 0;
+
+            // Optionally remove from DOM completely
+            setTimeout(() => notif.remove(), 500);
+        }
+    }, 4000); // 4 seconds before fade out
+</script>
+<script>
+    setTimeout(() => {
+
+        const box = document.getElementById('errors');
+        const login = document.getElementById('loggedin');
+
+        // removes element from DOM
+        box.style.display = 'none';
+        loggedin.style.display = 'none';
+
+    }, 4000);
+
+
+    // Get form element and input fields
+    const form = document.getElementById('login');
+    const nameInput = document.getElementById('username');
+    const emailInput = document.getElementById('password');
+
+    // Function to validate name input
+    const validateName = () => {
+        const value = nameInput.value.trim();
+        const errorElement = document.getElementById('usernameError');
+
+        if (value === '') {
+            errorElement.textContent = 'Password is required';
+            nameInput.focus();
+            nameInput.style.borderColor = 'red';
+            nameInput.classList.add('invalid');
+        } else {
+            errorElement.textContent = '';
+            nameInput.classList.remove('invalid');
+            nameInput.style.borderColor = 'green';
+        }
+    };
+
+    // Function to validate email input
+    const validateEmail = () => {
+        const value = emailInput.value.trim();
+        const errorElement = document.getElementById('passwordError');
+
+        if (value === '')
+        {
+            errorElement.textContent = 'Confirm Password is required';
+            emailInput.focus();
+            emailInput.style.borderColor = 'red';
+            emailInput.classList.add('invalid');
+
+        }
+        else
+        {
+            errorElement.textContent = '';
+            emailInput.classList.remove('invalid');
+            emailInput.style.borderColor = 'green';
+        }
+    };
+
+    // Attach event listeners for input fields
+    nameInput.addEventListener('blur', validateName);
+    emailInput.addEventListener('blur', validateEmail);
+
+    // Validate form on submit
+    form.addEventListener('submit', (e) => {
+        // Perform validation on all fields
+        validateName();
+        validateEmail();
+
+        // Check if any input fields have validation errors
+        if (form.querySelectorAll('.invalid').length > 0) {
+            e.preventDefault(); // Prevent form submission if there are errors
+        }
+    });
+</script>
+<script>
+    function showLoadingOverlay() {
+        // Show the loading overlay
+        document.getElementById('loading-overlay').style.display = 'flex';
+
+        // You can also disable the submit button to prevent multiple clicks
+        document.getElementById('myForm').submit();
+    }
+
+    // To hide the loading overlay when the page reloads
+    window.onload = function () {
+        document.getElementById('loading-overlay').style.display = 'none';
+    };
+</script>
+</body>
+</html>
+<style>
+    .error
+    {
+        background-color: #d50000;
+        color: white;
+    }
+
+    .errors
+    {
+        color: #d50000;
+    }
+    #loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #loading-message {
+        font-size: 18px;
+    }
+
+    .icon.is-right i {
+        pointer-events: all;
+    }
+</style>

@@ -1,0 +1,139 @@
+/* Sidebar visibility toggle */
+#sidebar {
+    position: fixed; /* Make sure the sidebar is fixed on the left */
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #fff;
+    z-index: 9999;
+    /*box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);*/
+    transform: translateX(-100%); /* Sidebar is off-screen by default */
+    transition: transform 0.3s ease; /* Smooth transition for sliding in/out */
+}
+
+/* Make sidebar visible on desktop screens */
+@media (min-width: 1024px) {
+    #sidebar {
+        transform: translateX(0); /* Always show the sidebar on desktop */
+    }
+}
+
+/* Sidebar adjustment for mobile screens */
+@media (max-width: 1024px) {
+    #sidebar {
+        top: 0; /* Remove the top offset for mobile */
+    }
+}
+
+/* Show sidebar when active on mobile */
+#sidebar.is-active {
+    transform: translateX(0); /* Slide in the sidebar */
+}
+
+/* Overlay when sidebar is open */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 9998;
+}
+
+.overlay.is-active {
+    display: block;
+}
+
+/* Main content styles */
+#main-content {
+    margin-left: 225px; /* Align with sidebar's width */
+    padding: 2em;
+    transition: margin-left 0.3s ease; /* Smooth transition for responsiveness */
+}
+
+@media (max-width: 1024px) {
+    #main-content {
+        margin-left: 0; /* No offset when sidebar is hidden */
+        padding: 0.5rem;
+    }
+}
+
+.avatar {
+    width: 50px; /* Adjust size as needed */
+    height: 50px; /* Ensure width and height are equal for a perfect circle */
+    border-radius: 50%; /* Make the image round */
+    object-fit: cover; /* Ensures the image content fits inside the circle */
+    border: 2px solid #007bff; /* Optional: Add a border */
+}
+
+
+/* Hide sidebar and overlay when a modal is active */
+body.is-modal-active #sidebar {
+    transform: translateX(-100%) !important; /* Force the sidebar off-screen */
+}
+
+body.is-modal-active .overlay {
+    display: none !important; /* Hide the overlay */
+}
+
+.avatar {
+    width: 50px; /* Adjust size as needed */
+    height: 50px; /* Ensure width and height are equal for a perfect circle */
+    border-radius: 50%; /* Make the image round */
+    object-fit: cover; /* Ensures the image content fits inside the circle */
+    border: 2px solid #007bff; /* Optional: Add a border */
+}
+
+.menu {
+    flex-grow: 1; /* Takes up remaining space */
+    overflow-y: auto; /* Scrollable if content exceeds height */
+}
+
+.logout-button {
+    margin-top: auto; /* Pushes the button to the bottom */
+    padding: 1rem;
+    text-align: center;
+    /*border-top: 1px solid #444; !* Optional: separates logout button visually *!*/
+}
+
+.logout-button a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    border-radius: 20px;
+    transition: background-color 0.2s ease;
+}
+
+.logout-button a:hover {
+    color: white;
+    background-color: skyBlue; /* Highlight on hover */
+}
+
+/* Sidebar link hover styles */
+#sidebar a {
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+#sidebar a:hover {
+    background-color: blue; /* Light blue hover background */
+    color: #0056b3; /* Darker blue text color */
+}
+
+#sidebar a:hover .icon i {
+    color: #0056b3; /* Match icon color with text */
+}
+
+#sidebar .menu-list li {
+    margin-bottom: 10px; /* Add some space between items */
+}
+
+
+.is-hidden {
+    display: none;
+}
+

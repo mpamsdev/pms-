@@ -1,0 +1,341 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <!--    <link rel="stylesheet" href="style.css">-->
+    {#Add the CSS FILES#}
+    <link href="css/main.css">
+    <!--        <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+
+</head>
+<body>
+{#SIDE BAR #}
+<aside id="sidebar" class="aside is-placed-left is-expanded has-background-light">
+    <div class="menu is-menu-main">
+        <ul class="menu-list">
+            <li>
+                <a href="/app/dashboard" class="router-link-active has-icon  is-size-5 mt-4">
+                    <span class="icon"><i class="mdi mdi-desktop-mac"></i></span>
+                    <span class="menu-item-label">Dashboard</span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="menu-list mt-2">
+            <li>
+                <a href="/app/employee" class="has-icon pt-4 pb-4  is-size-5">
+                    <span class="icon"><i class="mdi mdi-account-plus-outline"></i></span>
+                    <span class="menu-item-label">Employees</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app/tasks" class="has-icon pt-4 pb-4  is-size-5">
+                    <span class="icon"><i class="mdi mdi-file-document-outline"></i></span>
+                    <span class="menu-item-label">Tasks</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app/user/profile" class="has-icon pt-4 pb-4  is-size-5">
+                    <span class="icon"><i class="mdi mdi-account-circle"></i></span>
+                    <span class="menu-item-label">Profile</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app/user/add-user" class="has-icon pt-4 pb-4  is-size-5">
+                    <span class="icon"><i class="mdi mdi-cogs"></i></span>
+                    <span class="menu-item-label">Settings</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Logout Button -->
+    <div class="logout-button  is-danger ">
+        <a class="has-icon  is-size-5" href="/logout">
+            <span class="icon"><i class="mdi mdi-logout"></i></span>
+            <span class="menu-item-label">Logout</span>
+        </a>
+    </div>
+</aside>
+
+{#Main section from side bar on the right #}
+<div id="main-content" class="container-fluid">
+    <!-- Top Navigation Bar -->
+    <nav id="navbar-main" class="navbar is-spaced is-fixed has-shadow box has-background-light mb-4" >
+        <div class="container has-text-centered">
+            <div class="navbar-brand">
+                <a class="navbar-item is-hidden-desktop jb-aside-mobile-toggle">
+                    <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+                </a>
+                <div class="navbar-item has-control">
+                    <a href="/app/dashboard"> {{ "Dashboard" }}</a>
+                </div>
+            </div>
+
+            <div class="navbar-menu fadeIn animated faster" id="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
+                        <a class="navbar-link is-arrowless">
+                            <div class="is-user-avatar">
+                                {#                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Big Mart">#}
+                            </div>
+                            <div class="is-user-name ml-2"><span>{{ username }}</span></div>
+                            <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
+                        </a>
+                        <div class="navbar-dropdown">
+                            <a href="/app/profile" class="navbar-item">
+                                <span class="icon"><i class="mdi mdi-account"></i></span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/app/settings" class="navbar-item">
+                                <span class="icon"><i class="mdi mdi-settings"></i></span>
+                                <span>Settings</span>
+                            </a>
+
+                            <hr class="navbar-divider">
+                            <a href="/logout" class="navbar-item ">
+                                <span class="icon"><i class="mdi mdi-logout"></i></span>
+                                <span>Log Out</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="columns">
+        <div class="column is-12">
+            <section class="section mt-4">
+                <nav class="breadcrumb box has-background-info" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a class="is-size-5 has-text-white">Home</a></li>
+                        <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                    </ul>
+                </nav>
+                <div class="columns ">
+
+                    <div class="column is-full">
+                        <p class="title is-size-6  mt-4 mb-4">Recent Activities </p>
+                        {% if loanData %}
+                            {% for item in loanData %}
+                                <div class="">
+                                    <hr>
+                                    <div class="columns is-multiline">
+                                        <div class="column is-one-third has-text-centered">
+                                            <a href="/app/document-management/request/{{ item.client_id }}" class="button is-link">Document Managment</a>
+                                        </div>
+
+                                        <div class="column has-text-right">
+                                            <p class="is-size-7 has-text-weight-bold"> <span>{{ item.join_date }}</span> | <span>{{ item.request_status }}</span> </p>
+                                            <p class="mt-3 has-text-weight-bold">{{ item.name }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                         <div class="box">
+                             <p class="has-text-centered">No data  yet</p>
+                         </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>Fortress Hub Technologies Limited</strong>
+            </p>
+            <p>
+                All rights reserved &copy; {{ "now"|date("Y") }}
+            </p>
+        </div>
+    </footer>
+</div>
+
+
+
+<div id="overlay" class="overlay"></div>
+
+
+<!-- JavaScript to Open Modal and Redirect -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const burger = document.querySelector(".navbar-burger");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        const toggleSidebar = () => {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        };
+
+        // Open/Close sidebar on burger click
+        burger.addEventListener("click", toggleSidebar);
+
+        // Close sidebar on overlay click
+        overlay.addEventListener("click", toggleSidebar);
+
+        // Ensure sidebar is always visible on larger screens
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const toggleButton = document.querySelector(".jb-aside-mobile-toggle");
+        const overlay = document.getElementById("overlay");
+
+        // Toggle sidebar on hamburger icon click
+        toggleButton.addEventListener("click", function() {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        });
+
+        // Close sidebar if overlay is clicked
+        overlay.addEventListener("click", function() {
+            sidebar.classList.remove("is-active");
+            overlay.classList.remove("is-active");
+        });
+
+        // Close sidebar automatically on resize (for larger screens)
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+</script>
+</body>
+</html>
+<style>
+    /* Sidebar visibility toggle */
+    #sidebar {
+        position: fixed; /* Make sure the sidebar is fixed on the left */
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #fff;
+        z-index: 9999;
+        /*box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);*/
+        transform: translateX(-100%); /* Sidebar is off-screen by default */
+        transition: transform 0.3s ease; /* Smooth transition for sliding in/out */
+    }
+
+    /* Make sidebar visible on desktop screens */
+    @media (min-width: 1024px) {
+        #sidebar {
+            transform: translateX(0); /* Always show the sidebar on desktop */
+        }
+    }
+
+    /* Sidebar adjustment for mobile screens */
+    @media (max-width: 1024px) {
+        #sidebar {
+            top: 0; /* Remove the top offset for mobile */
+        }
+    }
+
+    /* Show sidebar when active on mobile */
+    #sidebar.is-active {
+        transform: translateX(0); /* Slide in the sidebar */
+    }
+
+    /* Overlay when sidebar is open */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 9998;
+    }
+
+    .overlay.is-active {
+        display: block;
+    }
+
+    /* Main content styles */
+    #main-content {
+        margin-left: 225px; /* Align with sidebar's width */
+        padding: 2em;
+        transition: margin-left 0.3s ease; /* Smooth transition for responsiveness */
+    }
+
+    @media (max-width: 1024px) {
+        #main-content {
+            margin-left: 0; /* No offset when sidebar is hidden */
+            padding: 0.5rem;
+        }
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+
+    /* Hide sidebar and overlay when a modal is active */
+    body.is-modal-active #sidebar {
+        transform: translateX(-100%) !important; /* Force the sidebar off-screen */
+    }
+
+    body.is-modal-active .overlay {
+        display: none !important; /* Hide the overlay */
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+    .menu {
+        flex-grow: 1; /* Takes up remaining space */
+        overflow-y: auto; /* Scrollable if content exceeds height */
+    }
+
+    .logout-button {
+        margin-top: auto; /* Pushes the button to the bottom */
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid #444; /* Optional: separates logout button visually */
+    }
+
+    .logout-button a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .logout-button a:hover {
+        color: white;
+        background-color: skyBlue; /* Highlight on hover */
+    }
+
+</style>

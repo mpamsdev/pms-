@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/site.webmanifest">
+    <style>
+        .icon.is-right i {
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body>
+<section class="hero is-small is-white">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5-desktop">
+                    <div class="">
+                        <div class="card-content">
+                            <figure class="image is-96x96" style="margin: 0 auto; /*border: 2px solid dodgerblue; border-radius: 50%/*">
+                                <img class="is-rounded" src="/assets/img/fht.png">
+                            </figure>
+                            <h1 class="has-text-centered is-size-5 pt-1 pb-2 pl-4 pr-4">Login Page</h1>
+                            {% if errors|length > 0 %}
+                                <div class="notification is-danger" id="errorNotification">
+                                        <p>{{ errors }}</p>
+                                </div>
+                            {% endif %}
+                            <form id="login" class=" pl-4 pr-4" action="" method="post" onsubmit="return validate()">
+                                <div class="field ">
+                                    <label class="">Email </label>
+                                    <div class="control has-icons-left is-expanded">
+                                        <input class="input is-large is-info" type="email" id="username" name="email" placeholder="e.g. user@example.com or phone number" required>
+                                        <span class="icon is-small is-left">
+                                                    <i class="mdi mdi-email-outline"></i>
+                                                </span>
+{#                                        <input class="input is-medium  is-link " id="username" name="email" type="email" placeholder="Enter email or phone number">#}
+                                        <small class="errors has-text-danger" id="usernameError"></small>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="">Password</label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input id="password" class="input is-large is-info" type="password" name="password" placeholder="********" required>
+                                        <span class="icon is-small is-left">
+                                                    <i class="mdi mdi-lock-outline"></i>
+                                                </span>
+                                        <span class="icon is-small is-right" onclick="togglePassword()">
+                                                    <i class="mdi mdi-eye-off" id="toggleIcon" style="cursor: pointer;"></i>
+                                                </span>
+{#                                        <input  class="input is-medium is-link " id="password" name="password" type="password" placeholder="Enter your password">#}
+                                        <small class="errors has-text-danger" id="passwordError"></small>
+                                    </div>
+                                </div>
+                                <p class="mt-4  has-text-right is-size-7">
+                                    <a class="has-text-info" href="/auth/forgot-password">Forgot Password?</a>
+                                </p>
+                                <div class="field has-text-centered mt-3">
+                                    <button class="button is-dark is-large is-fullwidth">Login</button>
+                                </div>
+                                <hr>
+                            </form>
+{#                            <hr>#}
+                            <p class="has-text-centered">All rights reserved &copy; {{ "now"|date("Y") }}.Fortress Hub Technologies</p>
+                            <p class="has-text-centered is-size-7"> <strong>Developed By:</strong> <a class="has-text-link" href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies Limited</a> </p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--MODAL FOR SELECTION-->
+    <!--MODAL TO REVIEW APPLICATION-->
+    <div class="modal" id="myModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head has-background-info has-white-text">
+                <p class="modal-card-title has-text-white">Choose Category</p>
+                <button type="button" class="delete" aria-label="close" id="closeModalBtn"></button>
+            </header>
+            <form id="signup" class="" action="" method="post" enctype="multipart/form-data">
+                <section class="modal-card-body" style="max-height: 30em; overflow-y: auto;">
+                    <div class="field has-text-left">
+                        <div class="control">
+                            <label class="label is-size-7" for="">Are you an individual / company?</label>
+                            <div class="select is-info is-normal is-fullwidth">
+                                {% set role = ["Individual", "Organization"] %}
+                                <select name="category" id="category" required>
+                                    {% for item in role %}
+                                        <option value="{{ item }}">{{ item }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+                <footer class="modal-card-foot has-background-white">
+                    <button type="button" id="proceed" name="proceed" class="button is-info is-small " >Proceed</button>
+                    <button type="button" class="button is-small" id="closeModalBtn">Cancel</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+</section>
+
+{#JS#}
+<script>
+
+    // Get form element and input fields
+    const form = document.getElementById('login');
+    const nameInput = document.getElementById('username');
+    const emailInput = document.getElementById('password');
+
+    // Function to validate name input
+    const validateName = () => {
+        const value = nameInput.value.trim();
+        const errorElement = document.getElementById('usernameError');
+
+        if (value === '') {
+            errorElement.textContent = 'Username is required';
+            nameInput.focus();
+            nameInput.style.borderColor = 'red';
+            nameInput.classList.add('invalid');
+        } else {
+            errorElement.textContent = '';
+            nameInput.classList.remove('invalid');
+            nameInput.style.borderColor = 'green';
+        }
+    };
+
+    // Function to validate email input
+    const validateEmail = () => {
+        const value = emailInput.value.trim();
+        const errorElement = document.getElementById('passwordError');
+
+        if (value === '')
+        {
+            errorElement.textContent = 'Password is required';
+            emailInput.focus();
+            emailInput.style.borderColor = 'red';
+            emailInput.classList.add('invalid');
+
+        }
+        else
+        {
+            errorElement.textContent = '';
+            emailInput.classList.remove('invalid');
+            emailInput.style.borderColor = 'green';
+        }
+    };
+
+    // Attach event listeners for input fields
+    nameInput.addEventListener('blur', validateName);
+    emailInput.addEventListener('blur', validateEmail);
+
+    // Validate form on submit
+    form.addEventListener('submit', (e) => {
+        // Perform validation on all fields
+        validateName();
+        validateEmail();
+
+        // Check if any input fields have validation errors
+        if (form.querySelectorAll('.invalid').length > 0) {
+            e.preventDefault(); // Prevent form submission if there are errors
+        }
+    });
+</script>
+<script>
+    // Get modal and buttons
+    const modal = document.getElementById('myModal');
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtns = document.querySelectorAll('#closeModalBtn');
+
+    // Function to open the modal
+    function openModal() {
+        //console.log('clicks')
+        modal.classList.add('is-active');
+    }
+    // Function to close the modal
+    function closeModal() {
+        modal.classList.remove('is-active');
+    }
+    // Event listener for opening the modal
+    openModalBtn.addEventListener('click', openModal);
+    // Event listeners for closing the modal
+    closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', closeModal);
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the dropdown element
+        var category = document.getElementById('category');
+        // Get the proceed button element
+        var proceedButton = document.getElementById('proceed');
+
+        // Add click event listener to the proceed button
+        proceedButton.addEventListener('click', function () {
+            var selectedCategory = category.value;
+
+            // Redirect based on the selected category
+            if (selectedCategory.toLowerCase() === 'individual') {
+                window.location.href = '/account/ind/step-one';
+            } else if (selectedCategory.toLowerCase() === 'organization') {
+                window.location.href = '/account/org/step-one';
+            }
+        });
+    });
+
+</script>
+<script>
+    function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.getElementById("toggleIcon");
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("mdi-eye-off");
+            icon.classList.add("mdi-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("mdi-eye");
+            icon.classList.add("mdi-eye-off");
+        }
+    }
+
+    setTimeout(() => {
+        const notif = document.getElementById('errorNotification');
+        if (notif) {
+            notif.style.transition = 'opacity 0.5s ease';
+            notif.style.opacity = 0;
+
+            // Optionally remove from DOM completely
+            setTimeout(() => notif.remove(), 500);
+        }
+    }, 4000); // 4 seconds before fade out
+</script>
+</body>
+</html>

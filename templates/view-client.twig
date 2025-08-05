@@ -1,0 +1,291 @@
+{% extends 'partials/base.twig' %}
+{% block content %}
+    <div id="main-content" class="container-fluid">
+        <div class="columns ">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-white">Home</a></li>
+                            <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                        </ul>
+                    </nav>
+                    <div class="columns">
+                        <div class="column is-full">
+                            <div class="box">
+                                <div class="column is-multiline">
+                                    {% if client %}
+                                        {% for item in clients %}
+                                            <div class="column is-3">
+                                                <div class="card">
+                                                    <div class="card-image">
+                                                        <figure class="image is-4by3" style="margin: 0 auto;">
+                                                            <img class="" src="/assets/uploads/profiles/{{ userData.profile_picture }}" />
+                                                        </figure>
+                                                    </div>
+                                                    <div class="card-content has-text-centered">
+                                                        <p class="mt-4 title is-size-6">
+                                                            {{ companyData.company_name ?? userData.firstname ~ ' ' ~ userData.lastname }}
+                                                        </p>
+                                                        <p>{{ username }}</p>
+                                                        <p>{{ companyData.phone ?? userData.phone }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="column is-9">
+
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                      <p class="title is-size-4">No Data to Display</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Template (reuse for reject/cancel, pass appropriate IDs & titles) -->
+    <div class="modal" id="commentModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head has-background-info has-text-white">
+                <p class="modal-card-title has-text-white" id="modalTitle">Action Required</p>
+                <button type="button" class="delete" aria-label="close" id="closeModalBtn"></button>
+            </header>
+            <form method="post" action="/loan/action" id="actionForm">
+                <input type="hidden" name="loan_uuid" value="{{ loan.uuid }}">
+                <input type="hidden" name="action_type" id="actionType" value="">
+                <section class="modal-card-body">
+                    <p id="modalMessage"></p>
+                    <div class="field mt-5">
+                        <label class="label">Comment <small class="has-text-danger">*</small></label>
+                        <input type="text" name="comment" class="input is-normal" required>
+                    </div>
+                </section>
+                <footer class="modal-card-foot has-background-white">
+                    <button type="submit" class="button is-success is-normal">Confirm</button>
+                    <button type="button" class="button is-normal" id="closeModalBtnFooter">Cancel</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    {#    Modal for deleting loan#}
+
+    <div class="modal" id="deleteModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head has-background-danger">
+                <p class="modal-card-title has-text-white">Confirm Deletion</p>
+                <button class="delete" aria-label="close" id="closeDeleteModal"></button>
+            </header>
+            <section class="modal-card-body">
+                <p class="mb-3">⚠️ You are about to permanently delete this loan application. This action cannot be undone.</p>
+                <p>Are you sure you want to proceed?</p>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-danger is-normal" id="confirmDeleteBtn" data-uuid="{{ loan.uuid }}">
+                    Yes, Delete
+                </button>
+                <button class="button is-normal" type="button" id="cancelDelete">Cancel</button>
+            </footer>
+        </div>
+    </div>
+
+
+    <script>
+        // Tab switcher logic
+        document.querySelectorAll('.tabs li').forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Clear active state
+                document.querySelectorAll('.tabs li').forEach(el => el.classList.remove('is-active'));
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('is-hidden'));
+
+                // Activate clicked tab
+                this.classList.add('is-active');
+                const targetId = this.getAttribute('data-tab');
+                document.getElementById(targetId).classList.remove('is-hidden');
+            });
+        });
+    </script>
+    <script>
+        function downloadLoanPDF(uuid) {
+            const btn = document.getElementById('downloadBtn');
+            const text = document.getElementById('downloadText');
+            const spinner = document.getElementById('spinner');
+
+            // Show loading state
+            text.innerText = "Downloading...";
+            spinner.classList.remove('is-hidden');
+            btn.disabled = true;
+
+            // Start file download
+            fetch(`/loan/pdf/${uuid}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'loan-details.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    alert("Failed to download PDF.");
+                    console.error(error);
+                })
+                .finally(() => {
+                    // Reset UI
+                    text.innerText = "Download PDF";
+                    spinner.classList.add('is-hidden');
+                    btn.disabled = false;
+                });
+        }
+
+        // Enable button after DOM load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('downloadBtn').disabled = false;
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const deleteBtn = document.getElementById('deleteBtn');
+            const deleteModal = document.getElementById('deleteModal');
+            const closeBtn = document.getElementById('closeDeleteModal');
+            const cancelBtn = document.getElementById('cancelDelete');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+            // Open modal
+            deleteBtn.addEventListener('click', () => {
+                deleteModal.classList.add('is-active');
+            });
+
+            // Close modal
+            closeBtn.addEventListener('click', () => deleteModal.classList.remove('is-active'));
+            cancelBtn.addEventListener('click', () => deleteModal.classList.remove('is-active'));
+
+            // Confirm deletion via AJAX
+            confirmDeleteBtn.addEventListener('click', () => {
+                const uuid = confirmDeleteBtn.getAttribute('data-uuid');
+
+                confirmDeleteBtn.classList.add('is-loading');
+
+                fetch(`/dashboard/loan/delete/${uuid}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        confirmDeleteBtn.classList.remove('is-loading');
+                        console.log(data);
+                        if (data.success) {
+                            alert('✅ Loan deleted successfully.');
+                            window.location.href = '/dashboard/all-loans'; // Redirect or refresh
+                        } else {
+                            alert('❌ Failed to delete loan.');
+                        }
+                    })
+                    .catch(err => {
+                        confirmDeleteBtn.classList.remove('is-loading');
+                        alert('⚠️ An error occurred.');
+                        console.error(err);
+                    });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('commentModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const actionTypeInput = document.getElementById('actionType');
+            const form = document.getElementById('actionForm');
+            const closeButtons = document.querySelectorAll('#closeModalBtn, #closeModalBtnFooter');
+
+            function openModal(actionType) {
+                let title = '';
+                let message = '';
+                switch(actionType) {
+                    case 'verify':
+                        title = 'Verify Loan';
+                        message = 'You are about to verify this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'cancel':
+                        title = 'Cancel Loan';
+                        message = 'You are about to cancel this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'approve':
+                        title = 'Approve Loan';
+                        message = 'You are about to approve this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'reject':
+                        title = 'Reject Loan';
+                        message = 'You are about to reject this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'disburse':
+                        title = 'Disburse Loan';
+                        message = 'You are about to disburse this loan. Please add a comment before proceeding.';
+                        break;
+                }
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                actionTypeInput.value = actionType;
+                modal.classList.add('is-active');
+            }
+
+            ['verifyBtn', 'cancelBtn', 'approveBtn', 'rejectBtn', 'disburseBtn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        openModal(id.replace('Btn', ''));
+                    });
+                }
+            });
+
+            closeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modal.classList.remove('is-active');
+                    form.reset();
+                });
+            });
+        });
+
+    </script>
+    <style>
+        .loader {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3273dc;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+    </style>
+
+{% endblock %}

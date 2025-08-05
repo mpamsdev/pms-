@@ -1,0 +1,240 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="Find thousands of verified job listings across Zambia with Sebenza Zambia.">
+    <meta name="keywords" content="Sebenza Zambia, Jobs in Zambia, Job Listings, Recruitment, Employment Portal">
+    <meta property="og:title" content="Sebenza Zambia | Find Jobs and Hire Talent">
+    <meta property="og:description" content="Explore verified job opportunities, post vacancies, and connect with top talent in Zambia. Sebenza Zambia is your trusted job marketplace.">
+    <meta property="og:image" content="https://sebenzazambia.com/assets/img/sebenza-logo.png">
+    <meta property="og:url" content="https://sebenzazambia.com">
+    <link rel="canonical" href="https://sebenzazambia.com">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <link href="/assets/img/sebenza-logo.png" rel="icon" type="image/png">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/public/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/site.webmanifest">
+    <title>{{ title }}</title>
+    <style>
+        .icon.is-right i {
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar is-light is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="container">
+        <!-- Navbar Brand -->
+        <div class="navbar-brand ">
+            <a class="navbar-item" href="/">
+                <!-- Control logo size with inline style or a CSS class -->
+                <img src="/assets/img/seb-logo.png" alt="Sebenza Zambia" style="max-height: 6rem; height: auto;">
+            </a>
+
+            <!-- Burger Icon -->
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMenu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <!-- Navbar Menu -->
+        <div id="navbarMenu" class="navbar-menu">
+            <!-- Center items by using is-justify-content-center -->
+            <div class="navbar-start  is-justify-content-center is-align-items-center" style="width: 100%;">
+                <a href="/" class="navbar-item">Home</a>
+                <a href="/" class="navbar-item">Jobs</a>
+                <a href="/about-us" class="navbar-item">About Us</a>
+                <a href="/contact-us" class="navbar-item">Contact Us</a>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">More</a>
+                    <div class="navbar-dropdown is-boxed">
+                        <a class="navbar-item">Advertisement</a>
+                        <a class="navbar-item is-selected">Interview Prep</a>
+                        <a class="navbar-item">Contact</a>
+                        <hr class="navbar-divider">
+                        <a class="navbar-item">Report an issue</a>
+                    </div>
+                </div>
+                <a href="/auth/login" class="navbar-item">
+                    <button class="button is-rounded is-light">Login</button>
+                </a>
+                <a href="/auth/sign-up" class="navbar-item">
+                    <button class="button is-rounded is-primary">Sign Up</button>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<section class="hero is-fullheight" >
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-4-desktop mt-5">
+                    <div class="card login-card">
+                        <div class="card-content">
+                            <h1 class="is-size-4 has-text-centered has-text-primary mt-4">
+                                Login
+                            </h1>
+                            {# Notification block #}
+                            {% if errors|length > 0 %}
+                                <div class="notification is-danger">
+                                   
+                                        <p class="has-text-white">
+                                            {{ errors }}
+                                        </p>
+                                    
+                                </div>
+                            {% endif %}
+
+                            <form id="loginForm" method="post" action="" >
+                                <!-- <input type="hidden" name="csrf_token" value="{{ csrf_token }}"> -->
+                                <div class="field">
+                                    <label class="">Email</label>
+                                    <div class="control has-icons-left is-expanded">
+                                        <input class="input is-normal is-primary" type="email" id="email" name="email" placeholder="e.g. user@example.com" required>
+                                        <span class="icon is-small is-left">
+                                                    <i class="mdi mdi-email-outline"></i>
+                                                </span>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="">
+                                        Password
+                                    </label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input id="password" class="input is-normal is-primary" type="password" name="password" placeholder="********" required>
+                                        <span class="icon is-small is-left">
+                                                    <i class="mdi mdi-lock-outline"></i>
+                                                </span>
+                                        <span class="icon is-small is-right" onclick="togglePassword()">
+                                                    <i class="mdi mdi-eye-off" id="toggleIcon" style="cursor: pointer;"></i>
+                                                </span>
+                                    </div>
+                                </div>
+                                <p class="has-text-right has-text-primary">
+                                    <a href="/forgot-password" class="  ">
+                                        Forgot Password?
+                                    </a>
+                                </p>
+
+                                <div class="field">
+                                    <button type="submit" id="sbmt" class="button is-normal is-primary is-fullwidth mt-2" type="submit">
+                                        Login
+                                    </button>
+                                </div>
+                                 <p class="has-text-centered has-text-primary mt-4">
+                                    Don't have an account?
+                                    <a href="/auth/sign-up" class="  ">
+                                         Sign Up
+                                    </a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div style="position: fixed; top: 50%; right: 20px; transform: translateY(-50%); display: flex; gap: 10px; flex-direction: column;">
+    <a data-aos="fade-zoom-in"
+       data-aos-easing="ease-in-back"
+       data-aos-delay="1000"
+       data-aos-offset="0" href="https://web.facebook.com/profile.php?id=61566451987755" class="button is-rounded is-link has-background-link">
+        <span class="mdi mdi-facebook"></span>
+    </a>
+    <a data-aos="fade-zoom-in"
+       data-aos-easing="ease-in-back"
+       data-aos-delay="800"
+       data-aos-offset="0" href="https://www.linkedin.com/company/fortress-hub-technologies-limited" class="button is-rounded is-info has-background-info">
+        <span class="mdi mdi-linkedin"></span>
+    </a>
+    <a data-aos="fade-zoom-in"
+       data-aos-easing="ease-in-back"
+       data-aos-delay="500"
+       data-aos-offset="0" href="https://wa.me/message/4H4EQNHCOEW7N1" class="button is-rounded is-success has-background-success">
+        <span class="mdi mdi-whatsapp"></span>
+    </a>
+    {#    <a data-aos="fade-zoom-in"#}
+    {#       data-aos-easing="ease-in-back"#}
+    {#       data-aos-delay="300"#}
+    {#       data-aos-offset="0" href="https://www.fortresshubtechnologies.com" class="button is-rounded is-light has-background-light">#}
+    {#        <span class="mdi mdi-web"></span>#}
+    {#    </a>#}
+</div>
+
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <a data-aos="fade-zoom-in"
+           data-aos-easing="ease-in-back"
+           data-aos-delay="300"
+           data-aos-offset="0" href="https://web.facebook.com/profile.php?id=61566451987755" class="button is-rounded is-link has-background-link"><span class="mdi mdi-facebook is-rounded"></span></a>
+        <a data-aos="fade-zoom-in"
+           data-aos-easing="ease-in-back"
+           data-aos-delay="500"
+           data-aos-offset="0" href="https://www.linkedin.com/company/fortress-hub-technologies-limited" class="button is-rounded is-info has-background-info"><span class="mdi mdi-linkedin is-rounded"></span></a>
+        <a data-aos="fade-zoom-in"
+           data-aos-easing="ease-in-back"
+           data-aos-delay="800"
+           data-aos-offset="0" href="https://wa.me/message/4H4EQNHCOEW7N1" class="button is-rounded is-success has-background-success"><span class="mdi mdi-whatsapp is-rounded"></span></a>
+        <hr>
+        <p>All rights reserved &copy; {{ "now"|date("Y") }}. Grazymann Global Solutions Limited</p>
+        <p class="is-size-5"> Sebenza Zambia </p>
+        <p class="is-size-5">
+            <a>Terms & Conditions</a> | <a> Privacy Police</a>
+        </p>
+    </div>
+</footer>
+<!-- JavaScript to handle navbar burger -->
+<script src="/public/assets/js/main.js"></script>
+{#<script src="/public/assets/js/main.js"></script>#}
+{#Smooth scrool#}
+<script src="/public/assets/js/smoothScroll.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init();
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const burger = document.querySelector('.navbar-burger');
+        const menu = document.getElementById(burger.dataset.target);
+
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('is-active');
+            menu.classList.toggle('is-active');
+        });
+    });
+</script>
+<script>
+    function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.getElementById("toggleIcon");
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("mdi-eye-off");
+            icon.classList.add("mdi-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("mdi-eye");
+            icon.classList.add("mdi-eye-off");
+        }
+    }
+</script>
+</body>
+</html>
+<style>
+
+</style>

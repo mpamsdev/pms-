@@ -1,0 +1,42 @@
+<nav id="navbar-main" class="navbar is-spaced is-fixed has-shadow box has-background-light mb-4" >
+    <div class="container has-text-centered">
+        <div class="navbar-brand">
+            <a class="navbar-item is-hidden-desktop jb-aside-mobile-toggle">
+                <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+            </a>
+            <div class="navbar-item has-control">
+                <a href="/app/dashboard"> {{ "Dashboard" }}</a>
+            </div>
+        </div>
+
+        <div class="navbar-menu fadeIn animated faster" id="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
+                    <a class="navbar-link is-arrowless">
+                        <div class="is-user-avatar">
+                            {#                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Big Mart">#}
+                        </div>
+                        <div class="is-user-name ml-2"><span>{{ username }}</span> </div>
+                        <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a href="/app/profile" class="navbar-item">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4 mr-2"></i></span>
+                            <span>My Profile</span>
+                        </a>
+                        <a href="/app/settings" class="navbar-item">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4 mr-2"></i></span>
+                            <span>Notifications</span>
+                        </a>
+
+                        <hr class="navbar-divider">
+                        <a href="/logout" class="navbar-item ">
+                            <span class="icon"><i class="mdi mdi-logout is-size-4 "></i></span>
+                            <span class="is-size-5">Log Out</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

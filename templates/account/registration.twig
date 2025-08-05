@@ -1,0 +1,347 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <link href="../views/images/original-logo.jpg" rel="icon" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/site.webmanifest">
+</head>
+<body class="">
+
+<div class="section is-small is-fullheight">
+    <div class="container has-text-centered">
+        <div class="columns is-centered">
+            <div class="column is-three-quarters">
+                <div class="is-spaced">
+                    <figure class="image is-64x64" style="margin: 0 auto;">
+                        <img class="is-rounded" src="/assets/img/logo.png">
+                    </figure>
+                    <h1 class="has-text-left has-text-weight-bold is-size-5 pt-4 pb-4">{{ pageName }}</h1>
+                    <form id="signup" action="" method="post">
+                        <div class="columns is-multiline">
+                            <div class="column is-12">
+                                <div class="field has-text-left">
+                                    <label class="" for="title">Title</label>
+                                    <div class="select is-info is-normal is-fullwidth">
+                                        <select name="title" id="title" required>
+                                            {% set roles = ['Mr', 'Mrs', 'Ms', 'Miss', 'Col', 'Capt', 'Adv', 'Dr', 'Judge', 'Lt', 'Maj', 'Past', 'Prof', 'Rev', 'Sgt', 'Sir'] %}
+                                            {% for role in roles %}
+                                                <option value="{{ role }}">{{ role }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="firstname">First Name</label>
+                                    <input type="text" id="firstname" name="firstname" class="input is-normal is-info" placeholder="Enter first name" required>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="lastname">Last Name</label>
+                                    <input type="text" id="lastname" name="lastname" class="input is-normal is-info" placeholder="Enter last name" required>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="email">Email Address</label>
+                                    <input type="email" id="email" name="username" class="input is-normal is-info" placeholder="Enter email address" required>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone" class="input is-normal is-info" placeholder="Enter phone number" required>
+                                    <small id="errorPhone" class="has-text-danger"></small>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="nrc">National ID Card (NRC)</label>
+                                    <input type="text" id="nrc" name="nationalCard" class="input is-normal is-info" placeholder="Enter your national ID card number" required>
+                                    <small id="errorNrc" class="has-text-danger"></small>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="dob">Date of Birth</label>
+                                    <input type="date" id="dob" name="dob" class="input is-normal is-info" placeholder="dd/mm/yyyy" required pattern="\d{2}/\d{2}/\d{4}">
+                                    <small id="errorDob" class="has-text-danger"></small>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="gender">Gender</label>
+                                    <div class="select is-info is-normal is-fullwidth">
+                                        <select name="gender" id="gender" required>
+                                            {% set genders = ['Male', 'Female'] %}
+                                            {% for gender in genders %}
+                                                <option value="{{ gender }}">{{ gender }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="home-address">Home Address</label>
+                                    <input type="text" id="home-address" name="homeAddress" class="input is-normal is-info" placeholder="Enter home address" required>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="city">City</label>
+                                    <input type="text" id="city" name="city" class="input is-normal is-info" placeholder="Enter city" required>
+                                </div>
+                            </div>
+
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <label class="" for="country">Country</label>
+                                    <input type="text" id="country" name="country" class="input is-normal is-info" placeholder="Country of residency" required>
+                                </div>
+                            </div>
+
+                            <div class="column is-2">
+                                <div class="field mt-5">
+                                    <div class="control">
+                                        <button type="submit" name="next" class="button is-normal is-info is-focused is-fullwidth" onclick="showLoadingOverlay(event)">
+                                            <span>Next</span>
+                                            <span class="mdi mdi-chevron-right is-size-3"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> <!-- /.columns -->
+                    </form>
+                    <p class="mt-6">
+                        Already have an account? <a href="/">Sign In</a>
+                    </p>
+                    <hr>
+                    <p class="mt-5">All rights reserved, Copyright &copy; {{ "now"|date("Y") }} . Chalom Investments Limited</p>
+                    <p><strong>Powered By:</strong> <a href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // Toggle mobile navigation menu
+    document.addEventListener('DOMContentLoaded', function ()
+    {
+        var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        if ($navbarBurgers.length > 0) {
+            $navbarBurgers.forEach(function ($el) {
+                $el.addEventListener('click', function () {
+                    var target = $el.dataset.target;
+                    var $target = document.getElementById(target);
+                    $el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+                });
+            });
+        }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('signup');
+        const phoneNumber = document.getElementById('phone');
+        const dob = document.getElementById('dob');
+        const nrc = document.getElementById('nrc');
+        const errorPhone = document.getElementById('errorPhone');
+        const errorNrc = document.getElementById('errorNrc');
+        const errorDob = document.getElementById('errorDob');
+
+        // Autofill from localStorage
+        const saved = JSON.parse(localStorage.getItem('registrationData') || '{}');
+        if (saved.stepOne) {
+            document.getElementById('title').value = saved.stepOne.title || '';
+            document.getElementById('firstname').value = saved.stepOne.firstname || '';
+            document.getElementById('lastname').value = saved.stepOne.lastname || '';
+            document.getElementById('email').value = saved.stepOne.username || '';
+            document.getElementById('phone').value = saved.stepOne.phone || '';
+            document.getElementById('nrc').value = saved.stepOne.nationalCard || '';
+            document.getElementById('dob').value = saved.stepOne.dob || '';
+            document.getElementById('gender').value = saved.stepOne.gender || '';
+            document.getElementById('home-address').value = saved.stepOne.homeAddress || '';
+            document.getElementById('city').value = saved.stepOne.city || '';
+            document.getElementById('country').value = saved.stepOne.country || '';
+        }
+
+        const validatePhone = () => {
+            const phone = phoneNumber.value.trim();
+            if (/^\+\d+/.test(phone)) {
+                errorPhone.textContent = '';
+                phoneNumber.classList.remove('invalid');
+                phoneNumber.style.borderColor = 'green';
+                return true;
+            } else {
+                errorPhone.textContent = 'Please include the country code (e.g., +260 for Zambia)';
+                phoneNumber.classList.add('invalid');
+                phoneNumber.style.borderColor = 'red';
+                return false;
+            }
+        };
+
+        const validateNrc = () => {
+            const nationalId = nrc.value.trim();
+            const regex = /^\d{6}\/\d{2}\/\d{1}$/;
+            if (regex.test(nationalId)) {
+                errorNrc.textContent = '';
+                nrc.classList.remove('invalid');
+                nrc.style.borderColor = 'green';
+                return true;
+            } else {
+                errorNrc.textContent = 'Wrong National ID format. Required: 000000/00/0';
+                nrc.classList.add('invalid');
+                nrc.style.borderColor = 'red';
+                return false;
+            }
+        };
+
+        const validateDob = () => {
+            const dobValue = dob.value.trim(); // e.g., 2005-12-30
+            const errorMsg = 'Please enter a valid DOB. Year must be 2007 or earlier.';
+
+            if (!dobValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                errorDob.textContent = errorMsg;
+                dob.classList.add('invalid');
+                dob.style.borderColor = 'red';
+                return false;
+            }
+
+            const [year, month, day] = dobValue.split('-').map(Number);
+            if (year > 2007) {
+                errorDob.textContent = errorMsg;
+                dob.classList.add('invalid');
+                dob.style.borderColor = 'red';
+                return false;
+            }
+
+            errorDob.textContent = '';
+            dob.classList.remove('invalid');
+            dob.style.borderColor = 'green';
+            return true;
+        };
+
+
+        // Attach blur validation
+        phoneNumber.addEventListener('blur', validatePhone);
+        nrc.addEventListener('blur', validateNrc);
+        dob.addEventListener('blur', validateDob);
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Always prevent default submission
+
+            const isPhoneValid = validatePhone();
+            const isNrcValid = validateNrc();
+            const isDobValid = validateDob();
+
+            if (!isPhoneValid || !isNrcValid || !isDobValid) {
+                return; // Stop if any validation fails
+            }
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalBtnHTML = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = `<span class="loader"></span> Saving...`;
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    redirect: 'follow'
+                });
+
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const html = await response.text();
+                    document.body.innerHTML = html;
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Something went wrong.");
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalBtnHTML;
+            }
+        });
+    });
+</script>
+
+
+</body>
+</html>
+    <style>
+        .error
+        {
+            background-color: #d50000;
+            color: white;
+        }
+        .error
+        {
+            color: #d50000;
+        }
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loading-message {
+            font-size: 18px;
+        }
+
+        .mdi-spin {
+            animation: mdi-spin 1s infinite linear;
+        }
+
+        @keyframes mdi-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+
+    </style>
+{% endblock %}

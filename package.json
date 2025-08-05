@@ -1,0 +1,19 @@
+{
+  "name": "pms",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "scripts": {
+    "dev": "browser-sync start \\\n  --proxy \"pms.zm\" \\\n  --files \"templates/**/*.twig, public/**/*.css, public/**/*.js, src/**/*.php\" \\\n  --host \"192.168.1.192\" \\\n  --port 3000 \\\n  --no-ui --no-open"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.4"
+  }
+
+}

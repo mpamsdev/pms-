@@ -1,0 +1,660 @@
+{% extends 'partials/base.twig' %}
+{% block content %}
+    <div id="main-content" class="container-fluid">
+        <div class="columns">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-white">Home</a></li>
+                            <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                        </ul>
+                    </nav>
+                    <div class="columns">
+                        <div class="column is-full">
+                            {% if loan %}
+                                <div class="box">
+                                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-3">
+                                        <p class="title is-size-5">
+                                            {{ title }} (<strong>App #:</strong> {{ loan.applicationNumber }})
+                                        </p>
+                                        <div class="buttons">
+                                            <button id="downloadBtn" class="button is-link is-light" onclick="downloadLoanPDF('{{ loan.uuid }}')" disabled>
+                                                <span class="icon is-small"><i class="mdi mdi-download"></i></span>
+                                                <span id="downloadText">PDF</span>
+                                                <span id="spinner" class="loader is-hidden ml-2"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <p class="mb-3"><strong>Action</strong></p>
+                                    <div class="buttons is-flex is-flex-wrap-wrap is-justify-content-flex-start mb-6">
+                                        {% set role = userData.role %}
+                                        {% set status = loan.status %}
+
+                                        {# ✅ Show if loan is fully paid #}
+                                        {% if status == '6' %}
+                                            <button class="button is-success is-fullwidth-mobile is-normal mr-2 mb-2" disabled>
+                                                <span class="icon"><i class="mdi mdi-check"></i></span>
+                                                <span>Loan Paid</span>
+                                            </button>
+
+                                            {# If loan is rejected or cancelled, only show Delete button to admin/superuser #}
+                                        {% elseif (status == '3' or status == '4') and (role == 'admin' or role == 'superuser') %}
+                                            <button class="button is-danger is-normal mr-2 mb-2" id="deleteBtn">
+                                                <span class="icon"><i class="mdi mdi-delete-outline"></i></span>
+                                                <span>Delete</span>
+                                            </button>
+
+                                            {# Verifier actions #}
+                                        {% elseif (status == '' or status is null) and role == 'verifier' %}
+                                            <button class="button is-primary is-normal mr-2 mb-2" id="verifyBtn">
+                                                <span class="icon"><i class="mdi mdi-check-decagram"></i></span>
+                                                <span>Verify</span>
+                                            </button>
+                                            <button class="button is-danger is-normal mr-2 mb-2" id="cancelBtn">
+                                                <span class="icon"><i class="mdi mdi-cancel"></i></span>
+                                                <span>Cancel</span>
+                                            </button>
+
+                                            {# Approver actions #}
+                                        {% elseif status == '0' and role == 'approver' %}
+                                            <button class="button is-success is-normal mr-2 mb-2" id="approveBtn">
+                                                <span class="icon"><i class="mdi mdi-check-circle-outline"></i></span>
+                                                <span>Approve</span>
+                                            </button>
+                                            <button class="button is-danger is-normal mr-2 mb-2" id="rejectBtn">
+                                                <span class="icon"><i class="mdi mdi-close-circle-outline"></i></span>
+                                                <span>Reject</span>
+                                            </button>
+
+                                            {# Admin/Superuser Disburse after approval #}
+                                        {% elseif status == '1' and (role == 'admin' or role == 'superuser') %}
+                                            <button class="button is-info is-fullwidth-mobile is-normal mr-2 mb-2" id="disburseBtn">
+                                                <span class="icon"><i class="mdi mdi-bank-transfer-out"></i></span>
+                                                <span>Disburse</span>
+                                            </button>
+                                            <button class="button is-danger is-normal mr-2 mb-2" id="rejectBtn">
+                                                <span class="icon"><i class="mdi mdi-close-circle-outline"></i></span>
+                                                <span>Reject</span>
+                                            </button>
+
+                                            {# Superuser sees all actions #}
+                                        {% elseif role == 'superuser' %}
+                                            <button class="button is-info is-normal mr-2 mb-2" id="disburseBtn">
+                                                <span class="icon"><i class="mdi mdi-bank-transfer-out"></i></span>
+                                                <span>Disburse</span>
+                                            </button>
+                                            <button class="button is-primary is-normal mr-2 mb-2" id="verifyBtn">
+                                                <span class="icon"><i class="mdi mdi-check-decagram"></i></span>
+                                                <span>Verify</span>
+                                            </button>
+                                            <button class="button is-danger is-outlined is-normal mr-2 mb-2" id="cancelBtn">
+                                                <span class="icon"><i class="mdi mdi-cancel"></i></span>
+                                                <span>Cancel</span>
+                                            </button>
+                                            <button class="button is-success is-normal mr-2 mb-2" id="approveBtn">
+                                                <span class="icon"><i class="mdi mdi-check-circle-outline"></i></span>
+                                                <span>Approve</span>
+                                            </button>
+                                            <button class="button is-danger is-normal mr-2 mb-2" id="rejectBtn">
+                                                <span class="icon"><i class="mdi mdi-close-circle-outline"></i></span>
+                                                <span>Reject</span>
+                                            </button>
+
+                                            {# Default fallback #}
+                                        {% else %}
+                                            <p>No actions available</p>
+                                        {% endif %}
+                                    </div>
+
+
+                                    <div class="tabs box is-centered  mb-6">
+                                        <ul>
+                                            <li class="is-active" data-tab="loan-details-tab">
+                                                <a>
+                                                    <span class="icon is-small"><i class="mdi mdi-file-document-outline"></i></span>
+                                                    <span>Loan Details</span>
+                                                </a>
+                                            </li>
+                                            <li data-tab="loan-schedule-tab">
+                                                <a>
+                                                    <span class="icon is-small"><i class="mdi mdi-calendar-clock"></i></span>
+                                                    <span>Loan Schedule</span>
+                                                </a>
+                                            </li>
+                                            <li data-tab="history-tab">
+                                                <a>
+                                                    <span class="icon is-small"><i class="mdi mdi-restore"></i></span>
+                                                    <span>History</span>
+                                                </a>
+                                            </li>
+                                            <li data-tab="documents-tab">
+                                                <a>
+                                                    <span class="icon is-small"><i class="mdi mdi-file-upload"></i></span>
+                                                    <span>Documents</span>
+                                                </a>
+                                            </li>
+                                            <li data-tab="user-details-tab">
+                                                <a>
+                                                    <span class="icon is-small"><i class="mdi mdi-account-circle"></i></span>
+                                                    <span>User Details</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Tab Content Sections -->
+                                    <div id="loan-details-tab" class="tab-content">
+                                        <div class="columns is-multiline">
+                                            <div class="column is-4">
+                                                <p class="is-size-6">Application Information</p>
+                                                <hr>
+                                                <p><strong>Amount:</strong> {{ loan.amount | number_format(2, '.', ',') }}</p>
+                                                <p><strong>Total Payable:</strong> {{ loan.totalPayable | number_format(2, '.', ',') }}</p>
+                                                <p><strong>Period:</strong> {{ loan.period }} Month (s)</p>
+                                                <p><strong>Interest Rate:</strong> {{ loan.interestRate }}%</p>
+                                                <p><strong>Loan Type:</strong> {{ loan.loanType }}</p>
+                                                <p><strong>Date of Created:</strong> {{ loan.created_at | date("d, M Y") }}</p>
+                                            </div>
+                                            <div class="column is-4">
+                                                <p class="is-size-6">Current Status</p>
+                                                <hr>
+                                                <p><strong>Balance:</strong> {{ loan.balance | number_format(2, '.', ',') }}</p>
+                                                <p><strong>Paid:</strong> {{ loan.paid | number_format(2, '.', ',') }}</p>
+                                                <p><strong>Interest:</strong> {{ loan.paidInterest | number_format(2, '.', ',') }}</p>
+                                            </div>
+                                            <div class="column is-4 ">
+                                                <p class="is-size-6">Application Status</p>
+                                                <hr>
+                                                {% if loan.status is same as('') or loan.status is null %}
+                                                    <button class="button has-text-white is-warning is-normal ">
+                                                        <span class="icon"><i class="mdi mdi-clock-outline"></i></span>
+                                                        <span>Loan Submission</span>
+                                                    </button>
+                                                {% elseif loan.status is same as('1') %}
+                                                    <button class="button has-text-white is-success is-is-normal">
+                                                        <span class="icon"><i class="mdi mdi-check-circle-outline"></i></span>
+                                                        <span>Loan Approved</span>
+                                                    </button>
+                                                {% elseif loan.status is same as('2') %}
+                                                    <button class="button has-text-white is-info is-is-normal">
+                                                        <span class="icon"><i class="mdi mdi-bank-transfer-out"></i></span>
+                                                        <span>Loan Disbursed</span>
+                                                    </button>
+                                                {% elseif loan.status is same as('3') %}
+                                                    <button class="button has-text-white is-danger is-dark is-normal">
+                                                        <span class="icon"><i class="mdi mdi-close-circle-outline"></i></span>
+                                                        <span>Loan Rejected</span>
+                                                    </button>
+                                                {% elseif loan.status is same as('4') %}
+                                                    <button class="button has-text-white is-danger is-normal ">
+                                                        <span class="icon"><i class="mdi mdi-cancel"></i></span>
+                                                        <span class="has-text-white">Loan Cancelled</span>
+                                                    </button>
+                                                {% elseif loan.status is same as('5') %}
+                                                    <button class="button is-link is-normal">
+                                                        <span class="icon"><i class="mdi mdi-currency-usd"></i></span>
+                                                        <span>Loan Repayment</span>
+                                                    </button>
+                                                {% elseif loan.status is same as('6') %}
+                                                    <button class="button is-success is-normal" disabled>
+                                                        <span class="icon"><i class="mdi mdi-check"></i></span>
+                                                        <span>Loan Paid</span>
+                                                    </button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="loan-schedule-tab" class="tab-content is-hidden">
+                                        <h1 class="title is-size-6">Loan Repayment Schedule</h1>
+                                        <div class="columns is-multiline">
+                                            <!-- Repayment Amount -->
+                                            <div class="column is-4">
+                                                <div class="field">
+                                                    <label class="">Enter Repayment Amount</label>
+                                                    <div class="control">
+                                                        <input id="repaymentAmount" name="repaymentAmount" class="input is-info" type="number" placeholder="e.g., 1500"
+                                                        {% if loan.status == 6 %}disabled{% endif %}>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Post Type Dropdown -->
+                                            <div class="column is-4">
+                                                <div class="field">
+                                                    <label class="">Post Type</label>
+                                                    <div class="control">
+                                                        <div class="select is-info is-fullwidth">
+                                                            <select id="postType" name="postType"  {% if loan.status == 6 %}disabled{% endif %}>
+                                                                {% set postTypes = ['installment', 'interest'] %}
+                                                                {% for type in postTypes %}
+                                                                    <option value="{{ type }}">{{ type|capitalize }}</option>
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="column is-4">
+                                                <div class="field">
+                                                    <label class="">Comment (Optional)</label> <!-- For spacing -->
+                                                    <div class="control">
+                                                        <input id="comment" name="comment" class="input is-info" type="text" placeholder="e.g., Part payment"  {% if loan.status == 6 %}disabled{% endif %}>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Button Aligned -->
+                                        </div>
+                                        <button type="button" class="button is-normal is-info" onclick="applyRepayment()" {% if loan.status == 6 %}disabled{% endif %}>
+                                            Post Payment
+                                        </button>
+                                        <hr>
+
+                                        {% set duration_months = loan.period %}
+                                        {% set monthly_installment = loan.totalPayable / duration_months %}
+
+                                        <table class="table is-fullwidth is-striped mt-5" id="scheduleTable">
+                                            <thead>
+                                            <tr>
+                                                <th>Month</th>
+                                                <th>Due Amount</th>
+                                                <th>Paid</th>
+                                                <th>Interest Paid</th>
+                                                <th>Status</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% set startDate = loan.created_at|date('Y-m-d') %}
+                                            {% set paidRemaining = loan.paid %}
+                                            {% for i in 1..duration_months %}
+                                                {% set dueDate = startDate|date_modify('+' ~ i ~ ' month') %}
+                                                {% set dueAmount = monthly_installment %}
+                                                {% set paidAmount = 0 %}
+                                                {% set paidInterest = loan.paidInterest %}
+                                                {% set statusText = 'Pending' %}
+                                                {% set statusClass = '' %}
+
+                                                {% if loan.status == '6' %}
+                                                    {% if paidRemaining >= dueAmount %}
+                                                        {% set paidAmount = dueAmount %}
+                                                        {% set paidRemaining = paidRemaining - dueAmount %}
+                                                        {% set statusText = 'Paid' %}
+                                                        {% set statusClass = 'has-text-success' %}
+                                                    {% elseif paidRemaining > 0 %}
+                                                        {% set paidAmount = paidRemaining %}
+                                                        {% set paidRemaining = 0 %}
+                                                        {% set statusText = 'Part Payment' %}
+                                                        {% set statusClass = 'has-text-warning' %}
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                <tr data-index="{{ i-1 }}">
+                                                    <td>{{ dueDate|date("d M Y") }}</td>
+                                                    <td class="due">{{ dueAmount | number_format(2, '.', ',') }}</td>
+                                                    <td class="paid">{{ paidAmount | number_format(2, '.', ',') }}</td>
+                                                    <td class="interest">{{ paidInterest | number_format(2, '.', ',') }}</td>
+                                                    <td class="status {{ statusClass }}">{{ statusText }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div id="history-tab" class="tab-content is-hidden">
+                                        Repayment History will come here
+                                    </div>
+
+                                    <div id="documents-tab" class="tab-content is-hidden">
+                                        <div class="columns is-multiline">
+
+                                            {# Identity Section (e.g., NRC) #}
+                                            <div class="column is-4">
+                                                <p class="has-text-centered has-text-weight-bold">Identity</p>
+                                                <div class="box">
+                                                    {% if loan.nrc is not empty %}
+                                                        {% if loan.nrc ends with '.pdf' %}
+                                                            <embed src="/public/assets/uploads/{{ loan.nrc }}" type="application/pdf" width="100%" height="200px" />
+                                                        {% else %}
+                                                            <figure class="image is-4by3">
+                                                                <img src="{{ loan.nrc }}" alt="NRC Document">
+                                                            </figure>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <p class="has-text-grey">No NRC document uploaded.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            {# Payslip & Account Statement Section #}
+                                            <div class="column is-4">
+                                                <p class="has-text-centered has-text-weight-bold">Payslip & Statement</p>
+                                                <div class="box">
+                                                    {% if loan.payslip is not empty %}
+                                                        {% if loan.payslip ends with '.pdf' %}
+                                                            <embed src="/public/assets/uploads/{{ loan.payslip }}" type="application/pdf" width="100%" height="200px" />
+                                                        {% else %}
+                                                            <figure class="image is-4by3">
+                                                                <img src="/public/assets/uploads/{{ loan.payslip }}" alt="Payslip">
+                                                            </figure>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <p class="has-text-grey">No payslip uploaded.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                            {# Collateral Section #}
+                                            <div class="column is-4">
+                                                <p class="has-text-centered has-text-weight-bold">Collateral Files</p>
+                                                <div class="box">
+                                                    {% if loan.collateral is not empty %}
+                                                        {% if loan.collateral ends with '.pdf' %}
+                                                            <embed src="/public/assets/uploads/{{ loan.collateral }}" type="application/pdf" width="100%" height="200px" />
+                                                        {% else %}
+                                                            <figure class="image is-4by3">
+                                                                <img src="/public/assets/uploads/{{ loan.collateral }}" alt="Collateral File">
+                                                            </figure>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <p class="has-text-grey">No collateral document uploaded.</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div id="user-details-tab" class="tab-content is-hidden">
+                                        <div class="columns is-multiline">
+                                            <div class="column is-4">
+                                                <p class="is-size-6">Personal Information</p>
+                                                <hr>
+                                                <p><strong>Title:</strong> {{ loan.user.title }}</p>
+                                                <p><strong>Full Name:</strong> {{ loan.user.firstname ~ ' ' ~ loan.user.lastname }}</p>
+                                                <p><strong>Dob:</strong> {{ loan.user.dob }}</p>
+                                                <p><strong>Email:</strong> {{ loan.user.username }}</p>
+                                                <p><strong>Phone:</strong> {{ loan.user.phone }}</p>
+                                                <p><strong>National ID:</strong> {{ loan.user.nationalCard }}</p>
+                                                <p><strong>Address:</strong> {{ loan.user.address }}</p>
+                                                <p><strong>City:</strong> {{ loan.user.city }}</p>
+                                                <p><strong>Country:</strong> {{ loan.user.country }}</p>
+                                            </div>
+                                            <div class="column is-4">
+                                                <p class="is-size-6">Occupational Information</p>
+                                                <hr>
+                                                <p><strong>Company/Occupation:</strong> {{ loan.user.occupation.company | default('N/A') }}</p>
+                                                <p><strong>Work Status:</strong> {{ loan.user.occupation.workStatus | default('N/A') }}</p>
+                                                <p><strong>Position:</strong> {{ loan.user.occupation.position | default('N/A') }}</p>
+                                                <p><strong>Department:</strong> {{ loan.user.occupation.department | default('N/A') }}</p>
+                                                <p><strong>Address:</strong> {{ loan.user.occupation.address | default('N/A') }}</p>
+                                            </div>
+                                            <div class="column is-4">
+                                                <p class="is-size-6">Next of Kin Information</p>
+                                                <hr>
+                                                <p><strong>Full Name:</strong> {{ loan.user.nextOfKin.firstname ~ ' ' ~ loan.user.nextOfKin.lastname | default('N/A')}}</p>
+                                                <p><strong>Email:</strong> {{ loan.user.nextOfKin.next_phone | default('N/A')}}</p>
+                                                <p><strong>National ID:</strong> {{ loan.user.nextOfKin.next_national_id | default('N/A')}}</p>
+                                                <p><strong>Relationship:</strong> {{ loan.user.nextOfKin.next_relationship | default('N/A')}}</p>
+                                                <p><strong>Address:</strong> {{ loan.user.nextOfKin.next_address | default('N/A')}}</p>
+                                                <p><strong>Address:</strong> {{ loan.user.nextOfKin.next_work_status | default('N/A')}}</p>
+                                                <p><strong>Address:</strong> {{ loan.user.nextOfKin.next_company_address | default('N/A')}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="box">
+                                    <p class="has-text-centered is-size-5">No Loan Preview</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Template (reuse for reject/cancel, pass appropriate IDs & titles) -->
+    <div class="modal" id="commentModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head has-background-info has-text-white">
+                <p class="modal-card-title has-text-white" id="modalTitle">Action Required</p>
+                <button type="button" class="delete" aria-label="close" id="closeModalBtn"></button>
+            </header>
+            <form method="post" action="/loan/action" id="actionForm">
+                <input type="hidden" name="loan_uuid" value="{{ loan.uuid }}">
+                <input type="hidden" name="action_type" id="actionType" value="">
+                <section class="modal-card-body">
+                    <p id="modalMessage"></p>
+                    <div class="field mt-5">
+                        <label class="label">Comment <small class="has-text-danger">*</small></label>
+                        <input type="text" name="comment" class="input is-normal" required>
+                    </div>
+                </section>
+                <footer class="modal-card-foot has-background-white">
+                    <button type="submit" class="button is-success is-normal">Confirm</button>
+                    <button type="button" class="button is-normal" id="closeModalBtnFooter">Cancel</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+{#    Modal for deleting loan#}
+
+    <div class="modal" id="deleteModal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head has-background-danger">
+                <p class="modal-card-title has-text-white">Confirm Deletion</p>
+                <button class="delete" aria-label="close" id="closeDeleteModal"></button>
+            </header>
+            <section class="modal-card-body">
+                <p class="mb-3">⚠️ You are about to permanently delete this loan application. This action cannot be undone.</p>
+                <p>Are you sure you want to proceed?</p>
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-danger is-normal" id="confirmDeleteBtn" data-uuid="{{ loan.uuid }}">
+                    Yes, Delete
+                </button>
+                <button class="button is-normal" type="button" id="cancelDelete">Cancel</button>
+            </footer>
+        </div>
+    </div>
+
+
+    <script>
+        // Tab switcher logic
+        document.querySelectorAll('.tabs li').forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Clear active state
+                document.querySelectorAll('.tabs li').forEach(el => el.classList.remove('is-active'));
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('is-hidden'));
+
+                // Activate clicked tab
+                this.classList.add('is-active');
+                const targetId = this.getAttribute('data-tab');
+                document.getElementById(targetId).classList.remove('is-hidden');
+            });
+        });
+    </script>
+    <script>
+        function downloadLoanPDF(uuid) {
+            const btn = document.getElementById('downloadBtn');
+            const text = document.getElementById('downloadText');
+            const spinner = document.getElementById('spinner');
+
+            // Show loading state
+            text.innerText = "Downloading...";
+            spinner.classList.remove('is-hidden');
+            btn.disabled = true;
+
+            // Start file download
+            fetch(`/loan/pdf/${uuid}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'loan-details.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    alert("Failed to download PDF.");
+                    console.error(error);
+                })
+                .finally(() => {
+                    // Reset UI
+                    text.innerText = "Download PDF";
+                    spinner.classList.add('is-hidden');
+                    btn.disabled = false;
+                });
+        }
+
+        // Enable button after DOM load
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('downloadBtn').disabled = false;
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const deleteBtn = document.getElementById('deleteBtn');
+            const deleteModal = document.getElementById('deleteModal');
+            const closeBtn = document.getElementById('closeDeleteModal');
+            const cancelBtn = document.getElementById('cancelDelete');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+            // Open modal
+            deleteBtn.addEventListener('click', () => {
+                deleteModal.classList.add('is-active');
+            });
+
+            // Close modal
+            closeBtn.addEventListener('click', () => deleteModal.classList.remove('is-active'));
+            cancelBtn.addEventListener('click', () => deleteModal.classList.remove('is-active'));
+
+            // Confirm deletion via AJAX
+            confirmDeleteBtn.addEventListener('click', () => {
+                const uuid = confirmDeleteBtn.getAttribute('data-uuid');
+
+                confirmDeleteBtn.classList.add('is-loading');
+
+                fetch(`/dashboard/loan/delete/${uuid}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        confirmDeleteBtn.classList.remove('is-loading');
+                        console.log(data);
+                        if (data.success) {
+                            alert('✅ Loan deleted successfully.');
+                            window.location.href = '/dashboard/all-loans'; // Redirect or refresh
+                        } else {
+                            alert('❌ Failed to delete loan.');
+                        }
+                    })
+                    .catch(err => {
+                        confirmDeleteBtn.classList.remove('is-loading');
+                        alert('⚠️ An error occurred.');
+                        console.error(err);
+                    });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('commentModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const actionTypeInput = document.getElementById('actionType');
+            const form = document.getElementById('actionForm');
+            const closeButtons = document.querySelectorAll('#closeModalBtn, #closeModalBtnFooter');
+
+            function openModal(actionType) {
+                let title = '';
+                let message = '';
+                switch(actionType) {
+                    case 'verify':
+                        title = 'Verify Loan';
+                        message = 'You are about to verify this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'cancel':
+                        title = 'Cancel Loan';
+                        message = 'You are about to cancel this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'approve':
+                        title = 'Approve Loan';
+                        message = 'You are about to approve this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'reject':
+                        title = 'Reject Loan';
+                        message = 'You are about to reject this loan. Please add a comment before proceeding.';
+                        break;
+                    case 'disburse':
+                        title = 'Disburse Loan';
+                        message = 'You are about to disburse this loan. Please add a comment before proceeding.';
+                        break;
+                }
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                actionTypeInput.value = actionType;
+                modal.classList.add('is-active');
+            }
+
+            ['verifyBtn', 'cancelBtn', 'approveBtn', 'rejectBtn', 'disburseBtn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', e => {
+                        e.preventDefault();
+                        openModal(id.replace('Btn', ''));
+                    });
+                }
+            });
+
+            closeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    modal.classList.remove('is-active');
+                    form.reset();
+                });
+            });
+        });
+
+    </script>
+    <style>
+        .loader {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3273dc;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+    </style>
+
+{% endblock %}

@@ -1,0 +1,582 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <!--    <link rel="stylesheet" href="style.css">-->
+    {#Add the CSS FILES#}
+    <link rel="stylesheet" href="/public/assets/css/main.css">
+    <!--        <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+
+</head>
+<body>
+{#SIDE BAR #}
+{#SIDE BAR #}
+{% include 'layouts/sidebar.twig' %}
+
+{#Main section from side bar on the right #}
+<div id="main-content" class="container-fluid">
+    <!-- Top Navigation Bar -->
+    {% include 'layouts/topnavbar.twig' %}
+    <div class="columns">
+        <div class="column is-12">
+            <section class="section mt-4">
+                <nav class="breadcrumb box has-background-info" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a class="is-size-5 has-text-white">Home</a></li>
+                        <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                    </ul>
+                </nav>
+                <div class="columns is-multiline">
+                    <div class="column is-full">
+                        {% if data %}
+                            {% set item = data[0] %}
+                            <div class="box is-fullwidth">
+                                <h5 class="">Company Information</h5>
+                                <hr>
+                                <form class="mt-4" action="" method="post">
+                                    <div class="columns is-multiline">
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">Company Name</label>
+                                                    <input class="input is-small is-info" value="{{ item.company_name }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">Registration Number</label>
+                                                    <input class="input is-small is-info" value="{{ item.company_id }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-12">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">Email / Username</label>
+                                                    <input class="input is-small is-info" value="{{ item.username }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">Phone</label>
+                                                    <input class="input is-small is-info" value="{{ item.phone }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">Operation Area</label>
+                                                    <input class="input is-small is-info" value="{{ item.operation_area }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">City</label>
+                                                    <input class="input is-small is-info" value="{{ item.city }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-6">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">Country</label>
+                                                    <input class="input is-small is-info" value="{{ item.country }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="column is-12">
+                                            <div class="field has-text-left">
+                                                <div class="control">
+                                                    <label class="label is-size-7">Address</label>
+                                                    <input class="input is-small is-info" value="{{ item.company_address }}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr>
+
+                                    <div class="field">
+                                        <div class="control">
+                                            <button type="submit" name="verifyUser" class="button is-small is-info is-focused " >
+                                                Verify User
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        {% else %}
+                            <p>No data available.</p>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>Chalom Investments Limited. All rights reserved &copy; {{ "now"|date("Y") }}</p>
+            <p> <strong>Powered By:</strong><a href="https://www.fortresshubtechnologies.com">Fortress Hub Technologies</a> </p>
+        </div>
+    </footer>
+</div>
+
+
+{#MODALS #}
+<div class="modal" id="simpleModal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="is-flex is-justify-content-flex-end">
+                <p class="button is-small is-danger" id="closeFooter"><span class="mdi mdi-window-close"></span></p>
+            </div>
+            <p class="title is-size-6 mb-4">Add Admin</p>
+            <hr>
+            <form id="productForm" class="" action="/ch/admin/admin_user" method="post" enctype="multipart/form-data">
+                <div class="columns is-multiline">
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">First Name</label>
+                            <input type="text" id="name" name="firstname" class="input is-link is-normal" placeholder="Enter first name" required>
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Last Name</label>
+                            <input type="text" id="rate" name="lastname" class="input is-link is-normal" placeholder="Enter last name" required>
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Email</label>
+                            <input type="email" id="email" name="email" class="input is-link is-normal" placeholder="Enter email" >
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Phone</label>
+                            <input type="tel" id="phone" name="phone" class="input is-link is-normal" placeholder="Enter phone" required>
+                        </div>
+                    </div>
+                    <div class="column is-full">
+                        <div class="field">
+                            <label class="label is-size-7">Role</label>
+                            <div class="select is-fullwidth is-link">
+                                <select name="role" id="role">
+                                    <option value="" disabled selected>Select Role</option>
+                                    <option value="superuser">Superuser</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="verifier">Verifier</option>
+                                    <option value="approver">Approver</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Password</label>
+                            <input type="password" id="password" name="password" class="input is-link is-normal" placeholder="Enter client's password">
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="input is-link is-normal" placeholder="Confirm client's password">
+                        </div>
+                    </div>
+
+                </div>
+                <button type="submit" id=""   class="button is-info">Add User</button>
+            </form>
+        </div>
+    </div>
+    {#    <button class="modal-close is-large" aria-label="close" id="closeModal"></button>#}
+</div>
+
+<div id="overlay" class="overlay"></div>
+
+
+<!-- JavaScript to Open Modal and Redirect -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- Include jsPDF and html2canvas libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<!-- DOWNLOAD EXCEL USING JS -->
+<script>
+
+    const exportButton = document.getElementById('export-to-excel');
+    const table = document.getElementById('application-table');
+
+    exportButton.addEventListener('click', () => {
+        // Get the current date and time
+        const currentDate = new Date();
+        const formattedDate = currentDate.toISOString().slice(0, 19).replace(/:/g, '-');
+
+        // Clone the table to avoid modifying the original table
+        let clonedTable = table.cloneNode(true);
+
+        // Remove the last column (Action) from all rows
+        for (let row of clonedTable.rows) {
+            row.deleteCell(-1); // Deletes the last cell in each row
+        }
+
+        // Create worksheet from modified table
+        const wb = XLSX.utils.table_to_book(clonedTable, { sheet: 'sheet-1' });
+
+        // Export to file (start a download)
+        XLSX.writeFile(wb, 'Chalom_' + formattedDate + '.xlsx');
+    });
+
+</script>
+<script>
+
+    // Function to print the table
+    function printTable() {
+        // Clone the table to avoid modifying the original
+        let clonedTable = document.getElementById('application-table').cloneNode(true);
+
+        // Remove the last column (Action) from all rows
+        for (let row of clonedTable.rows) {
+            row.deleteCell(-1); // Deletes the last cell in each row
+        }
+
+        // Open a new window for printing
+        const printWindow = window.open('', '_blank');
+
+        // Write the modified table HTML into the new window
+        printWindow.document.write('<html><head><title>Export / Print</title>');
+        printWindow.document.write('<style>table { border-collapse: collapse; width: 100%; }');
+        printWindow.document.write('table, th, td { border: 1px solid black; text-align: left;}</style></head><body>');
+        printWindow.document.write(clonedTable.outerHTML); // Insert the modified table
+        printWindow.document.write('</body></html>');
+
+        // Close the document after writing
+        printWindow.document.close();
+
+        // Print the window
+        printWindow.print();
+    }
+
+    // Attach the printTable function to the button click event
+    const printButton = document.getElementById('print-table');
+
+    // Check if the button is found before adding the event listener
+    if (printButton) {
+        printButton.addEventListener('click', printTable);
+    } else {
+        console.error('Button not found. Check the button ID in your HTML.');
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const burger = document.querySelector(".navbar-burger");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        const toggleSidebar = () => {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        };
+
+        // Open/Close sidebar on burger click
+        burger.addEventListener("click", toggleSidebar);
+
+        // Close sidebar on overlay click
+        overlay.addEventListener("click", toggleSidebar);
+
+        // Ensure sidebar is always visible on larger screens
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+
+</script>
+<script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById('settings-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+    function toggleDropdownReports() {
+        const dropdown = document.getElementById('reports-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+
+    function toggleDropdownUsers() {
+        const dropdown = document.getElementById('users-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const toggleButton = document.querySelector(".jb-aside-mobile-toggle");
+        const overlay = document.getElementById("overlay");
+
+        // Toggle sidebar on hamburger icon click
+        toggleButton.addEventListener("click", function() {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        });
+
+        // Close sidebar if overlay is clicked
+        overlay.addEventListener("click", function() {
+            sidebar.classList.remove("is-active");
+            overlay.classList.remove("is-active");
+        });
+        // Close sidebar automatically on resize (for larger screens)
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('simpleModal');
+        const openModal = document.getElementById('openModal');
+        // const closeModal = document.getElementById('closeModal');
+        const closeFooter = document.getElementById('closeFooter');
+
+        const toggleModal = () => {
+            modal.classList.toggle('is-active');
+            document.body.classList.toggle('is-modal-active'); // Add/remove the class
+        };
+
+        openModal.addEventListener('click', toggleModal);
+        // closeModal.addEventListener('click', toggleModal);
+        closeFooter.addEventListener('click', toggleModal);
+
+        // Close modal when clicking the background
+        modal.querySelector('.modal-background').addEventListener('click', toggleModal);
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Open modal on edit button click
+        const editButtons = document.querySelectorAll('.edit-btn');
+        editButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-id');
+                const modal = document.getElementById(`simpleEditModal-${userId}`);
+                if (modal) {
+                    modal.classList.add('is-active');
+                }
+            });
+        });
+
+        // Close modal on close button click
+        const closeButtons = document.querySelectorAll('.close-btn');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-id');
+                const modal = document.getElementById(`simpleEditModal-${userId}`);
+                if (modal) {
+                    modal.classList.remove('is-active');
+                }
+            });
+        });
+
+        // Close modal when background is clicked
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-background')) {
+                    modal.classList.remove('is-active');
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const deleteButtons = document.querySelectorAll('.notification .delete');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.parentElement.style.display = 'none';
+            });
+        });
+    });
+
+
+    document.getElementById("productForm").addEventListener("submit", function() {
+        setTimeout(() => {
+            document.getElementById("myForm").reset();
+        }, 500);
+    });
+</script>
+</body>
+</html>
+<style>
+    /* Sidebar visibility toggle */
+    #sidebar {
+        position: fixed; /* Make sure the sidebar is fixed on the left */
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #fff;
+        z-index: 9999;
+        /*box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);*/
+        transform: translateX(-100%); /* Sidebar is off-screen by default */
+        transition: transform 0.3s ease; /* Smooth transition for sliding in/out */
+    }
+
+    /* Make sidebar visible on desktop screens */
+    @media (min-width: 1024px) {
+        #sidebar {
+            transform: translateX(0); /* Always show the sidebar on desktop */
+        }
+    }
+
+    /* Sidebar adjustment for mobile screens */
+    @media (max-width: 1024px) {
+        #sidebar {
+            top: 0; /* Remove the top offset for mobile */
+        }
+    }
+
+    /* Show sidebar when active on mobile */
+    #sidebar.is-active {
+        transform: translateX(0); /* Slide in the sidebar */
+    }
+
+    /* Overlay when sidebar is open */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 9998;
+    }
+
+    .overlay.is-active {
+        display: block;
+    }
+
+    /* Main content styles */
+    #main-content {
+        margin-left: 225px; /* Align with sidebar's width */
+        padding: 2em;
+        transition: margin-left 0.3s ease; /* Smooth transition for responsiveness */
+    }
+
+    @media (max-width: 1024px) {
+        #main-content {
+            margin-left: 0; /* No offset when sidebar is hidden */
+            padding: 0.5rem;
+        }
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+
+    /* Hide sidebar and overlay when a modal is active */
+    body.is-modal-active #sidebar {
+        transform: translateX(-100%) !important; /* Force the sidebar off-screen */
+    }
+
+    body.is-modal-active .overlay {
+        display: none !important; /* Hide the overlay */
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+    .menu {
+        flex-grow: 1; /* Takes up remaining space */
+        overflow-y: auto; /* Scrollable if content exceeds height */
+    }
+
+    .logout-button {
+        margin-top: auto; /* Pushes the button to the bottom */
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid #444; /* Optional: separates logout button visually */
+    }
+
+    .logout-button a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .logout-button a:hover {
+        color: white;
+        background-color: skyBlue; /* Highlight on hover */
+    }
+
+
+    /* Sidebar link hover styles */
+    #sidebar a {
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    #sidebar a:hover {
+        background-color: #09122C; /* Light blue hover background */
+        color: #0056b3; /* Darker blue text color */
+    }
+
+    #sidebar a:hover .icon i {
+        color: #0056b3; /* Match icon color with text */
+    }
+
+    #sidebar .menu-list li {
+        margin-bottom: 10px; /* Add some space between items */
+    }
+
+
+    .is-hidden {
+        display: none;
+    }
+
+</style>

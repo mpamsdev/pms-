@@ -1,0 +1,161 @@
+
+{% extends 'partials/base.twig' %}
+{% block content%}
+{#Main section from side bar on the right #}
+<div id="main-content" class="container-fluid">
+    <div class="columns">
+        <div class="column is-12">
+            <section class="section is-small mt-6">
+                <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a class="is-size-5 has-text-white">Home</a></li>
+                        <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                    </ul>
+                </nav>
+                <div class="columns ">
+                    <div class="column is-full">
+                        <div class="box is-fullwidth">
+                            <div class="field has-text-left">
+                                <div class="control">
+                                    <label class="label">Search</label>
+                                    <input id="searchInput" type="text" class="input is-normal is-info" placeholder="Search by name, username, nrc or loan number ">
+                                </div>
+                            </div>
+                            <h5 class="mt-4 mb-4">Search Results</h5>
+                            <div class="columns is-multiline">
+                                <button id="export-to-excel" class="button is-normal is-success mx-2 my-1">
+                                    <span class="mdi mdi-file-excel mr-2"></span>
+                                    Excel
+                                </button>
+                                <button id="print-table" class="button is-normal is-info mx-2 my-1">
+                                    <span class="mdi mdi-file-pdf-box has-text-danger mr-2"></span>
+                                    Pdf
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table id="resultTable" class="table is-stripped is-fullwidth">
+                                    <thead class="">
+                                    <tr>
+                                        <th class="is-size-6 has-text-centered ">Application #</th>
+                                        <th class="is-size-6 has-text-centered ">Fullname</th>
+                                        <th class="is-size-6 has-text-centered ">Amount</th>
+                                        <th class="is-size-6 has-text-centered ">Rate</th>
+                                        <th class="is-size-6 has-text-centered ">Payable</th>
+                                        <th class="is-size-6 has-text-centered ">Balance</th>
+                                        <th class="is-size-6 has-text-centered ">Paid</th>
+                                        <th class="is-size-6 has-text-centered ">Period</th>
+                                        <th class="is-size-6 has-text-centered ">Status</th>
+                                        <th class="is-size-6 has-text-centered ">Created At</th>
+                                        <th class="is-size-6 has-text-centered ">Updated At</th>
+                                        <th class="is-size-6 has-text-centered ">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="searchResults">
+                                    <!--Script will push search results here-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+    <script>
+        const fetchData = async (searchTerm) => {
+            try {
+                const response = await fetch(`http://localhost:8080/dashboard/search?term=${encodeURIComponent(searchTerm)}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Fetch error:', error);
+                return [];
+            }
+        };
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', async () => {
+            const term = searchInput.value.trim();
+            if (term.length < 2) return;
+
+            const results = await fetchData(term);
+            displayResults(results);
+        });
+
+        const displayResults = (results) => {
+            const tableBody = document.getElementById('searchResults');
+            tableBody.innerHTML = '';
+
+            if (!results.length) {
+                tableBody.innerHTML = '<tr><td colspan="15" class="has-text-danger">No records found.</td></tr>';
+                return;
+            }
+
+            results.forEach(result => {
+                const row = document.createElement('tr');
+                const formatCurrency = val => Number(val).toFixed(2).toLocaleString();
+                const getStatus = status => {
+                    switch (status) {
+                        case 0: return '<p class="is-size-6 has-text-warning">Loan Submission</p>';
+                        case 1: return '<p class="is-size-6 has-text-success">Application Approved</p>';
+                        case 2: return '<p class="is-size-6 has-text-info">Fund Disbursed</p>';
+                        case 3: return '<p class="is-size-6 has-text-danger">Application Rejected</p>';
+                        case 4: return '<p class="is-size-6 has-text-primary">Application Cancelled</p>';
+                        case 5: return '<p class="is-size-6 has-text-link">Loan Repayment</p>';
+                        case 6: return '<p class="is-size-6 has-text-success">Loan Paid</p>';
+                        default: return 'Unknown';
+                    }
+                };
+
+                row.innerHTML = `
+
+                <td class="is-size-6">${result.applicationNumber}</td>
+                <td class="is-size-6"><a href="/dashboard/loan/${result.uuid}">${result.fullname}</a></td>
+                <td class="is-size-6">${result.amount}</td>
+                <td class="is-size-6">${result.interestRate}</td>
+                <td class="is-size-6">${formatCurrency(result.totalPayable)}</td>
+                <td class="is-size-6">${formatCurrency(result.balance)}</td>
+                <td class="is-size-6">${formatCurrency(result.paid)}</td>
+                <td class="is-size-6">${result.period}</td>
+                <td class="is-size-6">${getStatus(result.status)}</td>
+                <td class="is-size-6">${result.created_at}</td>
+                <td class="is-size-6">${result.updated_at}</td>
+                <td class="is-size-6">
+                    <a href="/dashboard/loan/${result.uuid}" class="has-text-info" title="Preview">
+                            <i class="mdi mdi-eye is-size-4"></i>
+                    </a>
+                </td>
+            `;
+                tableBody.appendChild(row);
+            });
+        };
+    </script>
+    <!-- DOWNLOAD EXCEL USING JS -->
+    <script>
+
+        const exportButton = document.getElementById('export-to-excel');
+        const table = document.getElementById('application-table');
+
+        exportButton.addEventListener('click', () => {
+            // Get the current date and time
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().slice(0, 19).replace(/:/g, '-');
+
+            // Clone the table to avoid modifying the original table
+            let clonedTable = table.cloneNode(true);
+
+            // Remove the last column (Action) from all rows
+            for (let row of clonedTable.rows) {
+                row.deleteCell(-1); // Deletes the last cell in each row
+            }
+
+            // Create worksheet from modified table
+            const wb = XLSX.utils.table_to_book(clonedTable, { sheet: 'sheet-1' });
+
+            // Export to file (start a download)
+            XLSX.writeFile(wb, 'Chalom_' + formattedDate + '.xlsx');
+        });
+
+    </script>
+{% endblock %}

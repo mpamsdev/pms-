@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title|default('Chalom Investments') }}</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<aside id="sidebar" class="aside is-placed-left is-expanded has-background-dark">
+    <div class="menu is-menu-main" style="overflow-y: auto; height: 100vh;">
+
+        <ul class="menu-list mt-1">
+            <!-- Company Logo -->
+            <li>
+                <a href="/dashboard" class="has-icon pt-4 pb-4  is-size-5 mt-4">
+                    <span class="icon"><i class="mdi mdi-view-dashboard has-text-white is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">FORTRESS HUB</span>
+                </a>
+            </li>
+            <hr>
+            <li>
+                <a  class="has-icon  pt-4 pb-4  is-size-6" onclick="toggleDropdownTasks()">
+                    <span class="icon"><i class="mdi mdi-file-tree has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Task Manager</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="tasks-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/dashboard/tasks" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-format-list-bulleted-square has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">View Tasks</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard/assign-task" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-playlist-edit has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Assign Tasks</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard/task-performance" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-format-list-checks has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Task Performance</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownLoans()">
+                    <span class="icon"><i class="mdi mdi-check-bold has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Compliance Manager</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="loans-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/dashboard/compliance-table" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-table has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Compliance Table</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownUsers()">
+                    <span class="icon"><i class="mdi mdi-account-group has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Employee Manager</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="users-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/dashboard/employees" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-account-multiple-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Employees</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownReports()">
+                    <span class="icon"><i class="mdi mdi-bank has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Payroll Manager</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="reports-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/dashboard/clients" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-folder-plus has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Create Record</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/dashboard/companies" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-currency-usd has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Salary Manager</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard/transaction-history" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-bank-transfer has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Transaction History</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="/dashboard/profile" class="has-icon pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-account-circle has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Profile Manager</span>
+                </a>
+            </li>
+            {#Users droped#}
+
+            <!-- Dropdown Menu -->
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdown()">
+                    <span class="icon"><i class="mdi mdi-account-cog has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">System Settings</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="settings-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/dashboard/users-and-roles" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Users and Roles</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/dashboard/system-logs" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">System Logs</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="/auth/logout" class="has-icon pt-2 pb-2 is-size-6">
+                    <span class="icon"><i class="mdi mdi-logout has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Sign Out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
+<nav id="navbar-main" class="navbar is-fixed-top  has-shadow box has-background-lights mb-4" >
+    <div class="container has-text-centered">
+        <div class="navbar-brand">
+            <a class="navbar-item is-hidden-desktop jb-aside-mobile-toggle">
+                <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+            </a>
+            <div class="navbar-item has-control">
+                <a href="/dashboard"> {{ "Dashboard" }}</a>
+            </div>
+        </div>
+
+        <div class="navbar-menu fadeIn animated faster" id="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
+                    <a class="navbar-link is-arrowless">
+                        {% set isCompany = userData.user_type == 'company' %}
+                        {% if isCompany %}
+                            {% set initials = userData.company_name[0]|upper %}
+                        {% else %}
+                            {% set initials = userData.firstname[0]|upper %}
+                        {% endif %}
+                        <div class="is-flex is-align-items-center">
+                            <span class="icon is-large has-text-info" style="border: 2px solid dodgerblue; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; margin-right: 0.5rem;">
+                                <i class="mdi mdi-account mdi-24px"></i>
+                            </span>
+                            <span class="is-user-name has-text-weight-semibold">{{ username }}</span>
+                        </div>
+
+                    </a>
+
+                    <div class="navbar-dropdown">
+                        <a href="/dashboard/profile" class="navbar-item">
+                            <span class="icon"><i class="mdi mdi-account-circle has-text-info is-size-4 mr-2"></i></span>
+                            <span>My Profile</span>
+                        </a>
+                        <hr class="navbar-divider">
+                        <a href="/auth/logout" class="navbar-item ">
+                            <span class="icon"><i class="mdi mdi-logout is-size-4 "></i></span>
+                            <span class="is-size-5">Log Out</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+{% block content %}
+
+    <!-- Page-specific content goes here -->
+{% endblock %}
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>All rights reserved &copy; {{ "now"|date("Y") }}. Fortress Hub Technologies</p>
+        <p><strong>Developed By:</strong> <a href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies</a></p>
+    </div>
+</footer>
+
+<div id="overlay" class="overlay"></div>
+
+
+<!-- JavaScript to Open Modal and Redirect -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- JavaScript to Open Modal and Redirect -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!-- Include jsPDF and html2canvas libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const burger = document.querySelector(".navbar-burger");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        const toggleSidebar = () => {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        };
+
+        // Open/Close sidebar on burger click
+        burger.addEventListener("click", toggleSidebar);
+
+        // Close sidebar on overlay click
+        overlay.addEventListener("click", toggleSidebar);
+
+        // Ensure sidebar is always visible on larger screens
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+
+</script>
+<script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById('settings-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+
+    function toggleDropdownReports() {
+        const dropdown = document.getElementById('reports-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+
+    function toggleDropdownLoans() {
+        const dropdown = document.getElementById('loans-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+    function toggleDropdownTasks() {
+        const dropdown = document.getElementById('tasks-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+    function toggleDropdownUsers() {
+        const dropdown = document.getElementById('users-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const toggleButton = document.querySelector(".jb-aside-mobile-toggle");
+        const overlay = document.getElementById("overlay");
+
+        // Toggle sidebar on hamburger icon click
+        toggleButton.addEventListener("click", function() {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        });
+
+        // Close sidebar if overlay is clicked
+        overlay.addEventListener("click", function() {
+            sidebar.classList.remove("is-active");
+            overlay.classList.remove("is-active");
+        });
+
+        // Close sidebar automatically on resize (for larger screens)
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

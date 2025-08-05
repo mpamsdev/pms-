@@ -1,0 +1,293 @@
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ title }}</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+        <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+        <link href="../views/images/original-logo.jpg" rel="icon" type="image/png">
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+        <link rel="manifest" href="/assets/img/site.webmanifest">
+    </head>
+    <body class="">
+
+    <div class="section is-small is-fullheight">
+        <div class="container has-text-centered">
+            <div class="columns is-centered">
+                <div class="column is-three-quarters">
+                    <div class="is-spaced">
+                        <figure class="image is-64x64" style="margin: 0 auto; border: 2px solid dodgerblue; border-radius: 50%">
+                            <img class="is-rounded" src="/assets/img/logo.png">
+                        </figure>
+                        <h1 class="has-text-left has-text-weight-bold is-size-5 pt-4 pb-4">{{ pageName }}</h1>
+                        <form id="signupOrg" action="" method="POST">
+                            <div class="columns is-multiline">
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="firstname">Company / Organization</label>
+                                        <input type="text" id="company" name="company" class="input is-normal is-info" placeholder="Company name" required>
+                                    </div>
+                                </div>
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="lastname">Registration Number</label>
+                                        <input type="number" id="registration_number" name="registration_number" class="input is-normal is-info" placeholder="Company registration number" required>
+                                    </div>
+                                </div>
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="email">Email</label>
+                                        <input type="email" id="email" name="username" class="input is-normal is-info" placeholder="Enter email address" required>
+                                    </div>
+                                </div>
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="phone">Phone Number</label>
+                                        <input type="tel" id="phone" name="phone" class="input is-normal is-info" placeholder="Enter phone number" required>
+                                        <small id="errorPhone" class="has-text-danger"></small>
+                                    </div>
+                                </div>
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="nrc">Operation Area</label>
+                                        <input type="text" id="operation_area" name="operation_area" class="input is-normal is-info" placeholder="Enter area of operation" required>
+                                        <small id="errorNrc" class="has-text-danger"></small>
+                                    </div>
+                                </div>
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="dob">Years in Operation</label>
+                                        <input type="number" id="years" name="years" class="input is-normal is-info" placeholder="Year in operation" required >
+                                        <small id="errorDob" class="has-text-danger"></small>
+                                    </div>
+                                </div>
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="home-address">Address</label>
+                                        <input type="text" id="home-address" name="homeAddress" class="input is-normal is-info" placeholder="Enter home address" required>
+                                    </div>
+                                </div>
+
+                                <div class="column is-6">
+                                    <div class="field has-text-left">
+                                        <label class="" for="city">City</label>
+                                        <input type="text" id="city" name="city" class="input is-normal is-info" placeholder="Enter city" required>
+                                    </div>
+                                </div>
+
+                                <div class="column is-12">
+                                    <div class="field has-text-left">
+                                        <label class="" for="country">Country</label>
+                                        <input type="text" id="country" name="country" class="input is-normal is-info" placeholder="Country of residency" required>
+                                    </div>
+                                </div>
+{#                                <div class="column is-6">#}
+{#                                    <div class="field has-text-left">#}
+{#                                        <label class="">Password</label>#}
+{#                                        <div class="control has-icons-left has-icons-right">#}
+{#                                            <input id="password" class="input is-normal is-primary" type="password" name="password" placeholder="********" required>#}
+{#                                            <span class="icon is-small is-left">#}
+{#                                                    <i class="mdi mdi-lock-outline"></i>#}
+{#                                                </span>#}
+{#                                            <span class="icon is-small is-right" onclick="togglePassword()">#}
+{#                                                    <i class="mdi mdi-eye-off" id="toggleIcon" style="cursor: pointer;"></i>#}
+{#                                                </span>#}
+{#                                            #}{#                                        <input  class="input is-medium is-link " id="password" name="password" type="password" placeholder="Enter your password">#}
+{#                                            <small class="errors has-text-danger" id="passwordError"></small>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+                                <div class="column is-2">
+                                    <div class="field mt-5">
+                                        <div class="control">
+                                            <button type="submit" name="next" class="button is-normal is-info is-focused is-fullwidth" onclick="showLoadingOverlay(event)">
+                                                <span>Next</span>
+                                                <span class="mdi mdi-chevron-right is-size-3"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div> <!-- /.columns -->
+                        </form>
+                        <p class="mt-6">
+                            Already have an account? <a href="/">Sign In</a>
+                        </p>
+                        <hr>
+                        <p class="mt-5">All rights reserved, Copyright &copy; {{ "now"|date("Y") }} . Chalom Investments Limited</p>
+                        <p><strong>Powered By:</strong> <a href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Toggle mobile navigation menu
+        document.addEventListener('DOMContentLoaded', function ()
+        {
+            var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+            if ($navbarBurgers.length > 0) {
+                $navbarBurgers.forEach(function ($el) {
+                    $el.addEventListener('click', function () {
+                        var target = $el.dataset.target;
+                        var $target = document.getElementById(target);
+                        $el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+        });
+    </script>
+    <script>
+        function showLoadingOverlay(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('signupOrg');
+            const button = event.target.closest('button');
+            const originalBtnHTML = button.innerHTML;
+            const inputs = form.querySelectorAll('input[required], select[required]');
+
+            let hasError = false;
+
+            // Validate all required inputs
+            inputs.forEach((input) => {
+                input.classList.remove('invalid');
+                input.style.borderColor = '';
+
+                if (!input.value.trim()) {
+                    if (!hasError) {
+                        input.focus(); // focus first invalid input
+                    }
+
+                    input.classList.add('invalid');
+                    input.style.borderColor = 'red';
+                    hasError = true;
+                } else {
+                    input.classList.remove('invalid');
+                    input.style.borderColor = 'green';
+                }
+            });
+
+            if (hasError) {
+                return; // Stop submission if any required field is empty
+            }
+
+            // All fields valid, show loading and submit
+            button.disabled = true;
+            button.innerHTML = `<span class="loader"></span> Saving...`;
+
+            const formData = new FormData(form);
+
+
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                redirect: 'follow'
+            })
+                .then(response => {
+
+
+                    //console.log(formData);
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        return response.text().then(html => {
+                            document.body.innerHTML = html;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Something went wrong.");
+                    button.disabled = false;
+                    button.innerHTML = originalBtnHTML;
+                });
+        }
+    </script>
+
+    <script>
+        function togglePassword() {
+            const input = document.getElementById("password");
+            const icon = document.getElementById("toggleIcon");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("mdi-eye-off");
+                icon.classList.add("mdi-eye");
+            } else {
+                input.type = "password";
+                icon.classList.remove("mdi-eye");
+                icon.classList.add("mdi-eye-off");
+            }
+        }
+
+
+    </script>
+    </body>
+    </html>
+    <style>
+        .error
+        {
+            background-color: #d50000;
+            color: white;
+        }
+        .error
+        {
+            color: #d50000;
+        }
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loading-message {
+            font-size: 18px;
+        }
+
+        .mdi-spin {
+            animation: mdi-spin 1s infinite linear;
+        }
+
+        @keyframes mdi-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .is-hidden {
+            display: none !important;
+        }
+
+        .icon.is-right i {
+            pointer-events: all;
+        }
+    </style>
+{% endblock %}

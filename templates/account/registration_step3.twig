@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <link href="../views/images/original-logo.jpg" rel="icon" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/site.webmanifest">
+</head>
+<body class="">
+<!-- NAVBAR -->
+<div class="section is-small is-fullheight">
+    <div class="container has-text-centered">
+        <div class="columns is-centered">
+            <div class="column is-three-quarters">
+                <div class=" is-spaced">
+                    <figure class="image is-64x64" style="margin: 0 auto; border: 2px solid dodgerblue; border-radius: 50%">
+                        <img class="is-rounded" src="/assets/img/logo.png">
+                    </figure>
+                    <h1 class="has-text-left has-text-weight-bold is-size-5 pt-4 pb-4">{{ pageName }}</h1>
+                    {% if success %}
+                        <div class="notification is-success mb-5 mt-5">
+                            <h5>{{ success }}</h5>
+                        </div>
+                    {% elseif error %}
+                        <div class="notification is-danger mb-5 mt-5">
+                            <h5>{{ error }}</h5>
+                        </div>
+                    {% endif %}
+
+                    <form id="kin" action="" method="post">
+                        <div class="columns is-multiline">
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class="" for="">First Name</label>
+                                        <input type="text" id="firstname" name="firstname" class="input is-normal is-info" placeholder="Next of kin first name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class="" for="">Last Name</label>
+                                        <input type="text" id="lastname" name="lastname" class="input is-normal is-info" placeholder="Next of kin last name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class=""  for="">Relationship</label>
+                                        <div class="select is-info is-normal is-fullwidth">
+                                            <select name="relationship" id="title" required>
+                                                {% set relationships = ["Brother", "Sister", "Father", "Mother", "Husband", "Wife", "Aunt", "Uncle", "Cousin", "Son", "Daughter"] %}
+                                                {% for relation in relationships %}
+                                                    <option value="{{ relation }}">{{ relation }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class="" for="">Phone Number</label>
+                                        <input type="tel" id="phone" name="phone" class="input is-normal is-info" placeholder="+260" required>
+                                        <small id="errorPhone" class="has-text-danger"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class="" for="">National Identity (NRC)</label>
+                                        <input type="text" id="nrc" name="nationalCard" class="input is-normal is-info" placeholder="......./.../.." required>
+                                        <small id="errorNrc" class="has-text-danger"></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class="" for="">Home Address</label>
+                                        <input type="text" id="home-address" name="homeAddress" class="input is-normal is-info" placeholder="Home Address" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-12">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class=""  for="">Employment Status</label>
+                                        <div class="select is-info is-normal is-fullwidth">
+                                            <div class="select is-fullwidth">
+                                                <select name="employment-status" id="title" required>
+                                                    {% set statuses = ["Self-Employed", "Employed", "Not-Employed"] %}
+                                                    {% for status in statuses %}
+                                                        <option value="{{ status }}">{{ status }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class="" for="">Company Name</label>
+                                        <input type="text" id="company-name" name="company" class="input is-normal is-info" placeholder="Enter company name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-6">
+                                <div class="field has-text-left">
+                                    <div class="control">
+                                        <label class="" for="">Company Address</label>
+                                        <input type="text" id="company" name="company-address" class="input is-normal is-info" placeholder="Company Address" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-2">
+                                <div class="field mt-5">
+                                    <div class="control">
+                                        <div class="buttons">
+                                            <button type="submit" name="next" class="button is-normal is-info is-focused is-fullwidth" onclick="showLoadingOverlay(event)">
+                                                <span>Next</span>
+                                                <span class="mdi mdi-chevron-right is-size-3"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="column is-2">
+                                <div class="field mt-5">
+                                    <div class="control">
+                                        <a href="javascript:history.back()" class="button is-normal is-link is-light">
+                                            <span class="icon"><i class="mdi mdi-arrow-left"></i></span>
+                                            <span>Back</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <p class="mt-6">
+                        Already have an account? <a href="/">Sign In</a>
+                    </p>
+                    <hr>
+                    <p class="mt-5">All rights reserved, Copyright &copy; {{ "now"|date("Y") }} . Chalom Investments Limited</p>
+                    <p><strong>Powered By:</strong> <a href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies</a></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // Toggle mobile navigation menu
+    document.addEventListener('DOMContentLoaded', function ()
+    {
+        var $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+        if ($navbarBurgers.length > 0) {
+            $navbarBurgers.forEach(function ($el) {
+                $el.addEventListener('click', function () {
+                    var target = $el.dataset.target;
+                    var $target = document.getElementById(target);
+                    $el.classList.toggle('is-active');
+                    $target.classList.toggle('is-active');
+                });
+            });
+        }
+    });
+</script>
+<script>
+    //Validate form input
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneNumber = document.getElementById('phone');
+        //const dob = document.getElementById('dob');
+        const nrc = document.getElementById('nrc');
+        const form = document.getElementById('kin');
+        const errorPhone = document.getElementById('errorPhone');
+        const errorNrc = document.getElementById('errorNrc');
+        //const errorDob = document.getElementById('errorDob');
+
+        //Function to validate phone number
+        const validatePhone = () => {
+            const phone =phoneNumber.value.trim();
+            // Check if the phone number starts with a country code (e.g., +1)
+            if (phone.match(/^\+\d+/)) {
+                errorPhone.textContent = ''; // No error
+                phoneNumber.classList.remove('invalid');
+                phoneNumber.style.borderColor = 'green';
+            } else {
+                errorPhone.textContent = 'Please include the country code (e.g., +260 For Zambia)';
+                phoneNumber.classList.add('invalid');
+                phoneNumber.focus();
+                phoneNumber.style.borderColor = 'red';
+            }
+        };
+
+        //Function to validate national identity card
+        const validateNrc = () => {
+            const nationalId = nrc.value.trim();
+
+            // Regular expression for the specified format
+            const regex = /^\d{6}\/\d{2}\/\d{1}$/;
+
+            //Check for the correct format of the NRC
+            if (nationalId.match(regex)){
+                errorNrc.textContent = '';
+                nrc.classList.remove('invalid');
+                nrc.style.borderColor = 'green';
+            }else
+            {
+                errorNrc.textContent = 'Wrong National Id format. Required format is ...../../. (eg. 00000/00/0)'
+                nrc.focus();
+                nrc.classList.add('invalid');
+                nrc.style.borderColor = 'red';
+            }
+        };
+
+        // Function to validate date of birth
+        // const validateDob = () => {
+        //     const dobValue = dob.value.trim();
+        //     const dobDate = new Date(dobValue);
+        //     const minimumYear = 2007;
+        //
+        //     if (
+        //         !/^\d{2}\/\d{2}\/\d{4}$/.test(dobValue) ||
+        //         isNaN(dobDate) ||
+        //         dobDate.getFullYear() >= minimumYear
+        //     ) {
+        //         errorDob.textContent =
+        //             'Please enter a valid date of birth in the format dd/mm/yyyy, and the person should be born at least in 2007 or earlier.';
+        //         dob.classList.add('invalid');
+        //         dob.focus();
+        //         dob.style.borderColor = 'red';
+        //     } else {
+        //         errorDob.textContent = '';
+        //         dob.classList.remove('invalid');
+        //         dob.style.borderColor = 'green';
+        //     }
+        // };
+
+
+        // Add event listeners
+        phoneNumber.addEventListener('blur', validatePhone);
+        nrc.addEventListener('blur', validateNrc);
+        dob.addEventListener('blur', validateDob);
+
+        form.addEventListener('submit', function(event) {
+            // Perform final validation before submitting the form
+            validatePhone();
+            validateNrc();
+            validateDob();
+            // Check if any validation errors
+            if (form.querySelectorAll('.invalid').length > 0) {
+                event.preventDefault(); // Prevent form submission
+            }
+        });
+
+    });
+</script>
+<script>
+    function showLoadingOverlay(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('kin');
+        const button = event.target.closest('button');
+        const originalBtnHTML = button.innerHTML;
+
+        button.disabled = true;
+        button.innerHTML = `<span class="loader"></span> Saving...`;
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            redirect: 'follow' // Automatically follow 302 redirect
+        })
+            .then(response => {
+                // If the server responds with a redirect, browser automatically follows
+                // So if we're here, we're on the next page
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    return response.text().then(html => {
+                        // fallback: show any returned HTML (e.g., error page)
+                        document.body.innerHTML = html;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Something went wrong.");
+                button.disabled = false;
+                button.innerHTML = originalBtnHTML;
+            });
+    }
+</script>
+</body>
+</html>
+<style>
+    .error
+    {
+        background-color: #d50000;
+        color: white;
+    }
+    .error
+    {
+        color: #d50000;
+    }
+    #loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #loading-message {
+        font-size: 18px;
+    }
+</style>

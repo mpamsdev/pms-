@@ -1,0 +1,176 @@
+<aside id="sidebar" class="aside is-placed-left is-expanded has-background-dark">
+    <div class="menu is-menu-main" style="overflow-y: auto; height: 100vh;">
+
+        <ul class="menu-list mt-2">
+            <li>
+                <a href="/app/dashboard" class="has-icon pt-4 pb-4  is-size-6 mt-4">
+                    <span class="icon"><i class="mdi mdi-view-dashboard has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/ch/apply" class="has-icon  pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4 "></i></span>
+                    <span class="menu-item-label has-text-white has-text-white">Apply Now</span>
+                </a>
+            </li>
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownLoans()">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Loans</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="loans-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/ch/reports/receipts" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">All Loans</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/ch/reports/due-loans" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Due Loans</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ch/loans/cancelled-loans" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Cancelled Loans</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ch/loans/rejected-loans" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Rejected Loans</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ch/loans/paid-loans" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Paid Loans</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ch/loans/in-repayments" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">In Repayment</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="/ch/loans/my-applications" class="has-icon pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">My Applications</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/ch/profile" class="has-icon pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">My Profile</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/ch/reports/deep-search" class="has-icon pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Deep Search</span>
+                </a>
+            </li>
+            {#Reporting Data#}
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownReports()">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Reports</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="reports-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/ch/reports/receipts" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Receipts</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/ch/reports/generate-reports" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Generate Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ch/loans/applications" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Applications</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            {#Users droped#}
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownUsers()">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Manage Users</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="users-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/ch/user/clients" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Users</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/ch/user/companies" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Companies</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Dropdown Menu -->
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdown()">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Settings</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="settings-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/ch/admin/admin_user" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Users and Roles</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/ch/admin/manage_products" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Manage Products</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/ch/admin/system-logs" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-circle-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">System Logs</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
+        </ul>
+        <!-- Logout Button -->
+        <div class="logout-button  is-danger ">
+            <a class="has-icon button is-info is-size-5" href="/logout">
+                <span class="icon"><i class="mdi mdi-logout has-text-white is-size-4"></i></span>
+                <span class="menu-item-label has-text-white is-size-4">Logout</span>
+            </a>
+        </div>
+    </div>
+</aside>

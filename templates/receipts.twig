@@ -1,0 +1,168 @@
+
+{% extends 'partials/base.twig' %}
+{% block content%}
+{#Main section from side bar on the right #}
+<div id="main-content" class="container-fluid">
+    <div class="columns">
+        <div class="column is-12">
+            <section class="section is-small mt-6">
+                <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a class="is-size-5 has-text-white">Home</a></li>
+                        <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                    </ul>
+                </nav>
+                <div class="columns ">
+                  <div class="column is-full">
+                      <div class="box is-fullwidth">
+                          <div class="columns is-multiline">
+                              <div class="column is-6">
+                                  <div class="field has-text-left">
+                                      <div class="control">
+                                          <label class="">Start Date</label>
+                                          <input type="date" id="startDate" class="input is-normal is-info">
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="column is-6">
+                                  <div class="field has-text-left">
+                                      <div class="control">
+                                          <label class="">End Date</label>
+                                          <input type="date" id="endDate"  class="input is-normal is-info">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <h5 class="title is-size-6">Search Results</h5>
+                          <div class="columns is-multiline">
+                              <button id="export-to-excel" class="button is-normal is-success mx-2 my-1">
+                                  <span class="mdi mdi-file-excel mr-2"></span>
+                                  Excel
+                              </button>
+                              <button id="print-table" class="button is-normal is-info mx-2 my-1">
+                                  <span class="mdi mdi-file-pdf-box has-text-danger mr-2"></span>
+                                  Pdf
+                              </button>
+                          </div>
+                          <div class="table-container">
+                              <table id="resultTable" class="table is-stripped is-fullwidth">
+                                  <thead class="">
+                                  <tr>
+                                      <th class="is-size-6">Fullname</th>
+                                      <th class="is-size-6">Application No.</th>
+                                      <th class="is-size-6">Total Payable</th>
+                                      <th class="is-size-6">Total Paid </th>
+                                      <th class="is-size-6">Amount Received</th>
+                                      <th class="is-size-6">Receipt Date</th>
+                                      <th class="is-size-6">Narration</th>
+                                      <th class="is-size-6">Date Posted</th>
+                                  </tr>
+                                  </thead>
+                                  <tbody id="searchResults">
+                                  <!--Script will push search results here-->
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fetchData = async (startDate, endDate) => {
+                try {
+                    const response = await fetch(`http://localhost:8080/dashboard/receipts?start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`, {
+                        method: 'GET',
+                        mode: 'cors', // Enable CORS
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    //console.log(data);
+                    return data;
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    return [];
+                }
+            };
+
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const searchResults = document.getElementById('searchResults');
+
+            const handleFetch = async () => {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+
+                // Validate dates
+                if (!startDate || !endDate) {
+                    searchResults.innerHTML = '<tr><td colspan="12" class="has-text-danger">Please select both start and end dates.</td></tr>';
+                    return;
+                }
+
+                // Fetch data from API
+                const data = await fetchData(startDate, endDate);
+                //console.log(data);
+                // Display search results
+                displayResults(data || []);
+            };
+
+            const displayResults = (results) => {
+                const tableBody = searchResults;
+                tableBody.innerHTML = '';
+
+                if (!results || results.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="12" class="has-text-danger">No records found based on the date range</td></tr>';
+                    return;
+                }
+
+                results.forEach((result) => {
+                    const row = document.createElement('tr');
+                    // let balance = parseFloat(result.balance || 0);
+                    // let formattedBalance = balance.toFixed(2).toLocaleString();
+
+                    //let paid = parseFloat(result.paid || 0);
+                    ///let formatedPaid = paid.toFixed(2).toLocaleString();
+
+                    let paid = parseFloat(result.paid || 0); // Ensure paid is a number, default to 0
+                    let formattedPaid = paid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                    let amountPaid = parseFloat(result.amount_paid || 0);
+                    let formatteAmountPaid = amountPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                    // let payable = parseFloat(result.totalPayable || 0);
+                    // let formattedPayable = payable.toFixed(2).toLocaleString();
+                    //
+                    // let formattedPaid = result.paid ? parseFloat(result.paid).toFixed(2).toLocaleString() : "0.00";
+
+                    row.innerHTML = `
+                        <td>${result.fullname || '-'}</td>
+                        <td>${result.applicationNumber || '-'}</td>
+                        <td>${result.totalPayable || '-'}</td>
+                        <td>${formattedPaid }</td>
+                        <td>${formatteAmountPaid}</td>
+                        <td>${result.date_received || '-'}</td>
+                        <td>${result.comment}</td>
+                        <td>${result.createdAt || '-'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            };
+
+            // Attach event listeners
+            startDateInput.addEventListener('change', handleFetch);
+            endDateInput.addEventListener('change', handleFetch);
+        });
+
+    </script>
+{% endblock %}

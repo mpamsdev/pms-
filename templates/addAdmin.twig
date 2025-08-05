@@ -1,0 +1,607 @@
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <!--    <link rel="stylesheet" href="style.css">-->
+    {#Add the CSS FILES#}
+    <link href="css/main.css">
+    <!--        <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+
+</head>
+<body>
+<aside id="sidebar" class="aside is-placed-left is-expanded has-background-dark">
+    <div class="menu is-menu-main">
+        <ul class="menu-list">
+            <li>
+                <a href="/app/dashboard" class="router-link-active has-icon has-text-white is-size-5 mt-4">
+                    <span class="icon"><i class="mdi mdi-desktop-mac"></i></span>
+                    <span class="menu-item-label">Home</span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="menu-list mt-2">
+            <li>
+                <a href="/app/add-client" class="has-icon pt-4 pb-4 has-text-white is-size-5">
+                    <span class="icon"><i class="mdi mdi-account-plus-outline"></i></span>
+                    <span class="menu-item-label">Client Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app/document-management" class="has-icon pt-4 pb-4 has-text-white is-size-5">
+                    <span class="icon"><i class="mdi mdi-file-document-outline"></i></span>
+                    <span class="menu-item-label">Manage Documents</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app/user/profile" class="has-icon pt-4 pb-4 has-text-white is-size-5">
+                    <span class="icon"><i class="mdi mdi-account-circle"></i></span>
+                    <span class="menu-item-label">Profile Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app/user/add-user" class="has-icon pt-4 pb-4 has-text-white is-size-5">
+                    <span class="icon"><i class="mdi mdi-account-circle"></i></span>
+                    <span class="menu-item-label">Manage Users</span>
+                </a>
+            </li>
+            <li>
+                <a href="/app/program-management" class="has-icon pt-4 pb-4 has-text-white is-size-5">
+                    <span class="icon"><i class="mdi mdi-settings is-size-5"></i></span>
+                    <span class="menu-item-label">Manage Programs</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Logout Button -->
+    <div class="logout-button  is-danger has-background-dark">
+        <a class="has-icon has-text-white is-size-5" href="/logout">
+            <span class="icon"><i class="mdi mdi-logout"></i></span>
+            <span class="menu-item-label">Logout</span>
+        </a>
+    </div>
+</aside>
+
+{#Main section from side bar on the right #}
+<div id="main-content" class="container-fluid">
+    <!-- Top Navigation Bar -->
+    <nav id="navbar-main" class="navbar is-spaced is-fixed has-shadow mb-4" style="border-bottom: 1px solid blue;">
+        <div class="container has-text-centered">
+            <div class="navbar-brand">
+                <a class="navbar-item is-hidden-desktop jb-aside-mobile-toggle">
+                    <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+                </a>
+                <div class="navbar-item has-control">
+                    <a href="/app/dashboard"> {{ "Dashboard" }}</a>
+                </div>
+            </div>
+
+            <div class="navbar-menu fadeIn animated faster" id="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
+                        <a class="navbar-link is-arrowless">
+                            <div class="is-user-avatar">
+                                {#                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Big Mart">#}
+                            </div>
+                            <div class="is-user-name ml-2"><span>{{ username }}</span></div>
+                            <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
+                        </a>
+                        <div class="navbar-dropdown">
+                            <a href="/app/user/profile" class="navbar-item">
+                                <span class="icon"><i class="mdi mdi-account"></i></span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/app/program-management" class="navbar-item">
+                                <span class="icon"><i class="mdi mdi-settings"></i></span>
+                                <span>Settings</span>
+                            </a>
+
+                            <hr class="navbar-divider">
+                            <a href="/logout" class="navbar-item ">
+                                <span class="icon"><i class="mdi mdi-logout"></i></span>
+                                <span>Log Out</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="columns">
+        <div class="column is-12">
+            <section class="section mt-4">
+                <nav class="breadcrumb box has-background-light" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a class="is-size-5 has-text-dark">Home</a></li>
+                        <li><a href="" class=" is-size-5">{{ title }}</a></li>
+                    </ul>
+                </nav>
+                <div class="columns is-multiline">
+                    <div class="column is-full">
+                        <div class="card">
+                            <div class="card-header has-background-dark is-flex is-align-items-center is-justify-content-space-between">
+                                <p class="card-header-title is-size-7 has-text-white">
+                                    <span class="icon"><i class="mdi mdi-account-plus-outline is-size-5 mr-2"></i></span>
+                                    Add Clients
+                                </p>
+                                <button id="openModal" class="button is-normal is-success mr-3">Add Client</button>
+                            </div>
+                            <div class="card-content">
+                                {% if errors|length > 0 %}
+                                    <div class="notification is-danger">
+                                        <button class="delete"></button>
+                                        {% for error in errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                {% if success|length > 0 %}
+                                    <div class="notification is-success">
+                                        <button class="delete"></button>
+                                        {% for succ in success %}
+                                            <p>{{ succ }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                <div class="table-container">
+                                    <table id="property-table" class="table is-centered is-responsive is-striped is-fullwidth is-hoverable">
+                                        <thead>
+                                        <tr class="">
+                                            <!--<th>#</th>-->
+                                            <th class="is-size-7">Index #</th>
+                                            <th class="is-size-7">Name</th>
+                                            <th class="is-size-7">Email</th>
+                                            <th class="is-size-7">Phone</th>
+                                            <th class="is-size-7">role</th>
+                                            <th class="is-size-7">date created</th>
+                                            <th class="is-size-7">Edit</th>
+                                            <th class="is-size-7">Delete</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if allUsers %}
+                                            {% for item in allUsers %}
+                                                <tr>
+                                                    <td>{{ item.id }}</td>
+                                                    <td>{{ item.name }}</td>
+                                                    <td>{{ item.email}}</td>
+                                                    <td>{{ item.phone}}</td>
+                                                    <td>{{ item.role}}</td>
+                                                    <td>{{ item.created_at}}</td>
+                                                    <td>
+                                                        <button id="opensimpleEditModal-{{ item.id }}"
+                                                                type="button"
+                                                                class="button is-info is-small edit-btn"
+                                                                data-id="{{ item.id }}">
+                                                            <span class="mdi mdi-pencil"></span>
+                                                        </button>
+
+                                                        <div class="modal" id="simpleEditModal-{{ item.id }}">
+                                                            <div class="modal-background"></div>
+                                                            <div class="modal-content">
+                                                                <div class="box">
+                                                                    <div class="is-flex is-justify-content-flex-end">
+                                                                        <p class="button is-small is-danger close-btn" data-id="{{ item.id }}">
+                                                                            <span class="mdi mdi-window-close"></span>
+                                                                        </p>
+                                                                    </div>
+                                                                    <p class="title is-size-6 mb-4">Edit User</p>
+                                                                    <hr>
+                                                                    <form id="updateProfileForm" action="/app/user/edit-user" method="post">
+                                                                        <div class="columns is-multiline">
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Name</label>
+                                                                                    <input type="text" id="name-{{ item.id }}" name="name" class="input is-link is-normal" value="{{ item.name }}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Email</label>
+                                                                                    <input type="text" id="email-{{ item.id }}" name="email" class="input is-link is-normal" value="{{ item.email }}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-full">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Phone</label>
+                                                                                    <input type="tel" id="phone-{{ item.id }}" name="phone" class="input is-link is-normal" value="{{ item.phone }}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-full">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Role</label>
+                                                                                    <div class="select is-fullwidth is-link">
+                                                                                        <select name="role" id="role-{{ item.id }}">
+                                                                                            <option value="" disabled>Select Role</option>
+                                                                                            <option value="{{ item.role }}" selected>{{ item.role }}</option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Password</label>
+                                                                                    <input type="password" id="password-{{ item.id }}" name="password" class="input is-link is-normal">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Confirm Password</label>
+                                                                                    <input type="password" id="confirm_password-{{ item.id }}" name="confirm_password" class="input is-link is-normal">
+                                                                                </div>
+                                                                            </div>
+                                                                            <input type="hidden" name="user_id" value="{{ item.id }}">
+                                                                        </div>
+                                                                        <button type="submit" class="button is-success">Save Changes</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        <form action="/app/user/delete/{{ item.id }}" method="POST" style="display: inline;">
+                                                            <button type="submit" class="button is-danger is-small">
+                                                                <span class="mdi mdi-delete-circle"></span>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" class="has-text-centered ">No clients added yet</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <figure class="image is-96x96 mb-4" style="margin: 0 auto;">
+                <img class="is-rounded" src="/img/dash-logo.jpeg">
+            </figure>
+            <p>
+                <strong>Dash Finance</strong>. All rights reserved &copy; {{ "now"|date("Y") }}
+            </p>
+        </div>
+    </footer>
+</div>
+
+{#MODALS #}
+<div class="modal" id="simpleModal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="is-flex is-justify-content-flex-end">
+                <p class="button is-small is-danger" id="closeFooter"><span class="mdi mdi-window-close"></span></p>
+            </div>
+            <p class="title is-size-6 mb-4">Add User</p>
+            <hr>
+            <form id="updateProfileForm" class="" action="/app/user/add-user" method="post" enctype="multipart/form-data">
+                <div class="columns is-multiline">
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Name</label>
+                            <input type="text" id="name" name="name" class="input is-link is-normal" placeholder="Enter client name">
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Email</label>
+                            <input type="text" id="email" name="email" class="input is-link is-normal" placeholder="Enter client email">
+                        </div>
+                    </div>
+                    <div class="column is-full">
+                        <div class="field">
+                            <label class="label is-size-7">Phone</label>
+                            <input type="tel" id="phone" name="phone" class="input is-link is-normal" placeholder="Enter client phone">
+                        </div>
+                    </div>
+                    <div class="column is-full">
+                        <div class="field">
+                            <label class="label is-size-7">Role</label>
+                            <div class="select is-fullwidth is-link">
+                                <select name="role" id="role">
+                                    <option value="" disabled selected>Select Program</option>
+                                    <option value="admin">admin</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Password</label>
+                            <input type="password" id="password" name="password" class="input is-link is-normal" placeholder="Enter client's password">
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="input is-link is-normal" placeholder="Confirm client's password">
+                        </div>
+                    </div>
+
+                </div>
+                <button type="submit" id=""   class="button is-success">Add User</button>
+            </form>
+        </div>
+    </div>
+{#    <button class="modal-close is-large" aria-label="close" id="closeModal"></button>#}
+</div>
+
+
+
+<div id="overlay" class="overlay"></div>
+
+
+<!-- JavaScript to Open Modal and Redirect -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const burger = document.querySelector(".navbar-burger");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        const toggleSidebar = () => {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        };
+
+        // Open/Close sidebar on burger click
+        burger.addEventListener("click", toggleSidebar);
+
+        // Close sidebar on overlay click
+        overlay.addEventListener("click", toggleSidebar);
+
+        // Ensure sidebar is always visible on larger screens
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const toggleButton = document.querySelector(".jb-aside-mobile-toggle");
+        const overlay = document.getElementById("overlay");
+
+        // Toggle sidebar on hamburger icon click
+        toggleButton.addEventListener("click", function() {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        });
+
+        // Close sidebar if overlay is clicked
+        overlay.addEventListener("click", function() {
+            sidebar.classList.remove("is-active");
+            overlay.classList.remove("is-active");
+        });
+
+        // Close sidebar automatically on resize (for larger screens)
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('simpleModal');
+        const openModal = document.getElementById('openModal');
+        // const closeModal = document.getElementById('closeModal');
+        const closeFooter = document.getElementById('closeFooter');
+
+        const toggleModal = () => {
+            modal.classList.toggle('is-active');
+            document.body.classList.toggle('is-modal-active'); // Add/remove the class
+        };
+
+        openModal.addEventListener('click', toggleModal);
+        // closeModal.addEventListener('click', toggleModal);
+        closeFooter.addEventListener('click', toggleModal);
+
+        // Close modal when clicking the background
+        // modal.querySelector('.modal-background').addEventListener('click', toggleModal);
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Open modal on edit button click
+        const editButtons = document.querySelectorAll('.edit-btn');
+        editButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-id');
+                const modal = document.getElementById(`simpleEditModal-${userId}`);
+                if (modal) {
+                    modal.classList.add('is-active');
+                }
+            });
+        });
+
+        // Close modal on close button click
+        const closeButtons = document.querySelectorAll('.close-btn');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-id');
+                const modal = document.getElementById(`simpleEditModal-${userId}`);
+                if (modal) {
+                    modal.classList.remove('is-active');
+                }
+            });
+        });
+
+        // Close modal when background is clicked
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-background')) {
+                    modal.classList.remove('is-active');
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const deleteButtons = document.querySelectorAll('.notification .delete');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.parentElement.style.display = 'none';
+            });
+        });
+    });
+</script>
+<script>
+    document.getElementById('program-select').addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const programId = selectedOption.getAttribute('data-id');
+        document.getElementById('program-id').value = programId;
+    });
+</script>
+
+</body>
+</html>
+<style>
+    /* Sidebar visibility toggle */
+    #sidebar {
+        position: fixed; /* Make sure the sidebar is fixed on the left */
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #fff;
+        z-index: 9999;
+        /*box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);*/
+        transform: translateX(-100%); /* Sidebar is off-screen by default */
+        transition: transform 0.3s ease; /* Smooth transition for sliding in/out */
+    }
+
+    /* Make sidebar visible on desktop screens */
+    @media (min-width: 1024px) {
+        #sidebar {
+            transform: translateX(0); /* Always show the sidebar on desktop */
+        }
+    }
+
+    /* Sidebar adjustment for mobile screens */
+    @media (max-width: 1024px) {
+        #sidebar {
+            top: 0; /* Remove the top offset for mobile */
+        }
+    }
+
+    /* Show sidebar when active on mobile */
+    #sidebar.is-active {
+        transform: translateX(0); /* Slide in the sidebar */
+    }
+
+    /* Overlay when sidebar is open */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 9998;
+    }
+
+    .overlay.is-active {
+        display: block;
+    }
+
+    /* Main content styles */
+    #main-content {
+        margin-left: 225px; /* Align with sidebar's width */
+        padding: 2em;
+        transition: margin-left 0.3s ease; /* Smooth transition for responsiveness */
+    }
+
+    @media (max-width: 1024px) {
+        #main-content {
+            margin-left: 0; /* No offset when sidebar is hidden */
+            padding: 0.5rem;
+        }
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+
+    /* Hide sidebar and overlay when a modal is active */
+    body.is-modal-active #sidebar {
+        transform: translateX(-100%) !important; /* Force the sidebar off-screen */
+    }
+
+    body.is-modal-active .overlay {
+        display: none !important; /* Hide the overlay */
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+    .menu {
+        flex-grow: 1; /* Takes up remaining space */
+        overflow-y: auto; /* Scrollable if content exceeds height */
+    }
+
+    .logout-button {
+        margin-top: auto; /* Pushes the button to the bottom */
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid #444; /* Optional: separates logout button visually */
+    }
+
+    .logout-button a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .logout-button a:hover {
+        background-color: #ff4d4d; /* Highlight on hover */
+    }
+
+</style>

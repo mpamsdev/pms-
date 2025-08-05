@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/site.webmanifest">
+    <style>
+        .icon.is-right i {
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body>
+<section class="hero is-small is-white">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5-desktop">
+                    <div class="card mb-4 mt-6">
+                        <div class="card-content">
+                            <div class="has-text-centered">
+                                <figure class="image is-64x64 mb-5" style="margin: 0 auto; border: 2px solid dodgerblue; border-radius: 50%">
+                                    <img class="is-rounded" src="/assets/img/logo.png">
+                                </figure>
+                                <span id="icon-success" class="mdi mdi-check-circle-outline is-size-1 has-text-success" style="display: none;"></span>
+                                <h2 id="success-message" class="has-text-success is-size-3" style="display: none;"></h2>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="has-text-centered">All rights reserved &copy; {{ "now"|date("Y") }}. Chalom Investments Ltd</p>
+                    <p class="has-text-centered is-size-7"> <strong>Powered By:</strong> <a class="has-text-link" href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies Limited</a> </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const params = new URLSearchParams(window.location.search);
+        const message = params.get('message');
+        const messageBox = document.getElementById('success-message');
+        const icon = document.getElementById('icon-success');
+
+        if (message) {
+            messageBox.textContent = decodeURIComponent(message);
+            messageBox.style.display = 'block';
+            icon.style.display = 'block';
+
+            // Redirect after 5 seconds
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 3000);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+{% extends 'partials/base.twig' %}
+{% block content%}
+    {#Main section from side bar on the right #}
+    <div id="main-content" class="container-fluid">
+        <!-- Top Navigation Bar -->
+        <div class="columns">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-white">Home</a></li>
+                            <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                        </ul>
+                    </nav>
+                    <div class="columns">
+                        <div class="column is-full">
+                            <div class="table-container box">
+                                <table id="application-table" class="table is-centered is-responsive is-striped is-fullwidth is-hoverable">
+                                    <thead>
+                                    <tr class="">
+                                        <th class="is-size-6">Company Name</th>
+                                        <th class="is-size-6">Registration #</th>
+                                        <th class="is-size-6">Email</th>
+                                        <th class="is-size-6">Phone</th>
+                                        <th class="is-size-6">Operation Area</th>
+                                        <th class="is-size-6">Address</th>
+                                        <th class="is-size-6">City</th>
+                                        <th class="is-size-6">Country</th>
+                                        <th class="is-size-6">Date created</th>
+                                        <th class="is-size-6">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if users %}
+                                        {% for item in users %}
+                                            <tr>
+                                                <td class="is-size-6">{{ item.title}}</td>
+                                                <td class="is-size-6">{{ item.firstname | capitalize }}</td>
+                                                <td class="is-size-6">{{ item.lastname | capitalize}}</td>
+                                                <td class="is-size-6">{{ item.userid}}</td>
+                                                <td class="is-size-6">{{ item.username}}</td>
+                                                <td class="is-size-6">{{ item.phone}}</td>
+                                                <td class="is-size-6">{{ item.nationalCard}}</td>
+                                                <td class="is-size-6">{{ item.dateCreated | date("d, M Y")}}</td>
+                                                <td class="is-size-6">
+                                                    <a href="/dashboard/clients/client/{{ item.uuid}}" class="has-text-info" title="Preview">
+                                                        <i class="mdi mdi-eye is-size-4"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="has-text-centered ">No loan product added yet</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                                {% if users.lastPage > 1 %}
+                                    <nav class="pagination is-rounded is-small is-centered mt-4" role="navigation" aria-label="pagination">
+                                        {# Previous Page #}
+                                        {% if users.currentPage > 1 %}
+                                            <a class="pagination-previous" href="?page={{ users.currentPage - 1 }}">Previous</a>
+                                        {% else %}
+                                            <a class="pagination-previous" disabled>Previous</a>
+                                        {% endif %}
+
+                                        {# Next Page #}
+                                        {% if users.currentPage < users.lastPage %}
+                                            <a class="pagination-next" href="?page={{ users.currentPage + 1 }}">Next</a>
+                                        {% else %}
+                                            <a class="pagination-next" disabled>Next</a>
+                                        {% endif %}
+
+                                        <ul class="pagination-list">
+                                            {# Always show first page #}
+                                            {% if users.currentPage > 3 %}
+                                                <li><a class="pagination-link" href="?page=1">1</a></li>
+                                                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                                            {% endif %}
+
+                                            {# Show up to 2 pages before current #}
+                                            {% for page in users.currentPage - 2 .. users.currentPage + 2 %}
+                                                {% if page > 0 and page <= users.lastPage %}
+                                                    {% if page == users.currentPage %}
+                                                        <li><a class="pagination-link is-current">{{ page }}</a></li>
+                                                    {% else %}
+                                                        <li><a class="pagination-link" href="?page={{ page }}">{{ page }}</a></li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {# Always show last page #}
+                                            {% if users.currentPage < users.lastPage - 2 %}
+                                                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                                                <li><a class="pagination-link" href="?page={{ users.lastPage }}">{{ users.lastPage }}</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                {% endif %}
+
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+

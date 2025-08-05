@@ -1,0 +1,276 @@
+{% extends 'partials/base.twig' %}
+{% block content%}
+    {#Main section from side bar on the right #}
+    <div id="main-content" class="container-fluid">
+        <!-- Top Navigation Bar -->
+        <div class="columns">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-white">Home</a></li>
+                            <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                        </ul>
+                    </nav>
+                    <div class="columns">
+                        <div class="column is-full">
+
+                            <div class="table-container box">
+                                <p class="title is-size-6 mt-2 mb-4">{{ title }}</p>
+                                <hr>
+                                <button id="restoreAllBtn" class="button is-success is-normal mb-3">
+                                    <span>Restore All</span>
+                                </button>
+
+                                <div class="notification is-hidden mt-2"></div>
+
+                                <table id="application-table" class="table is-centered is-responsive  is-fullwidth is-hoverable">
+                                    <thead>
+                                    <tr class="">
+                                        <!--<th>#</th>-->
+                                        {#                                            <th class="is-size-7">Index #</th>#}
+                                        <th class="is-size-6">Application Number</th>
+                                        <th class="is-size-6">Full Name</th>
+                                        <th class="is-size-6">Amount</th>
+                                        <th class="is-size-6">Rate</th>
+                                        <th class="is-size-6">Total Payable</th>
+                                        <th class="is-size-6">Period</th>
+                                        <th class="is-size-6">Status</th>
+                                        <th class="is-size-6">date created</th>
+                                        <th class="is-size-6">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if loans|length > 0 %}
+                                        {% for item in loans %}
+                                            <tr>
+                                                {#                                                    <td class="is-size-7">{{ item.id }}</td>#}
+                                                <td class="is-size-6">{{ item.applicationNumber}}</td>
+                                                <td class="is-size-6">
+                                                    {% if item.user %}
+                                                        {% set first = item.user.firstname|default('') %}
+                                                        {% set last = item.user.lastname|default('') %}
+                                                        {% set fullName = (first ~ ' ' ~ last)|trim %}
+
+                                                        {{ fullName| capitalize }}
+                                                    {% else %}
+                                                        Unknown User
+                                                    {% endif %}
+
+                                                </td>
+                                                <td class="is-size-6">{{ item.amount | number_format(2,'.', ',') }}</td>
+                                                <td class="is-size-6">{{ item.interestRate}}</td>
+                                                <td class="is-size-6">{{ item.totalPayable | number_format(2,'.', ',')}}</td>
+                                                <td class="is-size-6">{{ item.period}}</td>
+                                                <td class="is-size-6">
+                                                    {% if item.status is same as('') or item.status is null %}
+                                                        <p class="has-text-warning">Loan Submission</p>
+                                                    {% elseif item.status is same as('1') %}
+                                                        <p class="has-text-success">Loan Approved</p>
+                                                    {% elseif item.status is same as('2') %}
+                                                        <p class="has-text-info">Loan Disbursed</p>
+                                                    {% elseif item.status is same as('3') %}
+                                                        <p class="has-text-danger">Loan Rejected</p>
+                                                    {% elseif item.status is same as('4') %}
+                                                        <p class="has-text-danger">Loan Cancelled</p>
+                                                    {% elseif item.status is same as('5') %}
+                                                        <p class="has-text-link">Loan Repayment</p>
+                                                    {% elseif item.status is same as('6') %}
+                                                        <p class="has-text-success">Loan Paid</p>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="is-size-6">{{ item.dateCreated | date("d, M Y")}}</td>
+                                                <td class="is-size-6">
+                                                    {# Restore Button #}
+                                                    <button class="button is-normal is-success restore-btn"
+                                                            data-uuid="{{ item.uuid }}"
+                                                            title="Restore">
+                                                        <span class="icon is-small"><i class="mdi mdi-backup-restore"></i></span>
+                                                        <span>Restore</span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5" class="has-text-centered ">No loan product added yet</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                                {% if loans.lastPage > 1 %}
+                                    <nav class="pagination is-rounded is-small is-centered mt-4" role="navigation" aria-label="pagination">
+                                        {# Previous Page #}
+                                        {% if loans.currentPage > 1 %}
+                                            <a class="pagination-previous" href="?page={{ loans.currentPage - 1 }}">Previous</a>
+                                        {% else %}
+                                            <a class="pagination-previous" disabled>Previous</a>
+                                        {% endif %}
+
+                                        {# Next Page #}
+                                        {% if loans.currentPage < loans.lastPage %}
+                                            <a class="pagination-next" href="?page={{ loans.currentPage + 1 }}">Next</a>
+                                        {% else %}
+                                            <a class="pagination-next" disabled>Next</a>
+                                        {% endif %}
+
+                                        <ul class="pagination-list">
+                                            {# Always show first page #}
+                                            {% if loans.currentPage > 3 %}
+                                                <li><a class="pagination-link" href="?page=1">1</a></li>
+                                                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                                            {% endif %}
+
+                                            {# Show up to 2 pages before current #}
+                                            {% for page in loans.currentPage - 2 .. loans.currentPage + 2 %}
+                                                {% if page > 0 and page <= loans.lastPage %}
+                                                    {% if page == loans.currentPage %}
+                                                        <li><a class="pagination-link is-current">{{ page }}</a></li>
+                                                    {% else %}
+                                                        <li><a class="pagination-link" href="?page={{ page }}">{{ page }}</a></li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {# Always show last page #}
+                                            {% if loans.currentPage < loans.lastPage - 2 %}
+                                                <li><span class="pagination-ellipsis">&hellip;</span></li>
+                                                <li><a class="pagination-link" href="?page={{ loans.lastPage }}">{{ loans.lastPage }}</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const restoreButtons = document.querySelectorAll(".restore-btn");
+            const notificationDiv = document.querySelector(".notification");
+
+            restoreButtons.forEach(button => {
+                button.addEventListener("click", async () => {
+                    const uuid = button.dataset.uuid;
+                    const originalHTML = button.innerHTML;
+
+                    // Replace button content and disable
+                    button.innerHTML = "Restoring...";
+                    button.disabled = true;
+
+                    try {
+                        const response = await fetch(`/dashboard/loan/restore/${uuid}`, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        //console.log(result);
+
+                        if (result.success) {
+                            showNotification("is-success", result.message || "Loan restored");
+                            setTimeout(() => window.location.reload(), 3000);
+                        } else {
+                            showNotification("is-danger", result.message || "Failed to restore loan.");
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        showNotification("is-danger", "An error occurred while restoring the loan.");
+                    } finally {
+                        button.disabled = false;
+                        button.innerHTML = originalHTML; // Restore original button content
+                    }
+                });
+            });
+
+            function showNotification(type, message) {
+                notificationDiv.className = `notification ${type}`;
+                notificationDiv.innerHTML = `
+            <button class="delete"></button>
+            ${message}
+        `;
+                notificationDiv.style.display = 'block';
+
+                setTimeout(() => {
+                    notificationDiv.style.display = 'none';
+                }, 5000);
+
+                const deleteBtn = notificationDiv.querySelector('.delete');
+                if (deleteBtn) {
+                    deleteBtn.addEventListener('click', () => {
+                        notificationDiv.style.display = 'none';
+                    });
+                }
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const restoreAllBtn = document.getElementById("restoreAllBtn");
+            const notificationDiv = document.querySelector(".notification");
+
+            if (restoreAllBtn) {
+                restoreAllBtn.addEventListener("click", async () => {
+                    const originalText = restoreAllBtn.innerHTML;
+                    restoreAllBtn.disabled = true;
+                    restoreAllBtn.innerHTML = "Restoring...";
+
+                    try {
+                        const response = await fetch('/dashboard/loan/restore-all', {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        const result = await response.json();
+                        //console.log(results);
+
+                        if (result.success) {
+                            showNotification("is-success", result.message || "Loans restored successfully.");
+                            setTimeout(() => window.location.reload(), 1500);
+                        } else {
+                            showNotification("is-danger", result.message || "Failed to restore loans.");
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        showNotification("is-danger", "An error occurred.");
+                    } finally {
+                        restoreAllBtn.innerHTML = originalText;
+                        restoreAllBtn.disabled = false;
+                    }
+                });
+            }
+
+            function showNotification(type, message) {
+                if (!notificationDiv) return;
+
+                notificationDiv.className = `notification ${type}`;
+                notificationDiv.innerHTML = `
+            <button class="delete"></button>
+            ${message}
+        `;
+                notificationDiv.classList.remove("is-hidden");
+
+                setTimeout(() => {
+                    notificationDiv.classList.add("is-hidden");
+                }, 5000);
+
+                notificationDiv.querySelector(".delete").onclick = () => {
+                    notificationDiv.classList.add("is-hidden");
+                };
+            }
+        });
+    </script>
+
+
+
+{% endblock %}

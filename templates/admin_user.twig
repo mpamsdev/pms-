@@ -1,0 +1,796 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+    <!--    <link rel="stylesheet" href="style.css">-->
+    {#Add the CSS FILES#}
+    <link href="css/main.css">
+    <!--        <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+
+</head>
+<body>
+{#SIDE BAR #}
+<aside id="sidebar" class="aside is-placed-left is-expanded has-background-dark">
+    <div class="menu is-menu-main" style="overflow-y: auto; height: 100vh;">
+        <ul class="menu-list">
+            <li>
+                <a href="/app/dashboard" class="router-link-active has-icon  is-size-6 mt-4">
+                    <span class="icon"><i class="mdi mdi-view-dashboard has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Dashboard</span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="menu-list mt-2">
+
+            <li>
+                <a href="/app/employee" class="has-icon  pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4 "></i></span>
+                    <span class="menu-item-label has-text-white has-text-white">Apply Now</span>
+                </a>
+            </li>
+            <li>
+                <a href="/pms/tasks" class="has-icon pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">My Applications</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/app/user/profile" class="has-icon pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">My Profile</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/app/user/profile" class="has-icon pt-4 pb-4  is-size-6">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Deep Search</span>
+                </a>
+            </li>
+            {#Reporting Data#}
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownReports()">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Reports</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="reports-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/ch/reports/receipts" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-receipt has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Receipts</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/app/user/permissions" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-chart-line has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Generate Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/app/user/roles" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-database has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Applications</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            {#Users droped#}
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownUsers()">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Manage Users</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="users-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/ch/user/clients" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-account-group has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Users</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/ch/user/companies" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-domain has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Companies</span>
+                        </a>
+                    </li>
+                    {#                    <li>#}
+                    {#                        <a href="/app/user/roles" class="has-icon pt-2 pb-2 is-size-6">#}
+                    {#                            <span class="icon"><i class="mdi mdi-database has-text-white"></i></span>#}
+                    {#                            <span class="menu-item-label has-text-white">Applications</span>#}
+                    {#                        </a>#}
+                    {#                    </li>#}
+                </ul>
+            </li>
+            <!-- Dropdown Menu -->
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdown()">
+                    <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">Settings</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="settings-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/ch/admin/admin_user" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-shield-account has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Users and Roles</span>
+                        </a>
+                    </li>
+
+{#                    <li>#}
+{#                        <a href="/app/user/roles" class="has-icon pt-2 pb-2 is-size-6">#}
+{#                            <span class="icon"><i class="mdi mdi-shield-account has-text-white"></i></span>#}
+{#                            <span class="menu-item-label has-text-white">Manage Roles</span>#}
+{#                        </a>#}
+{#                    </li>#}
+                    <li>
+                        <a href="/ch/admin/manage_products" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-cash-multiple has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Manage Products</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/ch/admin/system-logs" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-timer-settings-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">System Logs</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            {#            <li>#}
+            {#                <a href="/app/user/add-user" class="has-icon pt-4 pb-4  is-size-5">#}
+            {#                    <span class="icon"><i class="mdi mdi-circle-outline has-text-white is-size-4"></i></span>#}
+            {#                    <span class="menu-item-label has-text-white">Settings</span>#}
+            {#                </a>#}
+            {#            </li>#}
+        </ul>
+        <!-- Logout Button -->
+        <div class="logout-button  is-danger ">
+            <a class="has-icon button is-info is-size-5" href="/logout">
+                <span class="icon"><i class="mdi mdi-logout has-text-white is-size-4"></i></span>
+                <span class="menu-item-label has-text-white is-size-4">Logout</span>
+            </a>
+        </div>
+    </div>
+</aside>
+
+{#Main section from side bar on the right #}
+<div id="main-content" class="container-fluid">
+    <!-- Top Navigation Bar -->
+    <nav id="navbar-main" class="navbar is-spaced is-fixed has-shadow box has-background-light mb-4" >
+        <div class="container has-text-centered">
+            <div class="navbar-brand">
+                <a class="navbar-item is-hidden-desktop jb-aside-mobile-toggle">
+                    <span class="icon"><i class="mdi mdi-forwardburger mdi-24px"></i></span>
+                </a>
+                <div class="navbar-item has-control">
+                    <a href="/app/dashboard"> {{ "Dashboard" }}</a>
+                </div>
+            </div>
+
+            <div class="navbar-menu fadeIn animated faster" id="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
+                        <a class="navbar-link is-arrowless">
+                            <div class="is-user-avatar">
+                                {#                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="Big Mart">#}
+                            </div>
+                            <div class="is-user-name ml-2"><span>{{ username }}</span></div>
+                            <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
+                        </a>
+                        <div class="navbar-dropdown">
+                            <a href="/app/profile" class="navbar-item">
+                                <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4 mr-2"></i></span>
+                                <span>My Profile</span>
+                            </a>
+                            <a href="/app/settings" class="navbar-item">
+                                <span class="icon"><i class="mdi mdi-circle-outline has-text-info is-size-4 mr-2"></i></span>
+                                <span>Notifications</span>
+                            </a>
+
+                            <hr class="navbar-divider">
+                            <a href="/logout" class="navbar-item ">
+                                <span class="icon"><i class="mdi mdi-logout is-size-4 "></i></span>
+                                <span class="is-size-5">Log Out</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="columns">
+        <div class="column is-12">
+            <section class="section mt-4">
+                <nav class="breadcrumb box has-background-info" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a class="is-size-5 has-text-white">Home</a></li>
+                        <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                    </ul>
+                </nav>
+                <div class="columns is-multiline">
+                    <div class="column is-full">
+                        <div class="card">
+                            <div class="card-header pt-3 pb-3 has-background-dark is-flex is-align-items-center is-justify-content-space-between">
+                                <p class="card-header-title is-size-7 has-text-white">
+                                    <span class="icon"><i class="mdi mdi-format-list-checks is-size-5 mr-2"></i></span>
+                                    Users and Roles
+                                </p>
+                                <button id="openModal" class="button is-normal is-info mr-3">Add Admin </button>
+                            </div>
+                            <div class="card-content">
+                                {% if errors|length > 0 %}
+                                    <div class="notification is-danger">
+                                        <button class="delete"></button>
+                                        {% for error in errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                {% if success|length > 0 %}
+                                    <div class="notification is-success">
+                                        <button class="delete"></button>
+                                        {% for succ in success %}
+                                            <p>{{ succ }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+
+                                <div class="table-container">
+                                    <table id="property-table" class="table is-centered is-responsive is-striped is-fullwidth is-hoverable">
+                                        <thead>
+                                        <tr class="">
+                                            <!--<th>#</th>-->
+                                            <th class="is-size-7">Index #</th>
+                                            <th class="is-size-7">First Name</th>
+                                            <th class="is-size-7">Last Name</th>
+                                            <th class="is-size-7">Email</th>
+                                            <th class="is-size-7">Phone</th>
+                                            <th class="is-size-7">Role</th>
+                                            <th class="is-size-7">Status</th>
+                                            <th class="is-size-7">date created</th>
+                                            <th class="is-size-7">Edit</th>
+                                            <th class="is-size-7">Action</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if adminUsers %}
+                                            {% for item in adminUsers %}
+                                                <tr>
+                                                    <td class="is-size-7">{{ item.id }}</td>
+                                                    <td class="is-size-7">{{ item.firstname | capitalize }}</td>
+                                                    <td class="is-size-7">{{ item.lastname | capitalize}}</td>
+                                                    <td class="is-size-7">{{ item.username}}</td>
+                                                    <td class="is-size-7">{{ item.phone}}</td>
+                                                    <td class="is-size-7">{{ item.role | capitalize}}</td>
+                                                    <td class="is-size-7">
+                                                        {% if item.status is same as('suspended') %}
+                                                            <p class=" has-text-danger">
+                                                                {{item.status | capitalize}}
+                                                            </p>
+                                                        {% else %}
+                                                            <p class="has-text-success">
+                                                                {{item.status | capitalize}}
+                                                            </p>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="is-size-7">{{ item.created_at | date("d, M Y")}}</td>
+                                                    <td class="is-size-7">
+                                                        {% if item.status is same as('suspended') %}
+                                                            <button  id="opensimpleEditModal-{{ item.id }}" type="button"
+                                                                    class="button is-info is-small edit-btn"
+                                                                    data-id="{{ item.id }}" disabled>
+                                                                <span class="mdi mdi-pencil mr-1 is-size-5"></span>
+                                                                Edit
+                                                            </button>
+                                                        {% else %}
+                                                            <button id="opensimpleEditModal-{{ item.id }}"
+                                                                    type="button"
+                                                                    class="button is-info is-small edit-btn"
+                                                                    data-id="{{ item.id }}">
+                                                                <span class="mdi mdi-pencil mr-1 is-size-5"></span>
+                                                                Edit
+                                                            </button>
+                                                        {% endif %}
+                                                        <div class="modal" id="simpleEditModal-{{ item.id }}">
+                                                            <div class="modal-background"></div>
+                                                            <div class="modal-content">
+                                                                <div class="box">
+                                                                    <div class="is-flex is-justify-content-flex-end">
+                                                                        <p class="button is-small is-danger close-btn" data-id="{{ item.id }}">
+                                                                            <span class="mdi mdi-window-close is-size-5"></span>
+                                                                        </p>
+                                                                    </div>
+                                                                    <p class="title is-size-6 mb-4">Edit User</p>
+                                                                    <hr>
+                                                                    <form id="updateProfileForm" action="/ch/admin/admin_user/update/{{ item.id }}" method="post">
+                                                                        <div class="columns is-multiline">
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">First Name</label>
+                                                                                    <input type="text" id="name-{{ item.id }}" name="firstname" class="input is-link is-normal" value="{{ item.firstname }}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Last Name</label>
+                                                                                    <input type="text" id="name-{{ item.id }}" name="lastname" class="input is-link is-normal" value="{{ item.lastname }}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Email</label>
+                                                                                    <input type="text" id="email-{{ item.id }}" name="email" class="input is-link is-normal" value="{{ item.username}}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Phone</label>
+                                                                                    <input type="tel" id="phone-{{ item.id }}" name="phone" class="input is-link is-normal" value="{{ item.phone }}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-full">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Role</label>
+                                                                                    <div class="select is-normal is-fullwidth is-link">
+                                                                                        <select name="role" id="role-{{ item.id }}">
+                                                                                            <option value="{{ item.role }}" selected disabled>{{ item.role }}</option>
+{#                                                                                            <option value="" selected></option>#}
+                                                                                            <option value="superuser">Superuser</option>
+                                                                                            <option value="admin">Admin</option>
+                                                                                            <option value="verifier">Verifier</option>
+                                                                                            <option value="approver">Approver</option>
+                                                                                        </select>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Password</label>
+                                                                                    <input type="password" id="password-{{ item.id }}" name="password" class="input is-link is-normal">
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="column is-half">
+                                                                                <div class="field">
+                                                                                    <label class="label is-size-7">Confirm Password</label>
+                                                                                    <input type="password" id="confirm_password-{{ item.id }}" name="confirm_password" class="input is-link is-normal">
+                                                                                </div>
+                                                                            </div>
+                                                                            <input type="hidden" name="user_id" value="{{ item.id }}">
+                                                                        </div>
+                                                                        <button type="submit" class="button is-success">Update</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="is-size-7">
+                                                        {% if item.status is same as('suspended') %}
+                                                            <form action="/ch/admin/admin_user/activate/{{ item.id }}" method="POST" style="display: inline;">
+                                                                <button type="submit" class="button is-primary is-small">
+                                                                    <span class="mdi mdi-checkbox-marked-circle mr-1 is-size-5"></span>
+                                                                    Activate
+                                                                </button>
+                                                            </form>
+                                                            {%else%}
+                                                                <form action="/ch/admin/admin_user/suspend/{{ item.id }}" method="POST" style="display: inline;">
+                                                                    <button type="submit" class="button is-primary is-small">
+                                                                        <span class="mdi mdi-cancel mr-1 is-size-5"></span>
+                                                                        Suspend
+                                                                    </button>
+                                                                </form>
+                                                        {% endif %}
+
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="5" class="has-text-centered ">No loan product added yet</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>Chalom Investments Limited. All rights reserved &copy; {{ "now"|date("Y") }}</p>
+            <p> <strong>Powered By:</strong><a href="https://www.fortresshubtechnologies.com">Fortress Hub Technologies</a> </p>
+        </div>
+    </footer>
+</div>
+
+
+{#MODALS #}
+<div class="modal" id="simpleModal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="is-flex is-justify-content-flex-end">
+                <p class="button is-small is-danger" id="closeFooter"><span class="mdi mdi-window-close"></span></p>
+            </div>
+            <p class="title is-size-6 mb-4">Add Admin</p>
+            <hr>
+            <form id="productForm" class="" action="/ch/admin/admin_user" method="post" enctype="multipart/form-data">
+                <div class="columns is-multiline">
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">First Name</label>
+                            <input type="text" id="name" name="firstname" class="input is-link is-normal" placeholder="Enter first name" required>
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Last Name</label>
+                            <input type="text" id="rate" name="lastname" class="input is-link is-normal" placeholder="Enter last name" required>
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Email</label>
+                            <input type="email" id="email" name="email" class="input is-link is-normal" placeholder="Enter email" >
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Phone</label>
+                            <input type="tel" id="phone" name="phone" class="input is-link is-normal" placeholder="Enter phone" required>
+                        </div>
+                    </div>
+                    <div class="column is-full">
+                        <div class="field">
+                            <label class="label is-size-7">Role</label>
+                            <div class="select is-fullwidth is-link">
+                                <select name="role" id="role">
+                                    <option value="" disabled selected>Select Role</option>
+                                    <option value="superuser">Superuser</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="verifier">Verifier</option>
+                                    <option value="approver">Approver</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Password</label>
+                            <input type="password" id="password" name="password" class="input is-link is-normal" placeholder="Enter client's password">
+                        </div>
+                    </div>
+                    <div class="column is-half">
+                        <div class="field">
+                            <label class="label is-size-7">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="input is-link is-normal" placeholder="Confirm client's password">
+                        </div>
+                    </div>
+
+                </div>
+                <button type="submit" id=""   class="button is-info">Add User</button>
+            </form>
+        </div>
+    </div>
+    {#    <button class="modal-close is-large" aria-label="close" id="closeModal"></button>#}
+</div>
+
+<div id="overlay" class="overlay"></div>
+
+
+<!-- JavaScript to Open Modal and Redirect -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const burger = document.querySelector(".navbar-burger");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+
+        const toggleSidebar = () => {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        };
+
+        // Open/Close sidebar on burger click
+        burger.addEventListener("click", toggleSidebar);
+
+        // Close sidebar on overlay click
+        overlay.addEventListener("click", toggleSidebar);
+
+        // Ensure sidebar is always visible on larger screens
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+
+</script>
+<script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById('settings-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+    function toggleDropdownReports() {
+        const dropdown = document.getElementById('reports-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+
+    function toggleDropdownUsers() {
+        const dropdown = document.getElementById('users-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const sidebar = document.getElementById("sidebar");
+        const toggleButton = document.querySelector(".jb-aside-mobile-toggle");
+        const overlay = document.getElementById("overlay");
+
+        // Toggle sidebar on hamburger icon click
+        toggleButton.addEventListener("click", function() {
+            sidebar.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        });
+
+        // Close sidebar if overlay is clicked
+        overlay.addEventListener("click", function() {
+            sidebar.classList.remove("is-active");
+            overlay.classList.remove("is-active");
+        });
+        // Close sidebar automatically on resize (for larger screens)
+        window.addEventListener("resize", function() {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove("is-active");
+                overlay.classList.remove("is-active");
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('simpleModal');
+        const openModal = document.getElementById('openModal');
+        // const closeModal = document.getElementById('closeModal');
+        const closeFooter = document.getElementById('closeFooter');
+
+        const toggleModal = () => {
+            modal.classList.toggle('is-active');
+            document.body.classList.toggle('is-modal-active'); // Add/remove the class
+        };
+
+        openModal.addEventListener('click', toggleModal);
+        // closeModal.addEventListener('click', toggleModal);
+        closeFooter.addEventListener('click', toggleModal);
+
+        // Close modal when clicking the background
+        modal.querySelector('.modal-background').addEventListener('click', toggleModal);
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Open modal on edit button click
+        const editButtons = document.querySelectorAll('.edit-btn');
+        editButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-id');
+                const modal = document.getElementById(`simpleEditModal-${userId}`);
+                if (modal) {
+                    modal.classList.add('is-active');
+                }
+            });
+        });
+
+        // Close modal on close button click
+        const closeButtons = document.querySelectorAll('.close-btn');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-id');
+                const modal = document.getElementById(`simpleEditModal-${userId}`);
+                if (modal) {
+                    modal.classList.remove('is-active');
+                }
+            });
+        });
+
+        // Close modal when background is clicked
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-background')) {
+                    modal.classList.remove('is-active');
+                }
+            });
+        });
+    });
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const deleteButtons = document.querySelectorAll('.notification .delete');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.parentElement.style.display = 'none';
+            });
+        });
+    });
+
+
+    document.getElementById("productForm").addEventListener("submit", function() {
+        setTimeout(() => {
+            document.getElementById("myForm").reset();
+        }, 500);
+    });
+</script>
+</body>
+</html>
+<style>
+    /* Sidebar visibility toggle */
+    #sidebar {
+        position: fixed; /* Make sure the sidebar is fixed on the left */
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        background-color: #fff;
+        z-index: 9999;
+        /*box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);*/
+        transform: translateX(-100%); /* Sidebar is off-screen by default */
+        transition: transform 0.3s ease; /* Smooth transition for sliding in/out */
+    }
+
+    /* Make sidebar visible on desktop screens */
+    @media (min-width: 1024px) {
+        #sidebar {
+            transform: translateX(0); /* Always show the sidebar on desktop */
+        }
+    }
+
+    /* Sidebar adjustment for mobile screens */
+    @media (max-width: 1024px) {
+        #sidebar {
+            top: 0; /* Remove the top offset for mobile */
+        }
+    }
+
+    /* Show sidebar when active on mobile */
+    #sidebar.is-active {
+        transform: translateX(0); /* Slide in the sidebar */
+    }
+
+    /* Overlay when sidebar is open */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 9998;
+    }
+
+    .overlay.is-active {
+        display: block;
+    }
+
+    /* Main content styles */
+    #main-content {
+        margin-left: 225px; /* Align with sidebar's width */
+        padding: 2em;
+        transition: margin-left 0.3s ease; /* Smooth transition for responsiveness */
+    }
+
+    @media (max-width: 1024px) {
+        #main-content {
+            margin-left: 0; /* No offset when sidebar is hidden */
+            padding: 0.5rem;
+        }
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+
+    /* Hide sidebar and overlay when a modal is active */
+    body.is-modal-active #sidebar {
+        transform: translateX(-100%) !important; /* Force the sidebar off-screen */
+    }
+
+    body.is-modal-active .overlay {
+        display: none !important; /* Hide the overlay */
+    }
+
+    .avatar {
+        width: 50px; /* Adjust size as needed */
+        height: 50px; /* Ensure width and height are equal for a perfect circle */
+        border-radius: 50%; /* Make the image round */
+        object-fit: cover; /* Ensures the image content fits inside the circle */
+        border: 2px solid #007bff; /* Optional: Add a border */
+    }
+
+    .menu {
+        flex-grow: 1; /* Takes up remaining space */
+        overflow-y: auto; /* Scrollable if content exceeds height */
+    }
+
+    .logout-button {
+        margin-top: auto; /* Pushes the button to the bottom */
+        padding: 1rem;
+        text-align: center;
+        border-top: 1px solid #444; /* Optional: separates logout button visually */
+    }
+
+    .logout-button a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: background-color 0.2s ease;
+    }
+
+    .logout-button a:hover {
+        color: white;
+        background-color: skyBlue; /* Highlight on hover */
+    }
+
+
+    /* Sidebar link hover styles */
+    #sidebar a {
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    #sidebar a:hover {
+        background-color: #09122C; /* Light blue hover background */
+        color: #0056b3; /* Darker blue text color */
+    }
+
+    #sidebar a:hover .icon i {
+        color: #0056b3; /* Match icon color with text */
+    }
+
+    #sidebar .menu-list li {
+        margin-bottom: 10px; /* Add some space between items */
+    }
+
+
+    .is-hidden {
+        display: none;
+    }
+
+</style>
