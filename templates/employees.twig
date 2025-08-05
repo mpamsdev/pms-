@@ -1,0 +1,178 @@
+{% extends 'partials/base.twig' %}
+{% block content %}
+    <div id="main-content" class="container-fluid">
+        <div class="columns">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb box has-background-warning" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-white">Home</a></li>
+                            <li><a class="is-size-5 has-text-white">Employees</a></li>
+                        </ul>
+                    </nav>
+                    <div class="columns">
+                        <div class="column is-full">
+                            <div class="box">
+                                <div class="level mb-4">
+                                    <div class="level-left">
+                                        <button class="button is-success" onclick="openModal('addModal')">
+                                            <span class="mdi mdi-plus-thick"></span>
+                                            Add Employee
+                                        </button>
+                                        <button class="button is-outlined is-primary ml-2" onclick="exportToExcel()">
+                                            <span class="mdi mdi-file-excel "></span>
+                                            Excel
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {% if errors|length > 0 %}
+                                    <div class="notification is-danger" id="errorNotification">
+                                        <ul>
+                                            {% for error in errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+
+                                {% if success %}
+                                    <div class="notification is-success" id="successNotification">
+                                        {{ success }}
+                                    </div>
+                                {% endif %}
+
+                                <table id="myTable" class="table is-fullwidth is-hoverable">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Department</th>
+                                        <th>Job Title</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for employee in employees %}
+                                        <tr>
+                                            <td>{{ employee.id }}</td>
+                                            <td>{{ employee.name }}</td>
+                                            <td>{{ employee.email }}</td>
+                                            <td>{{ employee.phone }}</td>
+                                            <td>{{ employee.department }}</td>
+                                            <td>{{ employee.job_title }}</td>
+                                            <td>{{ employee.status }}</td>
+                                            <td>
+                                                <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
+                                                    <span class="mdi mdi-pencil"></span>
+                                                </button>
+                                                <form action="/dashboard/employees/suspend/{{ employee.id }}" method="post" style="display:inline-block">
+                                                    <button class="button is-small is-warning" type="submit">
+                                                        <span class="mdi mdi-account-off"></span>
+                                                    </button>
+                                                </form>
+                                                <form action="/dashboard/employees/delete/{{ employee.id }}" method="post" style="display:inline-block">
+                                                    <button class="button is-small is-danger" type="submit">
+                                                        <span class="mdi mdi-trash-can"></span>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Edit Modal -->
+                                        <div id="editModal-{{ employee.id }}" class="modal">
+                                            <div class="modal-background"></div>
+                                            <div class="modal-card">
+                                                <header class="modal-card-head has-background-warning">
+                                                    <p class="modal-card-title has-text-white">Edit Employee</p>
+                                                    <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ employee.id }}')"></button>
+                                                </header>
+                                                <section class="modal-card-body">
+                                                    <form action="/dashboard/employees/update" method="post">
+                                                        <input type="hidden" name="id" value="{{ employee.id }}">
+                                                        {% include 'partials/employee_form_fields.twig' with { employee: employee } %}
+                                                        <div class="field is-grouped is-grouped-left">
+                                                            <p class="control">
+                                                                <button type="submit" class="button is-success">Update</button>
+                                                            </p>
+                                                            <p class="control">
+                                                                <button type="button" class="button" onclick="closeModal('editModal-{{ employee.id }}')">Cancel</button>
+                                                            </p>
+                                                        </div>
+                                                    </form>
+                                                </section>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                <!-- Add Modal -->
+                                <div id="addModal" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-warning">
+                                            <p class="modal-card-title has-text-white">Add Employee</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <form action="/dashboard/employees/add" method="post">
+                                                {% include 'partials/employee_form_fields.twig' with { employee: {} } %}
+                                                <div class="field is-grouped is-grouped-right">
+                                                    <p class="control">
+                                                        <button type="submit" class="button is-success">Save</button>
+                                                    </p>
+                                                </div>
+                                            </form>
+                                        </section>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    function openModal(id) {
+                                        document.getElementById(id).classList.add('is-active');
+                                    }
+                                    function closeModal(id) {
+                                        document.getElementById(id).classList.remove('is-active');
+                                    }
+                                    function exportToExcel() {
+                                        const table = document.getElementById("myTable");
+                                        const data = [];
+                                        for (let row of table.rows) {
+                                            let rowData = [];
+                                            for (let i = 0; i < row.cells.length - 1; i++) {
+                                                rowData.push(row.cells[i].innerText);
+                                            }
+                                            data.push(rowData);
+                                        }
+                                        const worksheet = XLSX.utils.aoa_to_sheet(data);
+                                        const workbook = XLSX.utils.book_new();
+                                        XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
+                                        XLSX.writeFile(workbook, "employees.xlsx");
+                                    }
+                                    setTimeout(function () {
+                                        const errorNote = document.getElementById('errorNotification');
+                                        const successNote = document.getElementById('successNotification');
+                                        if (errorNote) {
+                                            errorNote.style.transition = "opacity 0.5s ease";
+                                            errorNote.style.opacity = 0;
+                                            setTimeout(() => errorNote.remove(), 500);
+                                        }
+                                        if (successNote) {
+                                            successNote.style.transition = "opacity 0.5s ease";
+                                            successNote.style.opacity = 0;
+                                            setTimeout(() => successNote.remove(), 500);
+                                        }
+                                    }, 5000);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -6,7 +6,7 @@ use App\Models\companies;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
-use App\Models\employee;
+use App\Models\employees;
 use Respect\Validation\Validator as v;
 
 
@@ -197,7 +197,7 @@ class AccountController
         }
 
         // Check if username exists
-        $existingUser = employee::where('username', $allData['username'])->first();
+        $existingUser = employees::where('username', $allData['username'])->first();
         if ($existingUser) {
             return $this->view->render($response, 'account/registration_step6.twig', [
                 'title' => 'Create Password',
@@ -208,7 +208,7 @@ class AccountController
         }
 
         // Generate new userid
-        $lastUser = employee::orderByDesc('userid')->first();
+        $lastUser = employees::orderByDesc('userid')->first();
         $newUserid = $lastUser ? $lastUser->userid + 1 : 1000;
 
         $photoBase64 = $session['step5']['profile-picture'] ?? null;
@@ -238,7 +238,7 @@ class AccountController
         $step1 = $_SESSION['registration']['step1'] ?? [];
 
         // Create user
-        $user = employee::create([
+        $user = employees::create([
             'userid' => $newUserid,
             'company_id' => null,
             'username' => $step1['username'],

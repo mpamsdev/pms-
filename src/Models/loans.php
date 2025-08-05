@@ -25,7 +25,7 @@ class  loans extends Model {
 
     public function user()
     {
-        return $this->belongsTo(employee::class, 'userid', 'userid');
+        return $this->belongsTo(employees::class, 'userid', 'userid');
     }
 
     public function repayments()

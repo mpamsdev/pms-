@@ -97,6 +97,11 @@ $container->set(\App\Controllers\ComplianceController::class, function ($c){
     return new \App\Controllers\ComplianceController($c->get('view'));
 });
 
+//Create an instance for the  Account Controller
+$container->set(\App\Controllers\EmployeeController::class, function ($c){
+    return new \App\Controllers\EmployeeController($c->get('view'));
+});
+
 // Register routes
 (require __DIR__ . '/../src/Routes/web.php')($app);
 

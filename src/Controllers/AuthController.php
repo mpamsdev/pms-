@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\companies;
-use App\Models\employee;
+use App\Models\employees;
 use App\Models\admins;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -49,7 +49,7 @@ class AuthController
         }
 
         // Try to find user in the `users` table
-        $user = employee::where('username', $email)->first();
+        $user = employees::where('username', $email)->first();
 
         if ($user && password_verify($password, $user->password)) {
             if ($user->status === 'suspended') {
@@ -141,7 +141,7 @@ class AuthController
             ]);
         }
 
-        if (employee::WHERE('email', $email)->exists()) {
+        if (employees::WHERE('email', $email)->exists()) {
             return $this->view->render($response, 'auth/sign-up.twig', [
                 'title' => 'Sign Up',
                 'error' => 'Email already registered.'
@@ -149,7 +149,7 @@ class AuthController
         }
 
         // Create the user
-        $user = new employee();
+        $user = new employees();
         $user->name         = $name;
         $user->email        = $email;
         $user->password_hash     = password_hash($password, PASSWORD_DEFAULT);
@@ -195,7 +195,7 @@ class AuthController
         }
 
         // Search in Users and Companies tables
-        $user = employee::where('username', $input)->orWhere('phone', $input)->first();
+        $user = employees::where('username', $input)->orWhere('phone', $input)->first();
         $company = Company::where('username', $input)->orWhere('phone', $input)->first();
 
         if (!$user && !$company) {

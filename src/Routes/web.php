@@ -7,6 +7,7 @@ use App\Controllers\JobsController;
 use App\Controllers\AuthController;
 use App\Controllers\ApplicationController;
 use App\Controllers\LoanController;
+use App\Controllers\EmployeeController;
 use App\Controllers\ComplianceController;
 
 return function (App $app) {
@@ -52,12 +53,15 @@ return function (App $app) {
     $app->group('/dashboard', function ($group){
         $group->get('', HomeController::class . ':dashboard');
 
+
+        //Compliance Routes
         $group->get('/compliance-table', ComplianceController::class . ':complianceTableView');
         $group->post('/compliance-table/add', ComplianceController::class . ':addRecord');
         $group->post('/compliance-table/delete/{id}', ComplianceController::class . ':deleteRecord');
         $group->post('/compliance-table/update', ComplianceController::class . ':updateRecord');
 
-        $group->post('/loan/restore/{uuid}', LoanController::class . ':restoreLoan');
+        //Employee Routes
+        $group->get('/employees', EmployeeController::class . ':employees');
         $group->post('/loan/restore-all', LoanController::class . ':restoreAllLoans');
 
         $group->get('/loan/{uuid}', HomeController::class . ':viewLoan');

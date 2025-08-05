@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 use Carbon\Carbon;
-use App\Models\employee;
+use App\Models\employees;
 use Illuminate\Pagination\Paginator;
 use Ramsey\Uuid\Uuid;
 use Dompdf\Dompdf;
@@ -85,7 +85,7 @@ class HomeController
                 ->withStatus(302);
         }
 
-        $profile = employee::where('userid', $_SESSION['userid'])->first();
+        $profile = employees::where('userid', $_SESSION['userid'])->first();
 
         // Render the dashboard
         return $this->view->render($response, 'profile.twig', [
@@ -502,7 +502,7 @@ class HomeController
             return $_GET[$pageName] ?? 1;
         });
 
-        $client = \App\Models\employee::with(['occupation', 'nextOfKin'])
+        $client = \App\Models\employees::with(['occupation', 'nextOfKin'])
             ->where('uuid', $args['uuid'])
             ->firstOrFail();
 
@@ -540,7 +540,7 @@ class HomeController
                 ->withStatus(302);
         }
 
-        $profile = employee::where('userid', $_SESSION['userid'])->first();
+        $profile = employees::where('userid', $_SESSION['userid'])->first();
 
         // Render the dashboard
         return $this->view->render($response, 'deep-search.twig', [
@@ -578,7 +578,7 @@ class HomeController
             return $_GET[$pageName] ?? 1;
         });
 
-        $users = employee::orderBy('id', 'desc')->paginate(20);
+        $users = employees::orderBy('id', 'desc')->paginate(20);
 
         //var_dump($loans);
 
