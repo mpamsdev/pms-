@@ -40,128 +40,131 @@
                                         {{ success }}
                                     </div>
                                 {% endif %}
-                                <table id="myTable" class="table is-fullwidth is-hoverable">
-                                    <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Certificate Name</th>
-                                        <th>Renewal Date</th>
-                                        <th>Created At</th>
-                                        <th>Updated At</th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% if compliance | length > 0 %}
-                                        {% for item in compliance %}
-                                            <tr>
-                                                <td>{{ item.compliance_id }}</td>
-                                                <td>{{ item.certificate_name }}</td>
-                                                <td>{{ item.renewal_date }}</td>
-                                                <td>{{ item.created_at }}</td>
-                                                <td>{{ item.updated_at }}</td>
-                                                <td>
-                                                    <button class="button is-small is-info" onclick="openModal('viewModal-{{ item.compliance_id }}')">
-                                                        <span class="mdi mdi-eye-circle"></span>
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button class="button is-small is-info" onclick="openModal('editModal-{{ item.compliance_id }}')">
-                                                        <span class="mdi mdi-pencil"></span>
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ item.compliance_id }}')">
-                                                        <span class="mdi mdi-trash-can"></span>
-                                                    </button>
-                                                </td>
 
-                                            </tr>
-                                            <!-- View Modal -->
-                                            {# Loop for all modals #}
+                                <div class="table-container">
+                                    <table id="myTable" class="table is-fullwidth is-hoverable">
+                                        <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Certificate Name</th>
+                                            <th>Renewal Date</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if compliance | length > 0 %}
                                             {% for item in compliance %}
-                                                <div class="modal" id="viewModal-{{ item.compliance_id }}">
-                                                    <div class="modal-background" onclick="closeModal('viewModal-{{ item.compliance_id }}')"></div>
+                                                <tr>
+                                                    <td>{{ item.compliance_id }}</td>
+                                                    <td>{{ item.certificate_name }}</td>
+                                                    <td>{{ item.renewal_date }}</td>
+                                                    <td>{{ item.created_at }}</td>
+                                                    <td>{{ item.updated_at }}</td>
+                                                    <td>
+                                                        <button class="button is-small is-primary" onclick="openModal('viewModal-{{ item.compliance_id }}')">
+                                                            <span class="mdi mdi-eye-circle"></span>
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button class="button is-small is-info" onclick="openModal('editModal-{{ item.compliance_id }}')">
+                                                            <span class="mdi mdi-pencil"></span>
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ item.compliance_id }}')">
+                                                            <span class="mdi mdi-trash-can"></span>
+                                                        </button>
+                                                    </td>
+
+                                                </tr>
+                                                <!-- View Modal -->
+                                                {# Loop for all modals #}
+                                                {% for item in compliance %}
+                                                    <div class="modal" id="viewModal-{{ item.compliance_id }}">
+                                                        <div class="modal-background" onclick="closeModal('viewModal-{{ item.compliance_id }}')"></div>
+                                                        <div class="modal-card">
+                                                            <header class="modal-card-head has-background-warning">
+                                                                <p class="modal-card-title has-text-white">View Compliance</p>
+                                                                <button class="delete" aria-label="close" onclick="closeModal('viewModal-{{ item.compliance_id }}')"></button>
+                                                            </header>
+                                                            <section class="modal-card-body">
+                                                                <p><strong>Certificate Name:</strong> {{ item.certificate_name }}</p>
+                                                                <p><strong>Renewal Date:</strong> {{ item.renewal_date }}</p>
+                                                            </section>
+                                                            <footer class="modal-card-foot">
+                                                                <button class="button" onclick="closeModal('viewModal-{{ item.compliance_id }}')">Close</button>
+                                                            </footer>
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+
+
+                                                <!-- Edit Modal -->
+                                                <div id="editModal-{{ item.compliance_id }}" class="modal">
+                                                    <div class="modal-background"></div>
                                                     <div class="modal-card">
                                                         <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">View Compliance</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('viewModal-{{ item.compliance_id }}')"></button>
+                                                            <p class="modal-card-title has-text-white">Edit Certificate</p>
+                                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ item.compliance_id }}')"></button>
                                                         </header>
                                                         <section class="modal-card-body">
-                                                            <p><strong>Certificate Name:</strong> {{ item.certificate_name }}</p>
-                                                            <p><strong>Renewal Date:</strong> {{ item.renewal_date }}</p>
+                                                            <form action="/dashboard/compliance-table/update" method="post">
+                                                                <div class="field">
+                                                                    <label>Certificate Name</label>
+                                                                    <div class="control">
+                                                                        <input class="input is-link" type="text" name="certificate_name" value="{{ item.certificate_name }}" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="field">
+                                                                    <label>Renewal Date</label>
+                                                                    <div class="control">
+                                                                        <input class="input is-link" type="date" name="renewal_date" value="{{ item.renewal_date }}" required>
+                                                                    </div>
+                                                                </div>
+                                                                <input class="is-hidden" name="id" value="{{ item.compliance_id }}" >
+                                                                <div class="field is-grouped is-grouped-left">
+                                                                    <p class="control">
+                                                                        <button type="submit" class="button is-success">Update</button>
+                                                                    </p>
+                                                                    <p class="control">
+                                                                        <button type="button" class="button" onclick="closeModal('editModal-{{ item.compliance_id }}')">Cancel</button>
+                                                                    </p>
+                                                                </div>
+                                                            </form>
+                                                        </section>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Delete Modal -->
+                                                <div id="deleteModal-{{item.compliance_id }}" class="modal">
+                                                    <div class="modal-background"></div>
+                                                    <div class="modal-card">
+                                                        <header class="modal-card-head has-background-danger">
+                                                            <p class="modal-card-title has-text-white">Confirm Delete</p>
+                                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ item.compliance_id }}')"></button>
+                                                        </header>
+                                                        <section class="modal-card-body">
+                                                            <p>Are you sure you want to delete <strong>{{item.certificate_name }}</strong>?</p>
                                                         </section>
                                                         <footer class="modal-card-foot">
-                                                            <button class="button" onclick="closeModal('viewModal-{{ item.compliance_id }}')">Close</button>
+                                                            <form action="/dashboard/compliance-table/delete/{{ item.compliance_id }}" method="post">
+                                                                <button class="button is-danger" type="submit">Delete</button>
+                                                                <button type="button" class="button" onclick="closeModal('deleteModal-{{ item.compliance_id }}')">Cancel</button>
+                                                            </form>
                                                         </footer>
                                                     </div>
                                                 </div>
                                             {% endfor %}
-
-
-                                            <!-- Edit Modal -->
-                                            <div id="editModal-{{ item.compliance_id }}" class="modal">
-                                                <div class="modal-background"></div>
-                                                <div class="modal-card">
-                                                    <header class="modal-card-head has-background-warning">
-                                                        <p class="modal-card-title has-text-white">Edit Certificate</p>
-                                                        <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ item.compliance_id }}')"></button>
-                                                    </header>
-                                                    <section class="modal-card-body">
-                                                        <form action="/dashboard/compliance-table/update" method="post">
-                                                            <div class="field">
-                                                                <label>Certificate Name</label>
-                                                                <div class="control">
-                                                                    <input class="input is-link" type="text" name="certificate_name" value="{{ item.certificate_name }}" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="field">
-                                                                <label>Renewal Date</label>
-                                                                <div class="control">
-                                                                    <input class="input is-link" type="date" name="renewal_date" value="{{ item.renewal_date }}" required>
-                                                                </div>
-                                                            </div>
-                                                            <input class="is-hidden" name="id" value="{{ item.compliance_id }}" >
-                                                            <div class="field is-grouped is-grouped-left">
-                                                                <p class="control">
-                                                                    <button type="submit" class="button is-success">Update</button>
-                                                                </p>
-                                                                <p class="control">
-                                                                    <button type="button" class="button" onclick="closeModal('editModal-{{ item.compliance_id }}')">Cancel</button>
-                                                                </p>
-                                                            </div>
-                                                        </form>
-                                                    </section>
-                                                </div>
-                                            </div>
-
-                                            <!-- Delete Modal -->
-                                            <div id="deleteModal-{{item.compliance_id }}" class="modal">
-                                                <div class="modal-background"></div>
-                                                <div class="modal-card">
-                                                    <header class="modal-card-head has-background-danger">
-                                                        <p class="modal-card-title has-text-white">Confirm Delete</p>
-                                                        <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ item.compliance_id }}')"></button>
-                                                    </header>
-                                                    <section class="modal-card-body">
-                                                        <p>Are you sure you want to delete <strong>{{item.certificate_name }}</strong>?</p>
-                                                    </section>
-                                                    <footer class="modal-card-foot">
-                                                        <form action="/dashboard/compliance-table/delete/{{ item.compliance_id }}" method="post">
-                                                            <button class="button is-danger" type="submit">Delete</button>
-                                                            <button type="button" class="button" onclick="closeModal('deleteModal-{{ item.compliance_id }}')">Cancel</button>
-                                                        </form>
-                                                    </footer>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr><td colspan="6">No compliance records found.</td></tr>
-                                    {% endif %}
-                                    </tbody>
-                                </table>
+                                        {% else %}
+                                            <tr><td colspan="6">No compliance records found.</td></tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
 
                                 <!-- Add Modal -->
                                 <div id="addModal" class="modal">
@@ -185,7 +188,7 @@
                                                         <input class="input is-link" type="date" name="renewal_date" required>
                                                     </div>
                                                 </div>
-                                                <div class="field is-grouped is-grouped-right">
+                                                <div class="field is-grouped is-grouped-left">
                                                     <p class="control">
                                                         <button type="submit" class="button is-success">Save</button>
                                                     </p>

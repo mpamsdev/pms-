@@ -9,9 +9,9 @@ class employees extends Model{
     public $timestamps = false;
 
     protected $fillable = [
-        'employee_number','email','password','firstname',
-        'lastname','phone', 'national_id','department','dob','gender','address','country','city','country','is_verified',
-        'role','status', 'profile_picture'
+        'name','username','password','phone','department','job_title', 'contract_type',
+        'national_id','tax_id', 'ssn','nhima_number','contract_start_date','contract_end_date','gender',
+        'status'
     ];
 
 

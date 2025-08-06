@@ -9,6 +9,7 @@ use App\Controllers\ApplicationController;
 use App\Controllers\LoanController;
 use App\Controllers\EmployeeController;
 use App\Controllers\ComplianceController;
+use App\Controllers\PayrollController;
 
 return function (App $app) {
     
@@ -53,7 +54,6 @@ return function (App $app) {
     $app->group('/dashboard', function ($group){
         $group->get('', HomeController::class . ':dashboard');
 
-
         //Compliance Routes
         $group->get('/compliance-table', ComplianceController::class . ':complianceTableView');
         $group->post('/compliance-table/add', ComplianceController::class . ':addRecord');
@@ -62,7 +62,14 @@ return function (App $app) {
 
         //Employee Routes
         $group->get('/employees', EmployeeController::class . ':employees');
-        $group->post('/loan/restore-all', LoanController::class . ':restoreAllLoans');
+        $group->post('/employees/add', EmployeeController::class . ':addEmployee');
+        $group->post('/employees/update', EmployeeController::class . ':updateEmployee');
+        $group->post('/employees/suspend', EmployeeController::class . ':suspendEmployee');
+        $group->post('/employees/delete', EmployeeController::class . ':deleteEmployee');
+        $group->post('/employees/activate', EmployeeController::class . ':activateEmployee');
+
+        //Payroll Route
+        $group->get('/payroll/salary-manager', PayrollController::class . ':index');
 
         $group->get('/loan/{uuid}', HomeController::class . ':viewLoan');
         $group->get('/loan/pdf/{uuid}', HomeController::class . ':downloadPdf');

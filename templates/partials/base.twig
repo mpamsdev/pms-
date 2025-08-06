@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/assets/css/main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .icon.is-right i {
+            pointer-events: all;
+        }
+    </style>
 </head>
 <body>
 <aside id="sidebar" class="aside is-placed-left is-expanded has-background-dark">
@@ -19,7 +24,7 @@
             <li>
                 <a href="/dashboard" class="has-icon pt-4 pb-4  is-size-5 mt-4">
                     <span class="icon"><i class="mdi mdi-view-dashboard has-text-white is-size-4"></i></span>
-                    <span class="menu-item-label has-text-white">FORTRESS HUB</span>
+                    <span class="menu-item-label has-text-white">FORTEDGE</span>
                 </a>
             </li>
             <hr>
@@ -53,7 +58,7 @@
             <li>
                 <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownLoans()">
                     <span class="icon"><i class="mdi mdi-check-bold has-text-white is-size-5"></i></span>
-                    <span class="menu-item-label has-text-white">Compliance Manager</span>
+                    <span class="menu-item-label has-text-white">Compliance Master</span>
                     <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
                 </a>
                 <ul id="loans-dropdown" class="menu-list is-hidden">
@@ -81,6 +86,34 @@
                 </ul>
             </li>
             <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownLeave()">
+                    <span class="icon"><i class="mdi mdi-timer-sand has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Leave Manager</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="leave-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/dashboard/apply-for-leave" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-square-edit-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Request For Leave</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/dashboard/" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-format-list-bulleted-square has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Leave Applications</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/dashboard/transaction-history" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-cogs has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Leave Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
                 <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownReports()">
                     <span class="icon"><i class="mdi mdi-bank has-text-white is-size-5"></i></span>
                     <span class="menu-item-label has-text-white">Payroll Manager</span>
@@ -95,7 +128,7 @@
                     </li>
 
                     <li>
-                        <a href="/dashboard/companies" class="has-icon pt-2 pb-2 is-size-6">
+                        <a href="/dashboard/payroll/salary-manager" class="has-icon pt-2 pb-2 is-size-6">
                             <span class="icon"><i class="mdi mdi-currency-usd has-text-white"></i></span>
                             <span class="menu-item-label has-text-white">Salary Manager</span>
                         </a>
@@ -278,6 +311,13 @@
     }
     function toggleDropdownUsers() {
         const dropdown = document.getElementById('users-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+    function toggleDropdownLeave() {
+        const dropdown = document.getElementById('leave-dropdown');
         const icon = document.getElementById('dropdown-icon');
         dropdown.classList.toggle('is-hidden');
         icon.classList.toggle('mdi-chevron-down');

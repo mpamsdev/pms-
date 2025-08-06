@@ -102,6 +102,11 @@ $container->set(\App\Controllers\EmployeeController::class, function ($c){
     return new \App\Controllers\EmployeeController($c->get('view'));
 });
 
+//Create an instance for the  Account Controller
+$container->set(\App\Controllers\PayrollController::class, function ($c){
+    return new \App\Controllers\PayrollController($c->get('view'));
+});
+
 // Register routes
 (require __DIR__ . '/../src/Routes/web.php')($app);
 
