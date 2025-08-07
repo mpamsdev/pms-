@@ -44,56 +44,45 @@ return function (App $app) {
         $group->map(['GET', 'POST'], '/step-three', AccountController::class . ':stepThreeOrg');
     });
 
-
-    $app->group('/dashboard/application', function ($group){
-        $group->map(['GET', 'POST'], '/apply', ApplicationController::class . ':apply');
-        $group->map(['GET', 'POST'], '/document-upload', ApplicationController::class .':uploadDocuments');
-    });
-
     //Dashboard routes
     $app->group('/dashboard', function ($group){
         $group->get('', HomeController::class . ':dashboard');
-
-        //Compliance Routes
-        $group->get('/compliance-table', ComplianceController::class . ':complianceTableView');
-        $group->post('/compliance-table/add', ComplianceController::class . ':addRecord');
-        $group->post('/compliance-table/delete/{id}', ComplianceController::class . ':deleteRecord');
-        $group->post('/compliance-table/update', ComplianceController::class . ':updateRecord');
-
-        //Employee Routes
-        $group->get('/employees', EmployeeController::class . ':employees');
-        $group->post('/employees/add', EmployeeController::class . ':addEmployee');
-        $group->post('/employees/update', EmployeeController::class . ':updateEmployee');
-        $group->post('/employees/suspend', EmployeeController::class . ':suspendEmployee');
-        $group->post('/employees/delete', EmployeeController::class . ':deleteEmployee');
-        $group->post('/employees/activate', EmployeeController::class . ':activateEmployee');
-
-        //Payroll Route
-        $group->get('/payroll/salary-manager', PayrollController::class . ':index');
-
-        $group->get('/loan/{uuid}', HomeController::class . ':viewLoan');
-        $group->get('/loan/pdf/{uuid}', HomeController::class . ':downloadPdf');
-        $group->get('/due-loans', HomeController::class . ':dueLoans');
-        $group->delete('/loan/delete/{uuid}', LoanController::class . ':deleteLoan');
-        $group->get('/cancelled-loans', HomeController::class . ':cancelledLoans');
-        $group->get('/rejected-loans', HomeController::class . ':rejectedLoans');
-        $group->get('/paid-loans', HomeController::class . ':paidLoans');
-        $group->get('/deleted-loans', HomeController::class . ':deletedLoans');
-        $group->get('/loan-repayments', HomeController::class . ':repaymentLoans');
         $group->get('/profile', HomeController::class . ':profile');
-        $group->get('/my-applications', HomeController::class . ':myApplications');
-        $group->get('/deep-search', HomeController::class . ':search');
-        $group->get('/search', LoanController::class . ':search');
-        $group->get('/receipts', HomeController::class . ':receipts');
-        $group->get('/generate-reports', HomeController::class . ':reports');
-        $group->get('/clients', HomeController::class . ':clients');
-        $group->get('/clients/client/{uuid}', HomeController::class . ':viewClient' );
-        $group->get('/companies', HomeController::class . ':companies');
-        $group->get('/company/{uuid}', HomeController::class . ':viewCompany');
-        $group->get('/manage-users', HomeController::class . ':manageUsers');
-        $group->get('/manage-products', HomeController::class . ':manageProducts');
         $group->get('/system-logs', HomeController::class . ':companies');
     });
+
+    //Compliance Routes
+    $app->group('/compliance', function ($group){
+        $group->get('', ComplianceController::class . ':complianceTableView');
+        $group->post('/add', ComplianceController::class . ':addRecord');
+        $group->post('/delete', ComplianceController::class . ':deleteRecord');
+        $group->post('/update', ComplianceController::class . ':updateRecord');
+    });
+
+    //Employee Routes
+    $app->group('/employees', function ($group){
+        $group->get('', EmployeeController::class . ':employees');
+        $group->post('/add', EmployeeController::class . ':addEmployee');
+        $group->post('/update', EmployeeController::class . ':updateEmployee');
+        $group->post('/suspend', EmployeeController::class . ':suspendEmployee');
+        $group->post('/delete', EmployeeController::class . ':deleteEmployee');
+        $group->post('/activate', EmployeeController::class . ':activateEmployee');
+    });
+
+    //Payroll Routes
+    $app->group('/payroll', function ($group){
+        $group->get('', PayrollController::class . ':index');
+        $group->post('/add', PayrollController::class . ':add');
+        $group->post('/update', PayrollController::class . ':update');
+        $group->post('/suspend', PayrollController::class . ':suspend');
+        $group->post('/delete', PayrollController::class . ':delete');
+        $group->post('/activate', PayrollController::class . ':activate');
+        $group->post('/salary', PayrollController::class . ':salary');
+        $group->post('/history', PayrollController::class . ':history');
+    });
+
+    //Leave
+
 
     // Serve assets
     $app->get('/assets/{path:.*}', function (Request $request, Response $response, $args) {
