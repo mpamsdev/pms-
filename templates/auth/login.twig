@@ -26,17 +26,18 @@
                             <figure class="image is-96x96" style="margin: 0 auto; /*border: 2px solid dodgerblue; border-radius: 50%/*">
                                 <img class="" src="/assets/img/fht.png">
                             </figure>
-                            <h1 class="has-text-centered is-size-5 pb-2 pl-4 pr-4">Login</h1>
+                            <h1 class="has-text-centered is-size-5">Login</h1>
                             {% if errors|length > 0 %}
                                 <div class="notification is-danger" id="errorNotification">
                                         <p>{{ errors }}</p>
                                 </div>
                             {% endif %}
+                            <hr>
                             <form id="login" class=" pl-4 pr-4" action="" method="post" onsubmit="return validate()">
                                 <div class="field ">
                                     <label class="">Email </label>
                                     <div class="control has-icons-left is-expanded">
-                                        <input class="input is-normal is-info" type="email" id="username" name="email" placeholder="e.g. user@example.com or phone number" required>
+                                        <input class="input is-medium is-info" type="email" id="username" name="email" placeholder="e.g. user@example.com or phone number" required>
                                         <span class="icon is-small is-left">
                                                     <i class="mdi mdi-email-outline"></i>
                                                 </span>
@@ -47,7 +48,7 @@
                                 <div class="field">
                                     <label class="">Password</label>
                                     <div class="control has-icons-left has-icons-right">
-                                        <input id="password" class="input is-normal is-info" type="password" name="password" placeholder="********" required>
+                                        <input id="password" class="input is-medium is-info" type="password" name="password" placeholder="********" required>
                                         <span class="icon is-small is-left">
                                                     <i class="mdi mdi-lock-outline"></i>
                                                 </span>
@@ -67,7 +68,7 @@
                                 <hr>
                             </form>
 {#                            <hr>#}
-                            <p class="has-text-centered">All rights reserved &copy; {{ "now"|date("Y") }}.Fortress Hub Technologies</p>
+                            <p class="has-text-centered is-size-7">All rights reserved &copy; {{ "now"|date("Y") }}.Fortress Hub Technologies</p>
                             <p class="has-text-centered is-size-7"> <strong>Developed By:</strong> <a class="has-text-link" href="https://www.fortresshubtechnologies.com" target="_blank">Fortress Hub Technologies Limited</a> </p>
                         </div>
 

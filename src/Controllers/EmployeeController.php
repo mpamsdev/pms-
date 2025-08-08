@@ -549,70 +549,69 @@ class EmployeeController
     }
 
 
-    private function sendEmail($email, $password)
+    //Private function to send email
+    private function sendEmail($record)
     {
-        $mail = new PHPMailer(true);
         try {
-            // Server settings
+            $today = new \DateTime();
+            $renewalDate = new \DateTime($record->renewal_date);
+
+            // Determine status
+            if ($renewalDate < $today) {
+                $status = 'Expired';
+                $subject = "Compliance Expired: {$record->certificate_name}";
+                $message = "The compliance certificate <strong>{$record->title}</strong> expired on <strong>{$record->renewal_date}</strong>. Immediate action is required.";
+            } elseif ($renewalDate->format('Y-m-d') === $today->format('Y-m-d')) {
+                $status = 'Expires Today';
+                $subject = "Compliance Expires Today: {$record->certificate_name}";
+                $message = "The compliance certificate <strong>{$record->title}</strong> is due for renewal today (<strong>{$record->renewal_date}</strong>).";
+            } else {
+                $daysRemaining = $today->diff($renewalDate)->days;
+                $status = "Expires in {$daysRemaining} days";
+                $subject = "Compliance Renewal Reminder ({$daysRemaining} days): {$record->certificate_name}";
+                $message = "The compliance certificate <strong>{$record->title}</strong> will expire on <strong>{$record->renewal_date}</strong> ({$daysRemaining} days remaining).";
+            }
+
+            // Send email
             $mail = new PHPMailer();
-            $mail->isSMTP();  // Enable SMTP
-            $mail->Host = 'fortresshubtechnologies.com';  // Specify main and backup SMTP servers
-            $mail->SMTPAuth = true;   // Enable SMTP authentication
+            $mail->isSMTP();
+            $mail->Host = 'fortresshubtechnologies.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = $_ENV['EMAIL'];
+            $mail->Password = $_ENV['EMAIL_PASSWORD'];
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
 
-            // SMTP username and password
-            $mail->Username = 'training@fortresshubtechnologies.com';
-            $mail->Password = 'Fht@2025!'; // Ensure this is securely managed
+            $mail->setFrom('support@fortresshubtechnologies.com', 'FortEdge HR System');
+            $mail->addAddress('martine@fortresshubtechnologies.com', );
+            //$mail->addCC('martine@fortresshubtechnologies.com');
 
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Enable TLS encryption
-            $mail->Port = 587; // TCP port for TLS
-
-            // Recipients and Sender
-            $mail->setFrom('training@fortresshubtechnologies.com', 'Fortress Hub Technologies Limited');
-            $mail->addAddress('lweendo@fortresshubtechnologies.com'); // Add recipient
-            $mail->addCC('martine@fortresshubtechnologies.com');
-
-            // Content
             $mail->isHTML(true);
-            $mail->Subject = "Compliance Renewal Reminder: {$record->certificate_name}";
-            // Email body content with logo, button, and contact details
+            $mail->Subject = $subject;
             $mail->Body = '
-                <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; color: #333;">
-                    <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
-                       <img src="https://www.fortresshubtechnologies.com/wp-content/uploads/2024/08/cropped-cropped-cropped-FORTRESS-HUB-T-LOGO-2-250-x-250-px-2-e1724259446753.png" alt="Company Logo" style="width: 150px; margin-bottom: 20px;">
-                        <h3 style="color: #333;">Compliance Reminder</h3>
-                        <p style="font-size: 16px; color: #555;">
-                            <span style="font-weight: bold;">
-                             Hello, 
-                            </span>
-                        </p>
-                        <p style="font-size: 16px; color: #555;">
-                            
-                        </p>
-                        <p style="font-size: 16px; color: #555;">Here are the details of your registration:</p>
-                        
-                        <p style="font-size: 16px; color: #555; ">
-                            This bootcamp is designed to provide you with cutting-edge knowledge and hands-on experience in 
-                            AI and Cybersecurity.
-                        </p>
-                       
-                        <p>If you need any further assistance, Please raise a ticket to:</p>
-                        <p>Email: <a href="mailto:support@fortresshubtechnologies.com" style="color: #007bff;">support@fortresshubtechnologies.com</a><br>
-                           Phone: <a href="tel:+260965249614" style="color: #007bff;">+260965249614</a>
-                        </p>
-                        <p style="font-size: 16px; color: #555;">
-                            Best Regards,<br>
-                            Fortress Hub Technologies Limited
-                            <br>
-                            FortEdge HR 
-                        </p>
-                       
-                    </div>
-                    
+            <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; color: #333;">
+                <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                    <img src="https://www.fortresshubtechnologies.com/wp-content/uploads/2024/08/cropped-cropped-cropped-FORTRESS-HUB-T-LOGO-2-250-x-250-px-2-e1724259446753.png" alt="Company Logo" style="width: 150px; margin-bottom: 20px;">
+                    <h3 style="color: #333;">Compliance Alert</h3>
+                    <p style="font-size: 16px; color: #555;">
+                        ' . $message . '
+                    </p>
+                    <p style="font-size: 16px; color: #555;">
+                        Best Regards,<br>
+                        Fortress Hub Technologies Limited<br>
+                        FortEdge HR System
+                    </p>
                 </div>
-                ';
-            $mail->send();
+            </div>
+        ';
+
+            if ($mail->send()) {
+                return ['status' => 'success', 'message' => "{$status} email sent successfully."];
+            } else {
+                return ['status' => 'failed', 'message' => $mail->ErrorInfo];
+            }
         } catch (Exception $e) {
-            throw new Exception('Failed to send  : ' . $e->getMessage());
+            return ['status' => 'error', 'message' => 'Failed to send reminder email: ' . $e->getMessage()];
         }
     }
 

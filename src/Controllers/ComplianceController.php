@@ -314,8 +314,8 @@ class ComplianceController
             $mail->isSMTP();
             $mail->Host = 'fortresshubtechnologies.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'support@fortresshubtechnologies.com';
-            $mail->Password = 'Fht@1807!';
+            $mail->Username = $_ENV['EMAIL'];
+            $mail->Password = $_ENV['EMAIL_PASSWORD'];
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
