@@ -12,7 +12,8 @@
     "respect/validation": "^2.4",
     "nesbot/carbon": "^3.10",
     "ramsey/uuid": "^4.9",
-    "illuminate/pagination": "^12.20"
+    "illuminate/pagination": "^12.20",
+    "predis/predis": "^3.2"
   },
 
   "autoload": {

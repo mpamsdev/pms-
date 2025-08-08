@@ -15,18 +15,18 @@ class employees extends Model{
     ];
 
 
-    public function loans()
+    public function leaveRequests()
     {
-        return $this->hasMany(loans::class, 'userid', 'app_id');
+        return $this->hasMany(leaveRequest::class, 'employee_id');
     }
 
-    public function occupation() {
-        return $this->hasOne(occupation::class, 'userid'); // adjust FK if needed
+
+    public function salaries()
+    {
+        return $this->hasMany(salary::class);
     }
 
-    public function nextOfKin() {
-        return $this->hasOne(next_of_kin::class, 'userid'); // adjust FK if needed
-    }
+
 
 
 }

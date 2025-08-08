@@ -17,7 +17,8 @@
 </head>
 <body>
 <aside id="sidebar" class="aside is-placed-left is-expanded has-background-dark">
-    <div class="menu is-menu-main" style="overflow-y: auto; height: 100vh;">
+    <div class="menu is-menu-main" style="overflow-y: auto; height: calc(var(--vh, 1vh) * 100);
+;">
 
         <ul class="menu-list mt-1">
             <!-- Company Logo -->
@@ -63,7 +64,7 @@
                 </a>
                 <ul id="loans-dropdown" class="menu-list is-hidden">
                     <li>
-                        <a href="/dashboard/compliance-table" class="has-icon pt-2 pb-2 is-size-6">
+                        <a href="/compliance" class="has-icon pt-2 pb-2 is-size-6">
                             <span class="icon"><i class="mdi mdi-table has-text-white"></i></span>
                             <span class="menu-item-label has-text-white">Compliance Table</span>
                         </a>
@@ -78,7 +79,7 @@
                 </a>
                 <ul id="users-dropdown" class="menu-list is-hidden">
                     <li>
-                        <a href="/dashboard/employees" class="has-icon pt-2 pb-2 is-size-6">
+                        <a href="/employees" class="has-icon pt-2 pb-2 is-size-6">
                             <span class="icon"><i class="mdi mdi-account-multiple-outline has-text-white"></i></span>
                             <span class="menu-item-label has-text-white">Employees</span>
                         </a>
@@ -172,11 +173,10 @@
                     </li>
                 </ul>
             </li>
-
             <li>
-                <a href="/auth/logout" class="has-icon pt-2 pb-2 is-size-6">
-                    <span class="icon"><i class="mdi mdi-logout has-text-white is-size-5"></i></span>
-                    <span class="menu-item-label has-text-white">Sign Out</span>
+                <a href="/auth/logout" class="has-icon has-background-danger pt-4 pb-4 is-size-5">
+                    <span class="icon"><i class="mdi mdi-power has-text-white is-size-4"></i></span>
+                    <span class="menu-item-label has-text-white">LOGOUT</span>
                 </a>
             </li>
         </ul>
@@ -218,9 +218,9 @@
                             <span>My Profile</span>
                         </a>
                         <hr class="navbar-divider">
-                        <a href="/auth/logout" class="navbar-item ">
-                            <span class="icon"><i class="mdi mdi-logout is-size-4 "></i></span>
-                            <span class="is-size-5">Log Out</span>
+                        <a href="/auth/logout" class="navbar-item has-background-danger">
+                            <span class="icon"><i class="mdi mdi-power is-size-3 has-text-white"></i></span>
+                            <span class="is-size-5 has-text-white">LOGOUT</span>
                         </a>
                     </div>
                 </div>
@@ -252,6 +252,14 @@
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <script>
+    // Fix 100vh on iOS Safari
+    function setVhUnit() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    setVhUnit();
+    window.addEventListener('resize', setVhUnit);
+
     document.addEventListener("DOMContentLoaded", function () {
         const burger = document.querySelector(".navbar-burger");
         const sidebar = document.getElementById("sidebar");
@@ -351,6 +359,7 @@
         });
     });
 </script>
+
 
 </body>
 </html>

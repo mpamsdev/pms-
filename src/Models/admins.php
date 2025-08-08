@@ -12,4 +12,12 @@ class admins extends Model{
     protected $fillable = [
         'employee_number','username','department','password','name','phone', 'role', 'status'
     ];
+
+
+    public function approvedLeaves()
+    {
+        return $this->hasMany(leaveRequest::class, 'approver_id');
+    }
 }
+
+

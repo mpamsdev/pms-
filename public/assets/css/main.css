@@ -87,10 +87,17 @@ body.is-modal-active .overlay {
     border: 2px solid #007bff; /* Optional: Add a border */
 }
 
-.menu {
-    flex-grow: 1; /* Takes up remaining space */
-    overflow-y: auto; /* Scrollable if content exceeds height */
+/*.menu {*/
+/*    flex-grow: 1; !* Takes up remaining space *!*/
+/*    overflow-y: auto; !* Scrollable if content exceeds height *!*/
+/*}*/
+
+.menu.is-menu-main {
+    overflow-y: auto;
+    height: 100%;
+    -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
 }
+
 
 .logout-button {
     margin-top: auto; /* Pushes the button to the bottom */

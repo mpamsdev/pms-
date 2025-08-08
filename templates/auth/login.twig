@@ -18,16 +18,15 @@
 </head>
 <body>
 <section class="hero is-small is-white">
-    <div class="hero-body">
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-5-desktop">
+        <div class="container-fluid">
+            <div class="columns is-centered is-mobile is-centered-tablet">
+                <div class="column is-4-desktop is-full-mobile">
                     <div class="">
-                        <div class="card-content">
+                        <div class="card-content mt-5">
                             <figure class="image is-96x96" style="margin: 0 auto; /*border: 2px solid dodgerblue; border-radius: 50%/*">
-                                <img class="is-rounded" src="/assets/img/fht.png">
+                                <img class="" src="/assets/img/fht.png">
                             </figure>
-                            <h1 class="has-text-centered is-size-5 pt-1 pb-2 pl-4 pr-4">Login Page</h1>
+                            <h1 class="has-text-centered is-size-5 pb-2 pl-4 pr-4">Login</h1>
                             {% if errors|length > 0 %}
                                 <div class="notification is-danger" id="errorNotification">
                                         <p>{{ errors }}</p>
@@ -37,7 +36,7 @@
                                 <div class="field ">
                                     <label class="">Email </label>
                                     <div class="control has-icons-left is-expanded">
-                                        <input class="input is-large is-info" type="email" id="username" name="email" placeholder="e.g. user@example.com or phone number" required>
+                                        <input class="input is-normal is-info" type="email" id="username" name="email" placeholder="e.g. user@example.com or phone number" required>
                                         <span class="icon is-small is-left">
                                                     <i class="mdi mdi-email-outline"></i>
                                                 </span>
@@ -48,7 +47,7 @@
                                 <div class="field">
                                     <label class="">Password</label>
                                     <div class="control has-icons-left has-icons-right">
-                                        <input id="password" class="input is-large is-info" type="password" name="password" placeholder="********" required>
+                                        <input id="password" class="input is-normal is-info" type="password" name="password" placeholder="********" required>
                                         <span class="icon is-small is-left">
                                                     <i class="mdi mdi-lock-outline"></i>
                                                 </span>
@@ -63,7 +62,7 @@
                                     <a class="has-text-info" href="/auth/forgot-password">Forgot Password?</a>
                                 </p>
                                 <div class="field has-text-centered mt-3">
-                                    <button class="button is-dark is-large is-fullwidth">Login</button>
+                                    <button class="button is-dark is-normal is-fullwidth">Login</button>
                                 </div>
                                 <hr>
                             </form>
@@ -77,7 +76,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
     <!--MODAL FOR SELECTION-->
     <!--MODAL TO REVIEW APPLICATION-->

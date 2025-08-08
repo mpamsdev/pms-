@@ -46,12 +46,14 @@
                                     <table id="myTable" class="table is-fullwidth is-hoverable">
                                         <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone</th>
                                             <th>Department</th>
                                             <th>Job Title</th>
+                                            <th>Contract Start</th>
+                                            <th>Contract End</th>
+                                            <th>Years</th>
                                             <th>Status</th>
                                             <th></th>
                                             <th></th>
@@ -61,13 +63,22 @@
                                         <tbody>
                                         {% for employee in employees %}
                                             <tr>
-                                                <td>{{ employee.id }}</td>
                                                 <td>{{ employee.name }}</td>
                                                 <td>{{ employee.username }}</td>
                                                 <td>{{ employee.phone }}</td>
                                                 <td>{{ employee.department }}</td>
                                                 <td>{{ employee.job_title }}</td>
-                                                <td>{{ employee.status }}</td>
+                                                <td>
+                                                    {{ employee.contract_start_date ? employee.contract_start_date|date('Y-m-d') : '-' }}
+                                                </td>
+                                                <td>
+                                                    {{ employee.contract_end_date ? employee.contract_end_date|date('Y-m-d') : '-' }}
+                                                </td>
+
+                                                <td>
+                                                    {{ employee.contract_progress }}
+                                                </td>
+                                                <td>{{ employee.status | capitalize}}</td>
                                                 <td>
                                                     {% if employee.status == 'suspended' %}
                                                         <!-- Activate button -->
@@ -94,98 +105,102 @@
 
                                             </tr>
 
-                                            <!-- Edit Modal -->
-                                            <div id="editModal-{{ employee.id }}" class="modal">
-                                                <div class="modal-background"></div>
-                                                <div class="modal-card">
-                                                    <header class="modal-card-head has-background-warning">
-                                                        <p class="modal-card-title has-text-white">Edit Employee</p>
-                                                        <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ employee.id }}')"></button>
-                                                    </header>
-                                                    <section class="modal-card-body">
-                                                        <form action="/dashboard/employees/update" method="post">
-                                                            <input type="hidden" name="id" value="{{ employee.id }}">
-                                                            {% include 'partials/employee_form_fields.twig' with { employee: employee } %}
-                                                            <div class="field is-grouped is-grouped-left">
-                                                                <p class="control">
-                                                                    <button type="submit" class="button is-success">Update</button>
-                                                                </p>
-                                                                <p class="control">
-                                                                    <button type="button" class="button" onclick="closeModal('editModal-{{ employee.id }}')">Cancel</button>
-                                                                </p>
-                                                            </div>
-                                                        </form>
-                                                    </section>
-                                                </div>
-                                            </div>
-
-
-                                            <!-- Activate Confirmation Modal -->
-                                            <div id="activateModal-{{ employee.id }}" class="modal">
-                                                <div class="modal-background"></div>
-                                                <div class="modal-card">
-                                                    <header class="modal-card-head has-background-warning">
-                                                        <p class="modal-card-title has-text-white">Confirm Activation</p>
-                                                        <button class="delete" aria-label="close" onclick="closeModal('activateModal-{{ employee.id }}')"></button>
-                                                    </header>
-                                                    <section class="modal-card-body">
-                                                        <p>Are you sure you want to activate <strong>{{ employee.name }}</strong>?</p>
-                                                    </section>
-                                                    <footer class="modal-card-foot">
-                                                        <form action="/dashboard/employees/activate" method="post">
-                                                            <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                            <button type="submit" class="button is-primary">Activate</button>
-                                                        </form>
-                                                        <button class="button" onclick="closeModal('activateModal-{{ employee.id }}')">Cancel</button>
-                                                    </footer>
-                                                </div>
-                                            </div>
-
-                                            <!-- Suspend Confirmation Modal -->
-                                            <div id="suspendModal-{{ employee.id }}" class="modal">
-                                                <div class="modal-background"></div>
-                                                <div class="modal-card">
-                                                    <header class="modal-card-head has-background-warning">
-                                                        <p class="modal-card-title has-text-white">Confirm Suspension</p>
-                                                        <button class="delete" aria-label="close" onclick="closeModal('suspendModal-{{ employee.id }}')"></button>
-                                                    </header>
-                                                    <section class="modal-card-body">
-                                                        <p>Are you sure you want to suspend <strong>{{ employee.name }}</strong>?</p>
-                                                    </section>
-                                                    <footer class="modal-card-foot">
-                                                        <form action="/dashboard/employees/suspend" method="post">
-                                                            <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                            <button type="submit" class="button is-primary">Suspend</button>
-                                                        </form>
-                                                        <button class="button" onclick="closeModal('suspendModal-{{ employee.id }}')">Cancel</button>
-                                                    </footer>
-                                                </div>
-                                            </div>
-
-                                            <!-- Delete Confirmation Modal -->
-                                            <div id="deleteModal-{{ employee.id }}" class="modal">
-                                                <div class="modal-background"></div>
-                                                <div class="modal-card">
-                                                    <header class="modal-card-head has-background-danger">
-                                                        <p class="modal-card-title has-text-white">Confirm Deletion</p>
-                                                        <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ employee.id }}')"></button>
-                                                    </header>
-                                                    <section class="modal-card-body">
-                                                        <p>Are you sure you want to delete <strong>{{ employee.name }}</strong>?</p>
-                                                    </section>
-                                                    <footer class="modal-card-foot">
-                                                        <form action="/dashboard/employees/delete" method="post">
-                                                            <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                            <button type="submit" class="button is-danger">Delete</button>
-                                                        </form>
-                                                        <button class="button" onclick="closeModal('deleteModal-{{ employee.id }}')">Cancel</button>
-                                                    </footer>
-                                                </div>
-                                            </div>
                                         {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
+
+                                {% for item in employees  %}
+                                    <!-- Edit Modal -->
+                                    <div id="editModal-{{ item.id }}" class="modal">
+                                        <div class="modal-background"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-warning">
+                                                <p class="modal-card-title has-text-white">Edit Employee</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ item.id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <form action="/employees/update" method="post">
+                                                    <input type="hidden" name="id" value="{{ item.id }}">
+                                                    {% include 'partials/employee_form_fields.twig' with { employee: employee } %}
+                                                    <div class="field is-grouped is-grouped-left">
+                                                        <p class="control">
+                                                            <button type="submit" class="button is-success">Update</button>
+                                                        </p>
+                                                        <p class="control">
+                                                            <button type="button" class="button" onclick="closeModal('editModal-{{ item.id }}')">Cancel</button>
+                                                        </p>
+                                                    </div>
+                                                </form>
+                                            </section>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Activate Confirmation Modal -->
+                                    <div id="activateModal-{{ item.id }}" class="modal">
+                                        <div class="modal-background"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-warning">
+                                                <p class="modal-card-title has-text-white">Confirm Activation</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('activateModal-{{ item.id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <p>Are you sure you want to activate <strong>{{ item.name }}</strong>?</p>
+                                            </section>
+                                            <footer class="modal-card-foot">
+                                                <form action="/employees/activate" method="post">
+                                                    <input class="is-hidden" name="id" value="{{ item.id }}">
+                                                    <button type="submit" class="button is-primary">Activate</button>
+                                                </form>
+                                                <button class="button" onclick="closeModal('activateModal-{{ item.id }}')">Cancel</button>
+                                            </footer>
+                                        </div>
+                                    </div>
+
+                                    <!-- Suspend Confirmation Modal -->
+                                    <div id="suspendModal-{{ item.id }}" class="modal">
+                                        <div class="modal-background"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-warning">
+                                                <p class="modal-card-title has-text-white">Confirm Suspension</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('suspendModal-{{ item.id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <p>Are you sure you want to suspend <strong>{{ item.name }}</strong>?</p>
+                                            </section>
+                                            <footer class="modal-card-foot">
+                                                <form action="/employees/suspend" method="post">
+                                                    <input class="is-hidden" name="id" value="{{ item.id }}">
+                                                    <button type="submit" class="button is-primary">Suspend</button>
+                                                </form>
+                                                <button class="button" onclick="closeModal('suspendModal-{{ item.id }}')">Cancel</button>
+                                            </footer>
+                                        </div>
+                                    </div>
+
+                                    <!-- Delete Confirmation Modal -->
+                                    <div id="deleteModal-{{ item.id }}" class="modal">
+                                        <div class="modal-background"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-danger">
+                                                <p class="modal-card-title has-text-white">Confirm Deletion</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{item.id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <p>Are you sure you want to delete <strong>{{ item.name }}</strong>?</p>
+                                            </section>
+                                            <footer class="modal-card-foot">
+                                                <form action="/employees/delete" method="post">
+                                                    <input class="is-hidden" name="id" value="{{ item.id }}">
+                                                    <button type="submit" class="button is-danger">Delete</button>
+                                                </form>
+                                                <button class="button" onclick="closeModal('deleteModal-{{ item.id }}')">Cancel</button>
+                                            </footer>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
 
                                 <!-- Add Modal -->
                                 <div id="addModal" class="modal">
@@ -196,9 +211,8 @@
                                             <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
                                         </header>
                                         <section class="modal-card-body">
-                                            <form action="/dashboard/employees/add" method="post">
-                                                {% include 'partials/employee_form_fields.twig' with { employee: {} } %}
-
+                                            <form action="/employees/add" method="post">
+                                                {% include 'partials/employee_form_fields.twig' with { employee: {}, prefix: 'add' } %}
                                                 <div class="field is-grouped is-grouped-left">
                                                     <p class="control">
                                                         <button type="submit" class="button is-success">Save</button>
@@ -253,19 +267,5 @@
             </div>
         </div>
     </div>
-    <script>
-        function togglePassword() {
-            const input = document.getElementById("password");
-            const icon = document.getElementById("toggleIcon");
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.remove("mdi-eye-off");
-                icon.classList.add("mdi-eye");
-            } else {
-                input.type = "password";
-                icon.classList.remove("mdi-eye");
-                icon.classList.add("mdi-eye-off");
-            }
-        }
-    </script>
+
 {% endblock %}

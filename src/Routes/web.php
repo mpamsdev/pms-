@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\AccountController;
+use App\Controllers\LeaveController;
 use Slim\App;
 use App\Controllers\HomeController;
 use App\Controllers\JobsController;
@@ -57,6 +58,7 @@ return function (App $app) {
         $group->post('/add', ComplianceController::class . ':addRecord');
         $group->post('/delete', ComplianceController::class . ':deleteRecord');
         $group->post('/update', ComplianceController::class . ':updateRecord');
+        $group->post('/check-compliance', ComplianceController::class . ':checkCompliance');
     });
 
     //Employee Routes
@@ -81,7 +83,16 @@ return function (App $app) {
         $group->post('/history', PayrollController::class . ':history');
     });
 
-    //Leave
+    //Leave Routes
+    $app->group('leave', function ($group){
+        $group->get('', LeaveController::class . ':index');
+        $group->map(['GET', 'POST'],'/request', LeaveController::class . ':request');
+        $group->map(['GET', 'POST'], '/my-leave', LeaveController::class . ':myLeave');
+        $group->map(['GET', 'POST'], '/{uuid}/approve', LeaveController::class . ':approve');
+        $group->map(['GET', 'POST'], '/{uuid}/reject', LeaveController::class . ':reject');
+        $group->map(['GET', 'POST'], '/{uuid}/delete', LeaveController::class . ':delete');
+        $group->map(['GET', 'POST'], '/{uuid}/update', LeaveController::class . ':update');
+    });
 
 
     // Serve assets

@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Models\companies;
 use App\Models\compliance;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,6 +11,8 @@ use App\Models\employees;
 use Illuminate\Pagination\Paginator;
 use Ramsey\Uuid\Uuid;
 use Respect\Validation\Validator as v;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 class ComplianceController
 {
@@ -183,7 +184,9 @@ class ComplianceController
     // Delete Compliance Records
     public function deleteRecord(Request $request, Response $response, $args) {
         session_start();
-        $id = $args['id'];
+
+        $data = $request->getParsedBody();
+        $id = $data['id'];
         // Validation rules
         $validator = [
             'id' => v::notEmpty()->digit()
@@ -230,6 +233,124 @@ class ComplianceController
     }
 
 
+    //Compliance Check
+    public function checkCompliance(Request $request, Response $response, $args)
+    {
+        $today = new \DateTime();
+        $todayFormatted = $today->format('Y-m-d');
+        $alertDays = [30, 15, 5];
+
+        // Collect all matched records
+        $recordsToAlert = collect();
+
+        // 1. Expired or expiring today
+        $expired = compliance::whereDate('renewal_date', '<=', $todayFormatted)->get();
+        $recordsToAlert = $recordsToAlert->merge($expired);
+
+        // 2. Upcoming expirations (30, 15, 5 days away)
+        foreach ($alertDays as $days) {
+            $targetDate = (clone $today)->modify("+$days days")->format('Y-m-d');
+            $upcoming = compliance::whereDate('renewal_date', $targetDate)->get();
+            $recordsToAlert = $recordsToAlert->merge($upcoming);
+        }
+
+        // Remove duplicates just in case
+        $recordsToAlert = $recordsToAlert->unique('id');
+
+        if ($recordsToAlert->isEmpty()) {
+            $response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'No compliance records found for today.'
+            ]));
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        }
+
+        // 3. Send email for each record
+        $results = [];
+        foreach ($recordsToAlert as $record) {
+            $result = $this->sendEmail($record);
+
+            $results[] = [
+                'record_id' => $record->compliance_id,
+                'title' => $record->title ?? $record->certificate_name ?? 'N/A',
+                'status' => $result['status'],
+                'message' => $result['message']
+            ];
+        }
+
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'message' => count($recordsToAlert) . ' compliance alerts processed.',
+            'results' => $results
+        ]));
+        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+    }
+
+
+    private function sendEmail($record)
+    {
+        try {
+            $today = new \DateTime();
+            $renewalDate = new \DateTime($record->renewal_date);
+
+            // Determine status
+            if ($renewalDate < $today) {
+                $status = 'Expired';
+                $subject = "Compliance Expired: {$record->certificate_name}";
+                $message = "The compliance certificate <strong>{$record->title}</strong> expired on <strong>{$record->renewal_date}</strong>. Immediate action is required.";
+            } elseif ($renewalDate->format('Y-m-d') === $today->format('Y-m-d')) {
+                $status = 'Expires Today';
+                $subject = "Compliance Expires Today: {$record->certificate_name}";
+                $message = "The compliance certificate <strong>{$record->title}</strong> is due for renewal today (<strong>{$record->renewal_date}</strong>).";
+            } else {
+                $daysRemaining = $today->diff($renewalDate)->days;
+                $status = "Expires in {$daysRemaining} days";
+                $subject = "Compliance Renewal Reminder ({$daysRemaining} days): {$record->certificate_name}";
+                $message = "The compliance certificate <strong>{$record->title}</strong> will expire on <strong>{$record->renewal_date}</strong> ({$daysRemaining} days remaining).";
+            }
+
+            // Send email
+            $mail = new PHPMailer();
+            $mail->isSMTP();
+            $mail->Host = 'fortresshubtechnologies.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'support@fortresshubtechnologies.com';
+            $mail->Password = 'Fht@1807!';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+
+            $mail->setFrom('support@fortresshubtechnologies.com', 'FortEdge HR System');
+            $mail->addAddress('martine@fortresshubtechnologies.com', );
+            //$mail->addCC('martine@fortresshubtechnologies.com');
+
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body = '
+            <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; color: #333;">
+                <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+                    <img src="https://www.fortresshubtechnologies.com/wp-content/uploads/2024/08/cropped-cropped-cropped-FORTRESS-HUB-T-LOGO-2-250-x-250-px-2-e1724259446753.png" alt="Company Logo" style="width: 150px; margin-bottom: 20px;">
+                    <h3 style="color: #333;">Compliance Alert</h3>
+                    <p style="font-size: 16px; color: #555;">
+                        ' . $message . '
+                    </p>
+                    <p style="font-size: 16px; color: #555;">
+                        Best Regards,<br>
+                        Fortress Hub Technologies Limited<br>
+                        FortEdge HR System
+                    </p>
+                </div>
+            </div>
+        ';
+
+            if ($mail->send()) {
+                return ['status' => 'success', 'message' => "{$status} email sent successfully."];
+            } else {
+                return ['status' => 'failed', 'message' => $mail->ErrorInfo];
+            }
+        } catch (Exception $e) {
+            return ['status' => 'error', 'message' => 'Failed to send reminder email: ' . $e->getMessage()];
+        }
+    }
 
 
 }

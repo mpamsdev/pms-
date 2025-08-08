@@ -1,21 +1,21 @@
 <div class="field">
     <label>Name</label>
     <div class="control">
-        <input class="input is-link" type="text" name="name" value="{{ employee.name ?? '' }}" required>
+        <input class="input is-link" type="text" name="name" value="{{ item.name ?? '' }}" required>
     </div>
 </div>
 
 <div class="field">
     <label>Email</label>
     <div class="control">
-        <input class="input is-link" type="email" name="username" value="{{ employee.username ?? '' }}" required>
+        <input class="input is-link" type="email" name="username" value="{{ item.username ?? '' }}" required>
     </div>
 </div>
 
 <div class="field">
     <label>Phone</label>
     <div class="control">
-        <input class="input is-link" type="text" name="phone" value="{{ employee.phone ?? '' }}" required>
+        <input class="input is-link" type="text" name="phone" value="{{ item.phone ?? '' }}" required>
     </div>
 </div>
 <div class="field">
@@ -24,8 +24,8 @@
         <div class="select is-fullwidth is-link">
             <select name="gender" required>
                 <option value="">-- Select Gender --</option>
-                <option value="Male" {{ employee.gender == 'Male' ? 'selected' : '' }}>Male</option>
-                <option value="Female" {{ employee.gender == 'Female' ? 'selected' : '' }}>Female</option>
+                <option value="Male" {{ item.gender == 'Male' ? 'selected' : '' }}>Male</option>
+                <option value="Female" {{ item.gender == 'Female' ? 'selected' : '' }}>Female</option>
             </select>
         </div>
     </div>
@@ -36,9 +36,9 @@
         <div class="select is-fullwidth is-link">
             <select name="department" required>
                 <option value="">-- Select Department --</option>
-                <option value="Innovation" {{ employee.department == 'Innovation' ? 'selected' : '' }}>Innovation</option>
-                <option value="Cybersecurity" {{ employee.department == 'Cybersecurity' ? 'selected' : '' }}>Cybersecurity</option>
-                <option value="GRC" {{ employee.department == 'GRC' ? 'selected' : '' }}>GRC (Governance, Risk, Compliance)</option>
+                <option value="Innovation" {{ item.department == 'Innovation' ? 'selected' : '' }}>Innovation</option>
+                <option value="Cybersecurity" {{ item.department == 'Cybersecurity' ? 'selected' : '' }}>Cybersecurity</option>
+                <option value="GRC" {{ item.department == 'GRC' ? 'selected' : '' }}>GRC (Governance, Risk, Compliance)</option>
             </select>
         </div>
     </div>
@@ -47,7 +47,7 @@
 <div class="field">
     <label>Job Title</label>
     <div class="control">
-        <input class="input is-link" type="text" name="job_title" value="{{ employee.job_title ?? '' }}">
+        <input class="input is-link" type="text" name="job_title" value="{{ item.job_title ?? '' }}">
     </div>
 </div>
 
@@ -55,29 +55,29 @@
     <label>Contract Type</label>
     <div class="control">
         <div class="select is-fullwidth is-link">
-            <select name="contract_type" id="contract_type" onchange="toggleContractDates()" required>
+            <select name="contract_type" id="{{ prefix }}_contract_type" onchange="toggleContractDates('{{ prefix }}')" required>
                 <option value="">-- Select Contract Type --</option>
-                <option value="Permanent" {{ employee.contract_type == 'Permanent' ? 'selected' : '' }}>Permanent</option>
-                <option value="Contract" {{ employee.contract_type == 'Contract' ? 'selected' : '' }}>Contract</option>
-                <option value="Part-time" {{ employee.contract_type == 'Part-time' ? 'selected' : '' }}>Part-time</option>
-                <option value="Internship" {{ employee.contract_type == 'Internship' ? 'selected' : '' }}>Internship</option>
+                <option value="Permanent" {{ item.contract_type == 'Permanent' ? 'selected' : '' }}>Permanent</option>
+                <option value="Contract" {{ item.contract_type == 'Contract' ? 'selected' : '' }}>Contract</option>
+                <option value="Part-time" {{ item.contract_type == 'Part-time' ? 'selected' : '' }}>Part-time</option>
+                <option value="Internship" {{ item.contract_type == 'Internship' ? 'selected' : '' }}>Internship</option>
             </select>
         </div>
     </div>
 </div>
 
-<div id="contract-dates" class="is-hidden">
+<div id="{{ prefix }}_contract-dates" class="is-hidden">
     <div class="field">
         <label>Start Date</label>
         <div class="control">
-            <input class="input is-link" type="date" name="contract_start_date" value="{{ employee.contract_start_date ?? '' }}">
+            <input class="input is-link" type="date" name="contract_start_date" value="{{ item.contract_start_date ?? '' }}">
         </div>
     </div>
 
     <div class="field">
         <label>End Date</label>
         <div class="control">
-            <input class="input is-link" type="date" name="contract_end_date" value="{{ employee.contract_end_date ?? '' }}">
+            <input class="input is-link" type="date" name="contract_end_date" value="{{ item.contract_end_date ?? '' }}">
         </div>
     </div>
 </div>
@@ -85,50 +85,62 @@
 <div class="field">
     <label>National ID</label>
     <div class="control">
-        <input class="input is-link" id="national_id" type="text" name="national_id" value="{{ employee.national_id ?? '' }}">
+        <input class="input is-link" id="national_id" type="text" name="national_id" value="{{ item.national_id ?? '' }}">
     </div>
 </div>
 
 <div class="field">
     <label>Tax ID (ZRA-TPIN)</label>
     <div class="control">
-        <input class="input is-link" type="text" name="tax_id" value="{{ employee.tax_id ?? '' }}">
+        <input class="input is-link" type="text" name="tax_id" value="{{ item.tax_id ?? '' }}">
     </div>
 </div>
 
 <div class="field">
     <label>Napsa SSN</label>
     <div class="control">
-        <input class="input is-link" type="text" name="ssn" value="{{ employee.ssn ?? '' }}">
+        <input class="input is-link" type="text" name="ssn" value="{{ item.ssn ?? '' }}">
     </div>
 </div>
 
 <div class="field">
     <label>NHIMA Number</label>
     <div class="control">
-        <input class="input is-link" type="text" name="nhima_number" value="{{ employee.nhima_number ?? '' }}">
+        <input class="input is-link" type="text" name="nhima_number" value="{{ item.nhima_number ?? '' }}">
     </div>
 </div>
-<input class="is-hidden" name="id" value="{{ employee.id }}">
+<input class="is-hidden" name="id" value="{{ item.id }}">
 <div class="field">
-    <label class="">Password</label>
+    <label class="">
+        Password{% if item.id %} (Optional){% endif %}
+    </label>
     <div class="control has-icons-left has-icons-right">
-        <input id="password" class="input  is-link" type="password" name="password" placeholder="********" required>
+        <input id="password"
+               class="input is-link"
+               type="password"
+               name="password"
+               placeholder="********"
+               {% if not item.id %}required{% endif %}>
         <span class="icon is-small is-left">
-                                                    <i class="mdi mdi-lock-outline"></i>
-                                                </span>
+            <i class="mdi mdi-lock-outline"></i>
+        </span>
         <span class="icon is-small is-right" onclick="togglePassword()">
-                                                    <i class="mdi mdi-eye-off" id="toggleIcon" style="cursor: pointer;"></i>
-                                                </span>
-        {#                                        <input  class="input is-medium is-link " id="password" name="password" type="password" placeholder="Enter your password">#}
+            <i class="mdi mdi-eye-off" id="toggleIcon" style="cursor: pointer;"></i>
+        </span>
         <small class="errors has-text-danger" id="passwordError"></small>
     </div>
 </div>
 
+
 <script>
-    function toggleContractDates() {
-        const type = document.getElementById('contract_type').value;
-        const container = document.getElementById('contract-dates');
+
+    function toggleContractDates(prefix) {
+        const typeElement = document.getElementById(prefix + '_contract_type');
+        const container = document.getElementById(prefix + '_contract-dates');
+
+        if (!typeElement || !container) return; // stop if elements don't exist
+
+        const type = typeElement.value?.trim();
         if (type === 'Contract' || type === 'Internship') {
             container.classList.remove('is-hidden');
         } else {
@@ -137,9 +149,22 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        toggleContractDates(); // initialize based on existing data
+        // Initialize for both add and edit modes
+        ['add', 'edit'].forEach(prefix => {
+            toggleContractDates(prefix); // run on load for pre-selected values
+            const typeElement = document.getElementById(prefix + '_contract_type');
+            if (typeElement) {
+                typeElement.addEventListener('change', function () {
+                    toggleContractDates(prefix);
+                });
+            }
+        });
     });
+
+
+
 </script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -158,5 +183,20 @@
             nationalIdInput.value = value;
         });
     });
+</script>
+<script>
+    function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.getElementById("toggleIcon");
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("mdi-eye-off");
+            icon.classList.add("mdi-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("mdi-eye");
+            icon.classList.add("mdi-eye-off");
+        }
+    }
 </script>
 
