@@ -23,7 +23,7 @@ class AuthController
     public function login(Request $request, Response $response, array $args): Response
     {
         return $this->view->render($response, 'auth/login.twig', [
-            'title' => 'Login ',
+            'title' => 'FortEdge | Login ',
         ]);
     }
 
@@ -43,7 +43,7 @@ class AuthController
 
         if (!$emailValidator->validate($email) || !$passwordValidator->validate($password)) {
             return $this->view->render($response, 'auth/login.twig', [
-                'title' => 'Login',
+                'title' => 'FortEdge | Login',
                 'errors' => 'Invalid email or password format.'
             ]);
         }
@@ -90,7 +90,7 @@ class AuthController
         }
 
         return $this->view->render($response, 'auth/login.twig', [
-            'title' => 'Login',
+            'title' => 'FortEdge | Login',
             'errors' => 'Invalid email or password.'
         ]);
     }
@@ -99,7 +99,7 @@ class AuthController
     public function showRegister(Request $request, Response $response, array $args): Response
     {
         return $this->view->render($response, 'auth/sign-up.twig', [
-            'title' => 'Sign up ',
+            'title' => 'FortEdge | Sign up ',
         ]);
     }
 
@@ -136,14 +136,14 @@ class AuthController
 
         if (!empty($errors)) {
             return $this->view->render($response, 'auth/sign-up.twig', [
-                'title' => 'Sign Up',
+                'title' => ' FortEdge | Sign Up',
                 'errors' => $errors
             ]);
         }
 
         if (employees::WHERE('email', $email)->exists()) {
             return $this->view->render($response, 'auth/sign-up.twig', [
-                'title' => 'Sign Up',
+                'title' => ' FortEdge | Sign Up',
                 'error' => 'Email already registered.'
             ]);
         }

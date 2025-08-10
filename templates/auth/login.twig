@@ -10,6 +10,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
     <link rel="manifest" href="/assets/img/site.webmanifest">
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#3273dc" />
+
     <style>
         .icon.is-right i {
             pointer-events: all;
@@ -63,7 +66,7 @@
                                     <a class="has-text-info" href="/auth/forgot-password">Forgot Password?</a>
                                 </p>
                                 <div class="field has-text-centered mt-3">
-                                    <button class="button is-dark is-medium is-fullwidth">Login</button>
+                                    <button class="button is-black is-medium is-fullwidth">Login</button>
                                 </div>
                                 <hr>
                             </form>
@@ -118,6 +121,16 @@
 </section>
 
 {#JS#}
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('Service Worker registered.', reg))
+                .catch(err => console.log('Service Worker registration failed:', err));
+        });
+    }
+</script>
+
 <script>
 
     // Get form element and input fields

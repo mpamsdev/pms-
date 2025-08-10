@@ -94,6 +94,17 @@ return function (App $app) {
         $group->map(['GET', 'POST'], '/{uuid}/update', LeaveController::class . ':update');
     });
 
+    $app->get('/manifest.json', function ($request, $response) {
+        $response->getBody()->write(file_get_contents(__DIR__ . '/public/manifest.json'));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
+
+    $app->get('/service-worker.js', function ($request, $response) {
+        $response->getBody()->write(file_get_contents(__DIR__ . '/public/service-worker.js'));
+        return $response->withHeader('Content-Type', 'application/javascript');
+    });
+
+
 
     // Serve assets
     $app->get('/assets/{path:.*}', function (Request $request, Response $response, $args) {

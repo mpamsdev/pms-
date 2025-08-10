@@ -9,6 +9,50 @@
     <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/assets/css/main.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+    <link rel="manifest" href="/assets/img/site.webmanifest">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007bff">
+
+    <!-- PWA iOS support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(() => console.log("Service Worker registered"))
+                .catch(err => console.error("SW registration failed:", err));
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show your custom install button
+            let btn = document.createElement('button');
+            btn.textContent = "Install App";
+            btn.style.position = "fixed";
+            btn.style.bottom = "20px";
+            btn.style.right = "20px";
+            btn.onclick = () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(choice => {
+                    if (choice.outcome === 'accepted') {
+                        console.log('User installed the app');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                    btn.remove();
+                });
+            };
+            document.body.appendChild(btn);
+        });
+    </script>
+
     <style>
         .icon.is-right i {
             pointer-events: all;

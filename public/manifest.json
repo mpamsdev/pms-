@@ -1,0 +1,21 @@
+{
+  "name": "FortEdge HR System",
+  "short_name": "FortEdgeHR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "description": "Compliance and HR management system.",
+  "icons": [
+    {
+      "src": "/assets/img/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/img/android-chrome-192x192.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

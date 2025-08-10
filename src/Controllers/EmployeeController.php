@@ -142,7 +142,7 @@ class EmployeeController
             }
 
             // Save employee record
-            employees::create([
+           $create = employees::create([
                 'name' => $data['name'],
                 'username' => $data['username'],
                 'phone' => $data['phone'],
@@ -159,55 +159,21 @@ class EmployeeController
                 'password' => password_hash($data['password'], PASSWORD_DEFAULT)
             ]);
 
-            // Fetch again after insertion
-            $employeeData = employees::all();
-            $now = new DateTime();
+            //Call the send email function
+            $this->sendEmail($data['name'], $data['username'], $data['password']);
+            $message = $create ? 'Employee added successfully.' : 'Failed to add employee.';
 
-            // Loop over $employeeData, not $employees
-            foreach ($employeeData as &$employee) {
-                if (!empty($employee->contract_start_date) && !empty($employee->contract_end_date)) {
-                    $start = new DateTime($employee->contract_start_date);
-                    $end = new DateTime($employee->contract_end_date);
-
-                    if ($now > $end) {
-                        $progress = "Expired";
-                    } else {
-                        $passedInterval = $start->diff($now);
-                        $monthsPassed = $passedInterval->m + ($passedInterval->y * 12);
-                        $daysPassed = $passedInterval->d;
-
-                        if ($monthsPassed == 0) {
-                            // Less than one month
-                            $progress = $daysPassed . ' day' . ($daysPassed > 1 ? 's' : '');
-                        } else {
-                            // One or more months
-                            $progress = $monthsPassed . ' month' . ($monthsPassed > 1 ? 's' : '');
-                            if ($daysPassed > 0) {
-                                $progress .= ', ' . $daysPassed . ' day' . ($daysPassed > 1 ? 's' : '');
-                            }
-                        }
-                    }
-                } else {
-                    $progress = '-';
-                }
-                $employee->contract_progress = $progress;
-            }
-            unset($employee); // break the reference
-
-            return $this->view->render($response, 'employees.twig', [
-                'title' => 'Employees',
-                'success' => 'Employee added successfully.',
-                'employees' => $employeeData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
-            ]);
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/employees?success='.$message)
+                ->withStatus(302);
         }
 
         // GET Request - Load all employees
+        $queryParams = $request->getQueryParams();
+        $successMessage = $queryParams['success'] ?? null;
+        // GET Request - Load all employees
         $employeeData = employees::all();
-
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
             'employees' => $employeeData,
@@ -215,6 +181,7 @@ class EmployeeController
             'userid' => $_SESSION['userid'],
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
+            'success' => $successMessage
         ]);
     }
 
@@ -272,7 +239,7 @@ class EmployeeController
             }
 
             // Save employee record
-            employees:: where('id', $data['id'])->update([
+           $update = employees:: where('id', $data['id'])->update([
                 'name' => $data['name'] ?? '',
                 'username' => $data['username'] ?? '',
                 'phone' => $data['phone'],
@@ -289,55 +256,19 @@ class EmployeeController
                 'password' => password_hash($data['password'] ?? '', PASSWORD_DEFAULT)
             ]);
 
-            // Fetch again after insertion
-            $employeeData = employees::all();
-            $now = new DateTime();
+            $message = $update ? 'Record updated successfully.' : 'Record could not be updated.';
 
-            // Loop over $employeeData, not $employees
-            foreach ($employeeData as &$employee) {
-                if (!empty($employee->contract_start_date) && !empty($employee->contract_end_date)) {
-                    $start = new DateTime($employee->contract_start_date);
-                    $end = new DateTime($employee->contract_end_date);
-
-                    if ($now > $end) {
-                        $progress = "Expired";
-                    } else {
-                        $passedInterval = $start->diff($now);
-                        $monthsPassed = $passedInterval->m + ($passedInterval->y * 12);
-                        $daysPassed = $passedInterval->d;
-
-                        if ($monthsPassed == 0) {
-                            // Less than one month
-                            $progress = $daysPassed . ' day' . ($daysPassed > 1 ? 's' : '');
-                        } else {
-                            // One or more months
-                            $progress = $monthsPassed . ' month' . ($monthsPassed > 1 ? 's' : '');
-                            if ($daysPassed > 0) {
-                                $progress .= ', ' . $daysPassed . ' day' . ($daysPassed > 1 ? 's' : '');
-                            }
-                        }
-                    }
-                } else {
-                    $progress = '-';
-                }
-                $employee->contract_progress = $progress;
-            }
-            unset($employee); // break the reference
-
-            return $this->view->render($response, 'employees.twig', [
-                'title' => 'Employees',
-                'success' => 'Employee record updated successfully.',
-                'employees' => $employeeData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
-            ]);
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/employees?success='.$message)
+                ->withStatus(302);
         }
 
         // GET Request - Load all employees
+        $queryParams = $request->getQueryParams();
+        $successMessage = $queryParams['success'] ?? null;
+        // GET Request - Load all employees
         $employeeData = employees::all();
-
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
             'employees' => $employeeData,
@@ -345,6 +276,7 @@ class EmployeeController
             'userid' => $_SESSION['userid'],
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
+            'success' => $successMessage
         ]);
     }
 
@@ -354,82 +286,58 @@ class EmployeeController
         session_start();
         $data = $request->getParsedBody();
 
-        //var_dump($data);
-        $id = $data['id'];
-        // Validation rules
-        $validator = [
-            'id' => v::notEmpty()->digit()
-        ];
+        if($request->getMethod() === 'POST'){
+            //var_dump($data);
+            $id = $data['id'];
+            // Validation rules
+            $validator = [
+                'id' => v::notEmpty()->digit()
+            ];
 
-        // Validate ID
-        $errors = [];
-        foreach ($validator as $field => $rule) {
-            if (!$rule->validate($$field)) {
-                $errors[$field] = ucfirst($field) . ' is required or invalid.';
+            // Validate ID
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[$field] = ucfirst($field) . ' is required or invalid.';
+                }
             }
+
+            if (!empty($errors)) {
+                $employeeData = employees::all();
+                return $this->view->render($response, 'employees.twig', [
+                    'title' => 'Employees',
+                    'errors' => $errors,
+                    'employees' => $employeeData,
+                    'username' => $_SESSION['username'],
+                    'userid' => $_SESSION['userid'],
+                    'profile_picture' => $_SESSION['profile_picture'],
+                    'userData' => $_SESSION['userData'],
+                ]);
+            }
+
+            // Perform delete
+            $deleted = employees::where('id', $id)->delete();
+
+            $message = $deleted ? 'Record deleted successfully.' : 'Record not found or already deleted.';
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/employees?success='.$message)
+                ->withStatus(302);
+
         }
-
-        if (!empty($errors)) {
-            $employeeData = employees::all();
-            return $this->view->render($response, 'employees.twig', [
-                'title' => 'Employees',
-                'errors' => $errors,
-                'employees' => $employeeData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
-            ]);
-        }
-
-        // Perform delete
-        $deleted = employees::where('id', $id)->delete();
-
-        $message = $deleted ? 'Record deleted successfully.' : 'Record not found or already deleted.';
-
+        // GET Request - Load all employees
+        $queryParams = $request->getQueryParams();
+        $successMessage = $queryParams['success'] ?? null;
         // Fetch again after insertion
         $employeeData = employees::all();
-        $now = new DateTime();
-
-        // Loop over $employeeData, not $employees
-        foreach ($employeeData as &$employee) {
-            if (!empty($employee->contract_start_date) && !empty($employee->contract_end_date)) {
-                $start = new DateTime($employee->contract_start_date);
-                $end = new DateTime($employee->contract_end_date);
-
-                if ($now > $end) {
-                    $progress = "Expired";
-                } else {
-                    $passedInterval = $start->diff($now);
-                    $monthsPassed = $passedInterval->m + ($passedInterval->y * 12);
-                    $daysPassed = $passedInterval->d;
-
-                    if ($monthsPassed == 0) {
-                        // Less than one month
-                        $progress = $daysPassed . ' day' . ($daysPassed > 1 ? 's' : '');
-                    } else {
-                        // One or more months
-                        $progress = $monthsPassed . ' month' . ($monthsPassed > 1 ? 's' : '');
-                        if ($daysPassed > 0) {
-                            $progress .= ', ' . $daysPassed . ' day' . ($daysPassed > 1 ? 's' : '');
-                        }
-                    }
-                }
-            } else {
-                $progress = '-';
-            }
-            $employee->contract_progress = $progress;
-        }
-        unset($employee); // break the reference
-
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
-            'success' => $message,
             'employees' => $employeeData,
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
+            'success' => $successMessage
         ]);
 
     }
@@ -441,47 +349,55 @@ class EmployeeController
 
         $data = $request->getParsedBody();
 
-        //var_dump($data);
-        $id = $data['id'];
+        if ($request->getMethod() === 'POST') {
+            //var_dump($data);
+            $id = $data['id'];
 
-        // Validation rules
-        $validator = [
-            'id' => v::notEmpty()->digit()
-        ];
+            // Validation rules
+            $validator = [
+                'id' => v::notEmpty()->digit()
+            ];
 
-        // Validate ID
-        $errors = [];
-        foreach ($validator as $field => $rule) {
-            if (!$rule->validate($$field)) {
-                $errors[$field] = ucfirst($field) . ' is required or invalid.';
+            // Validate ID
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[$field] = ucfirst($field) . ' is required or invalid.';
+                }
             }
+
+            if (!empty($errors)) {
+                $employeeData = employees::all();
+                return $this->view->render($response, 'employees.twig', [
+                    'title' => 'Employees',
+                    'errors' => $errors,
+                    'employees' => $employeeData,
+                    'username' => $_SESSION['username'],
+                    'userid' => $_SESSION['userid'],
+                    'profile_picture' => $_SESSION['profile_picture'],
+                    'userData' => $_SESSION['userData'],
+                ]);
+            }
+
+            // Perform suspension
+            $suspend = employees::where('id', $id)->update(['status' => 'suspended']);
+            $message = $suspend ? 'Employee suspended successfully.' : 'Record not found or already deleted.';
+
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/employees?success='.urlencode($message))
+                ->withStatus(302);
         }
 
-        if (!empty($errors)) {
-            $employeeData = employees::all();
-            return $this->view->render($response, 'employees.twig', [
-                'title' => 'Employees',
-                'errors' => $errors,
-                'employees' => $employeeData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
-            ]);
-        }
-
-
-        // Perform suspension
-        $suspend = employees::where('id', $id)->update(['status' => 'suspended']);
-
-        $message = $suspend ? 'Employee suspended successfully.' : 'Record not found or already deleted.';
-
+        // GET Request - Load all employees
+        $queryParams = $request->getQueryParams();
+        $successMessage = $queryParams['success'] ?? null;
         // Fetch again after insertion
         $employeeData = employees::all();
 
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
-            'success' => $message,
+            'success' => $successMessage,
             'employees' => $employeeData,
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],
@@ -498,47 +414,53 @@ class EmployeeController
 
         $data = $request->getParsedBody();
 
-        //var_dump($data);
-        $id = $data['id'];
+        if ($request->getMethod() === 'POST') {
+            //var_dump($data);
+            $id = $data['id'];
+            // Validation rules
+            $validator = [
+                'id' => v::notEmpty()->digit()
+            ];
 
-        // Validation rules
-        $validator = [
-            'id' => v::notEmpty()->digit()
-        ];
-
-        // Validate ID
-        $errors = [];
-        foreach ($validator as $field => $rule) {
-            if (!$rule->validate($$field)) {
-                $errors[$field] = ucfirst($field) . ' is required or invalid.';
+            // Validate ID
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[$field] = ucfirst($field) . ' is required or invalid.';
+                }
             }
+
+            if (!empty($errors)) {
+                $employeeData = employees::all();
+                return $this->view->render($response, 'employees.twig', [
+                    'title' => 'Employees',
+                    'errors' => $errors,
+                    'employees' => $employeeData,
+                    'username' => $_SESSION['username'],
+                    'userid' => $_SESSION['userid'],
+                    'profile_picture' => $_SESSION['profile_picture'],
+                    'userData' => $_SESSION['userData'],
+                ]);
+            }
+
+            // Perform suspension
+            $suspend = employees::where('id', $id)->update(['status' => 'active']);
+            $message = $suspend ? 'Employee activated successfully.' : 'Record not found or already deleted.';
+
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/employees?success='.urlencode($message))
+                ->withStatus(302);
         }
-
-        if (!empty($errors)) {
-            $employeeData = employees::all();
-            return $this->view->render($response, 'employees.twig', [
-                'title' => 'Employees',
-                'errors' => $errors,
-                'employees' => $employeeData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
-            ]);
-        }
-
-
-        // Perform suspension
-        $suspend = employees::where('id', $id)->update(['status' => 'active']);
-
-        $message = $suspend ? 'Employee activated successfully.' : 'Record not found or already deleted.';
-
+        // GET Request - Load all employees
+        $queryParams = $request->getQueryParams();
+        $successMessage = $queryParams['success'] ?? null;
         // Fetch again after insertion
         $employeeData = employees::all();
 
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
-            'success' => $message,
+            'success' => $successMessage,
             'employees' => $employeeData,
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],
@@ -550,28 +472,9 @@ class EmployeeController
 
 
     //Private function to send email
-    private function sendEmail($record)
+    private function sendEmail($name, $email, $password)
     {
         try {
-            $today = new \DateTime();
-            $renewalDate = new \DateTime($record->renewal_date);
-
-            // Determine status
-            if ($renewalDate < $today) {
-                $status = 'Expired';
-                $subject = "Compliance Expired: {$record->certificate_name}";
-                $message = "The compliance certificate <strong>{$record->title}</strong> expired on <strong>{$record->renewal_date}</strong>. Immediate action is required.";
-            } elseif ($renewalDate->format('Y-m-d') === $today->format('Y-m-d')) {
-                $status = 'Expires Today';
-                $subject = "Compliance Expires Today: {$record->certificate_name}";
-                $message = "The compliance certificate <strong>{$record->title}</strong> is due for renewal today (<strong>{$record->renewal_date}</strong>).";
-            } else {
-                $daysRemaining = $today->diff($renewalDate)->days;
-                $status = "Expires in {$daysRemaining} days";
-                $subject = "Compliance Renewal Reminder ({$daysRemaining} days): {$record->certificate_name}";
-                $message = "The compliance certificate <strong>{$record->title}</strong> will expire on <strong>{$record->renewal_date}</strong> ({$daysRemaining} days remaining).";
-            }
-
             // Send email
             $mail = new PHPMailer();
             $mail->isSMTP();
@@ -583,18 +486,31 @@ class EmployeeController
             $mail->Port = 587;
 
             $mail->setFrom('support@fortresshubtechnologies.com', 'FortEdge HR System');
-            $mail->addAddress('martine@fortresshubtechnologies.com', );
+            $mail->addAddress($email);
             //$mail->addCC('martine@fortresshubtechnologies.com');
+            // Reply-To address
+            $mail->addReplyTo('support@fortresshubtechnologies.com', 'Fortress Hub Support');
 
             $mail->isHTML(true);
-            $mail->Subject = $subject;
+            $mail->Subject = 'Login Credentials - FortEdge HR System';
             $mail->Body = '
             <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; color: #333;">
                 <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
                     <img src="https://www.fortresshubtechnologies.com/wp-content/uploads/2024/08/cropped-cropped-cropped-FORTRESS-HUB-T-LOGO-2-250-x-250-px-2-e1724259446753.png" alt="Company Logo" style="width: 150px; margin-bottom: 20px;">
-                    <h3 style="color: #333;">Compliance Alert</h3>
+                    <h3 style="color: #333;">Login Crendentials</h3>
                     <p style="font-size: 16px; color: #555;">
-                        ' . $message . '
+                       Hello, <strong>'.$name.'</strong>!
+                    </p>
+                    <p style="font-size: 16px; color: #555;">
+                        Your FortEdge HR System login crendentials are; 
+                    </p>
+                    <p style="font-size: 16px; color: #555;">
+                        <strong>Username:</strong> '.$email.' <br>
+                        <strong>Password:</strong> '.$password.' <br>
+                    </p>
+                    <p>If you have any challenges or need assistance, please raise a ticket to:</p>
+                    <p>Email: <a href="mailto:support@fortresshubtechnologies.com" style="color: #007bff;">support@fortresshubtechnologies.com</a><br>
+                       Phone: <a href="tel:+260965249614" style="color: #007bff;">+260965249614</a>
                     </p>
                     <p style="font-size: 16px; color: #555;">
                         Best Regards,<br>
@@ -606,12 +522,12 @@ class EmployeeController
         ';
 
             if ($mail->send()) {
-                return ['status' => 'success', 'message' => "{$status} email sent successfully."];
+                return ['status' => 'success', 'message' => "email sent successfully."];
             } else {
                 return ['status' => 'failed', 'message' => $mail->ErrorInfo];
             }
         } catch (Exception $e) {
-            return ['status' => 'error', 'message' => 'Failed to send reminder email: ' . $e->getMessage()];
+            return ['status' => 'error', 'message' => 'Failed to send login credentials email: ' . $e->getMessage()];
         }
     }
 

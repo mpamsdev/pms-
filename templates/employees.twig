@@ -36,11 +36,13 @@
                                     </div>
                                 {% endif %}
 
+
                                 {% if success %}
                                     <div class="notification is-success" id="successNotification">
-                                        {{ success }}
+                                        <p id="successMessage"  style="display:none;"></p>
                                     </div>
                                 {% endif %}
+
 
                                 <div class="table-container">
                                     <table id="myTable" class="table is-fullwidth is-hoverable">
@@ -61,51 +63,56 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for employee in employees %}
-                                            <tr>
-                                                <td>{{ employee.name }}</td>
-                                                <td>{{ employee.username }}</td>
-                                                <td>{{ employee.phone }}</td>
-                                                <td>{{ employee.department }}</td>
-                                                <td>{{ employee.job_title }}</td>
-                                                <td>
-                                                    {{ employee.contract_start_date ? employee.contract_start_date|date('Y-m-d') : '-' }}
-                                                </td>
-                                                <td>
-                                                    {{ employee.contract_end_date ? employee.contract_end_date|date('Y-m-d') : '-' }}
-                                                </td>
+                                         {% if employees | length > 0 %}
+                                             {% for employee in employees %}
+                                                 <tr>
+                                                     <td>{{ employee.name }}</td>
+                                                     <td>{{ employee.username }}</td>
+                                                     <td>{{ employee.phone }}</td>
+                                                     <td>{{ employee.department }}</td>
+                                                     <td>{{ employee.job_title }}</td>
+                                                     <td>
+                                                         {{ employee.contract_start_date ? employee.contract_start_date|date('Y-m-d') : '-' }}
+                                                     </td>
+                                                     <td>
+                                                         {{ employee.contract_end_date ? employee.contract_end_date|date('Y-m-d') : '-' }}
+                                                     </td>
 
-                                                <td>
-                                                    {{ employee.contract_progress }}
-                                                </td>
-                                                <td>{{ employee.status | capitalize}}</td>
-                                                <td>
-                                                    {% if employee.status == 'suspended' %}
-                                                        <!-- Activate button -->
-                                                        <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-account-check"></span>
-                                                        </button>
-                                                    {% else %}
-                                                        <!-- Suspend button -->
-                                                        <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-account-off"></span>
-                                                        </button>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
-                                                        <span class="mdi mdi-pencil"></span>
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
-                                                        <span class="mdi mdi-trash-can"></span>
-                                                    </button>
-                                                </td>
+                                                     <td>
+                                                         {{ employee.contract_progress }}
+                                                     </td>
+                                                     <td>{{ employee.status | capitalize}}</td>
+                                                     <td>
+                                                         {% if employee.status == 'suspended' %}
+                                                             <!-- Activate button -->
+                                                             <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">
+                                                                 <span class="mdi mdi-account-check"></span>
+                                                             </button>
+                                                         {% else %}
+                                                             <!-- Suspend button -->
+                                                             <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">
+                                                                 <span class="mdi mdi-account-off"></span>
+                                                             </button>
+                                                         {% endif %}
+                                                     </td>
+                                                     <td>
+                                                         <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
+                                                             <span class="mdi mdi-pencil"></span>
+                                                         </button>
+                                                     </td>
+                                                     <td>
+                                                         <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
+                                                             <span class="mdi mdi-trash-can"></span>
+                                                         </button>
+                                                     </td>
 
-                                            </tr>
-
-                                        {% endfor %}
+                                                 </tr>
+                                             {% endfor %}
+                                         {% else %}
+                                             <tr>
+                                                 <td colspan="6">No employee records found.</td>
+                                             </tr>
+                                         {% endif %}
                                         </tbody>
                                     </table>
                                 </div>
@@ -268,4 +275,32 @@
         </div>
     </div>
 
+
+
+    <script>
+        // Disable all form submit buttons after submit
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const buttons = form.querySelectorAll('button[type="submit"]');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('is-loading'); // Optional Bulma loading spinner
+                });
+            });
+        });
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Parse query params
+            const params = new URLSearchParams(window.location.search);
+            const successMessage = params.get("success");
+
+            if (successMessage) {
+                const msgEl = document.getElementById("successMessage");
+                msgEl.textContent = decodeURIComponent(successMessage);
+                msgEl.style.display = "block";
+            }
+        });
+    </script>
 {% endblock %}
