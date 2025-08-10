@@ -31,6 +31,8 @@ class EmployeeController
     public function employees(Request $request, Response $response, $args) {
         session_start();
 
+        $success = $request->getQueryParams()['success'] ?? null;
+
         // Auth check
         if (!isset($_SESSION['userid']) || !isset($_SESSION['username'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
@@ -85,6 +87,7 @@ class EmployeeController
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
             'employees' => $employeeData,
+            'success' => $success
         ]);
     }
 
@@ -170,9 +173,6 @@ class EmployeeController
         }
 
         // GET Request - Load all employees
-        $queryParams = $request->getQueryParams();
-        $successMessage = $queryParams['success'] ?? null;
-        // GET Request - Load all employees
         $employeeData = employees::all();
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
@@ -181,7 +181,6 @@ class EmployeeController
             'userid' => $_SESSION['userid'],
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
-            'success' => $successMessage
         ]);
     }
 
@@ -264,9 +263,7 @@ class EmployeeController
                 ->withStatus(302);
         }
 
-        // GET Request - Load all employees
-        $queryParams = $request->getQueryParams();
-        $successMessage = $queryParams['success'] ?? null;
+
         // GET Request - Load all employees
         $employeeData = employees::all();
         return $this->view->render($response, 'employees.twig', [
@@ -276,7 +273,6 @@ class EmployeeController
             'userid' => $_SESSION['userid'],
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
-            'success' => $successMessage
         ]);
     }
 
@@ -325,9 +321,7 @@ class EmployeeController
                 ->withStatus(302);
 
         }
-        // GET Request - Load all employees
-        $queryParams = $request->getQueryParams();
-        $successMessage = $queryParams['success'] ?? null;
+
         // Fetch again after insertion
         $employeeData = employees::all();
         return $this->view->render($response, 'employees.twig', [
@@ -337,7 +331,6 @@ class EmployeeController
             'userid' => $_SESSION['userid'],
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
-            'success' => $successMessage
         ]);
 
     }
@@ -389,15 +382,11 @@ class EmployeeController
                 ->withStatus(302);
         }
 
-        // GET Request - Load all employees
-        $queryParams = $request->getQueryParams();
-        $successMessage = $queryParams['success'] ?? null;
         // Fetch again after insertion
         $employeeData = employees::all();
 
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
-            'success' => $successMessage,
             'employees' => $employeeData,
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],
@@ -413,6 +402,7 @@ class EmployeeController
         session_start();
 
         $data = $request->getParsedBody();
+        $message = '';
 
         if ($request->getMethod() === 'POST') {
             //var_dump($data);
@@ -452,15 +442,14 @@ class EmployeeController
                 ->withHeader('Location', '/employees?success='.urlencode($message))
                 ->withStatus(302);
         }
-        // GET Request - Load all employees
-        $queryParams = $request->getQueryParams();
-        $successMessage = $queryParams['success'] ?? null;
+
+
         // Fetch again after insertion
         $employeeData = employees::all();
 
         return $this->view->render($response, 'employees.twig', [
             'title' => 'Employees',
-            'success' => $successMessage,
+            //'success' => $success,
             'employees' => $employeeData,
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],

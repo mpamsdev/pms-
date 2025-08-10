@@ -30,6 +30,7 @@ class ComplianceController
     {
         session_start();
 
+        $success = $request->getQueryParams()['success'] ?? null;
         // Auth check
         if (!isset($_SESSION['userid']) || !isset($_SESSION['username'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
@@ -52,6 +53,7 @@ class ComplianceController
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
             'compliance' => $complianceData,
+            'success' => $success
         ]);
     }
 
@@ -96,80 +98,93 @@ class ComplianceController
             }
 
             // Save record
-            compliance::create([
+            $create = compliance::create([
                 'certificate_name' => $certificate_name,
                 'renewal_date' => $renewal_date,
             ]);
 
-            // Fetch again after insertion
-            $complianceData = Compliance::all();
+            $message = $create ? 'New compliance record added successfully.' : 'Failed to add compliance.';
 
-            return $this->view->render($response, 'compliance-table.twig', [
-                'title' => 'Compliance Table',
-                'success' => 'Record added successfully.',
-                'compliance' => $complianceData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
-            ]);
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/compliance?success='.$message)
+                ->withStatus(302);
+
         }
 
-        // Fallback GET
-        return $response->withHeader('Location', '/dashboard/compliance-table')->withStatus(302);
+
+        // Fetch again after insertion
+        $complianceData = Compliance::all();
+
+        return $this->view->render($response, 'compliance-table.twig', [
+            'title' => 'Compliance Table',
+            'success' => 'Record added successfully.',
+            'compliance' => $complianceData,
+            'username' => $_SESSION['username'],
+            'userid' => $_SESSION['userid'],
+            'profile_picture' => $_SESSION['profile_picture'],
+            'userData' => $_SESSION['userData'],
+        ]);
     }
 
     //Update Record
     public function updateRecord(Request $request, Response $response, $args){
         session_start();
 
-        $data = $request->getParsedBody();
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
 
-        $certificate_name = trim($data['certificate_name'] ?? '');
-        $renewal_date = trim($data['renewal_date'] ?? '');
-        $id = trim($data['id']);
+            $certificate_name = trim($data['certificate_name'] ?? '');
+            $renewal_date = trim($data['renewal_date'] ?? '');
+            $id = trim($data['id']);
 
-        // Validation rules
-        $validator = [
-            'certificate_name' => v::notEmpty()->length(1, 100),
-            'renewal_date' => v::notEmpty()->date('Y-m-d'),
-            'id' => v::notEmpty()->digit()
-        ];
+            // Validation rules
+            $validator = [
+                'certificate_name' => v::notEmpty()->length(1, 100),
+                'renewal_date' => v::notEmpty()->date('Y-m-d'),
+                'id' => v::notEmpty()->digit()
+            ];
 
-        // Validate fields
-        $errors = [];
-        foreach ($validator as $field => $rule) {
-            if (!$rule->validate($$field)) {
-                $errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+            // Validate fields
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[$field] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
             }
-        }
 
-        if (!empty($errors)) {
-            // Load existing data for the view
-            $complianceData = compliance::all();
-            return $this->view->render($response, 'compliance-table.twig', [
-                'title' => 'Compliance Table',
-                'errors' => $errors,
-                'compliance' => $complianceData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
+            if (!empty($errors)) {
+                // Load existing data for the view
+                $complianceData = compliance::all();
+                return $this->view->render($response, 'compliance-table.twig', [
+                    'title' => 'Compliance Table',
+                    'errors' => $errors,
+                    'compliance' => $complianceData,
+                    'username' => $_SESSION['username'],
+                    'userid' => $_SESSION['userid'],
+                    'profile_picture' => $_SESSION['profile_picture'],
+                    'userData' => $_SESSION['userData'],
+                ]);
+            }
+
+            //Update the record
+            $update = compliance::where('compliance_id', $id)->update([
+                'certificate_name' => $certificate_name,
+                'renewal_date' => $renewal_date,
             ]);
+
+            $message = $update ? 'Compliance record updated successfully.' : 'Failed to update compliance record.';
+
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/compliance?success='.$message)
+                ->withStatus(302);
         }
-
-        //Update the record
-        compliance::where('compliance_id', $id)->update([
-            'certificate_name' => $certificate_name,
-            'renewal_date' => $renewal_date,
-        ]);
-
 
         // Fetch again after insertion
         $complianceData = Compliance::all();
         return $this->view->render($response, 'compliance-table.twig', [
             'title' => 'Compliance Table',
-            'success' => 'Record updated successfully.',
             'compliance' => $complianceData,
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],
@@ -177,53 +192,57 @@ class ComplianceController
             'userData' => $_SESSION['userData'],
         ]);
 
-        // Fallback GET
-        return $response->withHeader('Location', '/dashboard/compliance-table')->withStatus(302);
     }
 
     // Delete Compliance Records
     public function deleteRecord(Request $request, Response $response, $args) {
         session_start();
 
-        $data = $request->getParsedBody();
-        $id = $data['id'];
-        // Validation rules
-        $validator = [
-            'id' => v::notEmpty()->digit()
-        ];
+        if ($request->getMethod() === 'POST'){
+            $data = $request->getParsedBody();
+            $id = $data['id'];
+            // Validation rules
+            $validator = [
+                'id' => v::notEmpty()->digit()
+            ];
 
-        // Validate ID
-        $errors = [];
-        foreach ($validator as $field => $rule) {
-            if (!$rule->validate($$field)) {
-                $errors[$field] = ucfirst($field) . ' is required or invalid.';
+            // Validate ID
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[$field] = ucfirst($field) . ' is required or invalid.';
+                }
             }
+
+            if (!empty($errors)) {
+                // Reload view with errors
+                $complianceData = compliance::all();
+                return $this->view->render($response, 'compliance-table.twig', [
+                    'title' => 'Compliance Table',
+                    'errors' => $errors,
+                    'compliance' => $complianceData,
+                    'username' => $_SESSION['username'],
+                    'userid' => $_SESSION['userid'],
+                    'profile_picture' => $_SESSION['profile_picture'],
+                    'userData' => $_SESSION['userData'],
+                ]);
+            }
+
+            // Perform delete
+            $deleted = compliance::where('compliance_id', $id)->delete();
+
+            $message = $deleted ? 'Record deleted successfully.' : 'Record not found or already deleted.';
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/compliance?success='.$message)
+                ->withStatus(302);
         }
-
-        if (!empty($errors)) {
-            // Reload view with errors
-            $complianceData = compliance::all();
-            return $this->view->render($response, 'compliance-table.twig', [
-                'title' => 'Compliance Table',
-                'errors' => $errors,
-                'compliance' => $complianceData,
-                'username' => $_SESSION['username'],
-                'userid' => $_SESSION['userid'],
-                'profile_picture' => $_SESSION['profile_picture'],
-                'userData' => $_SESSION['userData'],
-            ]);
-        }
-
-        // Perform delete
-        $deleted = compliance::where('compliance_id', $id)->delete();
-
-        $message = $deleted ? 'Record deleted successfully.' : 'Record not found or already deleted.';
 
         // Reload compliance data after deletion
         $complianceData = compliance::all();
         return $this->view->render($response, 'compliance-table.twig', [
             'title' => 'Compliance Table',
-            'success' => $message,
+            //'success' => $message,
             'compliance' => $complianceData,
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],

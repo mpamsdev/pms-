@@ -241,22 +241,30 @@
         }
     </script>
     <script>
-        // Auto-hide notifications after 5 seconds (5000 ms)
-        setTimeout(function () {
-            const errorNote = document.getElementById('errorNotification');
-            const successNote = document.getElementById('successNotification');
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                const errorNote = document.getElementById('errorNotification');
+                const successNote = document.getElementById('successNotification');
 
-            if (errorNote) {
-                errorNote.style.transition = "opacity 0.5s ease";
-                errorNote.style.opacity = 0;
-                setTimeout(() => errorNote.remove(), 500);
-            }
+                if (errorNote) {
+                    errorNote.style.transition = "opacity 0.5s ease";
+                    errorNote.style.opacity = 0;
+                    setTimeout(() => errorNote.remove(), 500);
+                }
+                if (successNote) {
+                    successNote.style.transition = "opacity 0.5s ease";
+                    successNote.style.opacity = 0;
+                    setTimeout(() => successNote.remove(), 500);
+                }
 
-            if (successNote) {
-                successNote.style.transition = "opacity 0.5s ease";
-                successNote.style.opacity = 0;
-                setTimeout(() => successNote.remove(), 500);
-            }
-        }, 5000); // 5 seconds
+                // ✅ Reset URL after hiding notifications
+                const url = new URL(window.location.href);
+                if (url.searchParams.has("success") || url.searchParams.has("error")) {
+                    url.searchParams.delete("success");
+                    url.searchParams.delete("error");
+                    window.history.replaceState({}, document.title, url.toString());
+                }
+            }, 4000); // delay before fade starts
+        });
     </script>
 {% endblock %}

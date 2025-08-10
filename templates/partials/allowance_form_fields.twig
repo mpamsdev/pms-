@@ -1,0 +1,65 @@
+<div class="field">
+    <label>Type</label>
+    <div class="control">
+        <input class="input is-link" type="text" name="name" value="{{ item.name ?? '' }}" required>
+    </div>
+</div>
+
+<div class="field">
+    <label>Amount</label>
+    <div class="control">
+        <input class="input is-link" type="number" name="amount" value="{{ item.amount ?? '' }}" required>
+    </div>
+</div>
+
+<div class="field">
+    <label>Employee</label>
+    <div class="control">
+        <div class="select is-fullwidth is-link">
+            <select id="employeeSelect" class="input">
+                <option value="">-- Select Employee --</option>
+                {% for employee in employees %}
+                    <option value="{{ employee.id }}">{{ employee.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+<!-- Hidden Input -->
+<input type="hidden" name="employee_id" id="employeeIdInput">
+<input class="is-hidden" name="id" value="{{ item.id }}">
+
+<script>
+    function toggleContractDates(prefix) {
+        const typeElement = document.getElementById(prefix + '_contract_type');
+        const container = document.getElementById(prefix + '_contract-dates');
+
+        if (!typeElement || !container) return; // stop if elements don't exist
+
+        const type = typeElement.value?.trim();
+        if (type === 'Contract' || type === 'Internship') {
+            container.classList.remove('is-hidden');
+        } else {
+            container.classList.add('is-hidden');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize for both add and edit modes
+        ['add', 'edit'].forEach(prefix => {
+            toggleContractDates(prefix); // run on load for pre-selected values
+            const typeElement = document.getElementById(prefix + '_contract_type');
+            if (typeElement) {
+                typeElement.addEventListener('change', function () {
+                    toggleContractDates(prefix);
+                });
+            }
+        });
+    });
+</script>
+<script>
+    document.getElementById('employeeSelect').addEventListener('change', function () {
+        // Update hidden input with selected employee's ID
+        document.getElementById('employeeIdInput').value = this.value;
+    });
+</script>

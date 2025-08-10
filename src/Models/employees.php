@@ -26,6 +26,11 @@ class employees extends Model{
         return $this->hasMany(salary::class);
     }
 
+    public  function allowances()
+    {
+        return $this->hasMany(allowance::class);
+    }
+
 
 
 

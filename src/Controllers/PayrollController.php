@@ -23,7 +23,7 @@ class PayrollController{
     }
 
     //Employees
-    public function index(Request $request, Response $response, $args){
+    public function salary(Request $request, Response $response, $args){
 
         session_start();
 
@@ -41,7 +41,6 @@ class PayrollController{
 
         // Fetch all compliance records
         //$salaryData = payroll::all();
-
         return $this->view->render($response, 'salary-manager.twig', [
             'title' => 'Salary Management',
             'username' => $_SESSION['username'],

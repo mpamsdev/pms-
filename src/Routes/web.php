@@ -79,8 +79,9 @@ return function (App $app) {
         $group->post('/suspend', PayrollController::class . ':suspend');
         $group->post('/delete', PayrollController::class . ':delete');
         $group->post('/activate', PayrollController::class . ':activate');
-        $group->post('/salary', PayrollController::class . ':salary');
+        $group->get('/salary', PayrollController::class . ':salary');
         $group->post('/history', PayrollController::class . ':history');
+        $group->post('/allowance', PayrollController::class . ':allowance');
     });
 
     //Leave Routes

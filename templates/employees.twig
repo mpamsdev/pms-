@@ -39,7 +39,7 @@
 
                                 {% if success %}
                                     <div class="notification is-success" id="successNotification">
-                                        <p id="successMessage"  style="display:none;"></p>
+                                        {{ success }}
                                     </div>
                                 {% endif %}
 
@@ -143,7 +143,6 @@
                                         </div>
                                     </div>
 
-
                                     <!-- Activate Confirmation Modal -->
                                     <div id="activateModal-{{ item.id }}" class="modal">
                                         <div class="modal-background"></div>
@@ -159,8 +158,8 @@
                                                 <form action="/employees/activate" method="post">
                                                     <input class="is-hidden" name="id" value="{{ item.id }}">
                                                     <button type="submit" class="button is-primary">Activate</button>
+                                                    <button type="button" class="button" onclick="closeModal('activateModal-{{ item.id }}')">Cancel</button>
                                                 </form>
-                                                <button class="button" onclick="closeModal('activateModal-{{ item.id }}')">Cancel</button>
                                             </footer>
                                         </div>
                                     </div>
@@ -180,8 +179,8 @@
                                                 <form action="/employees/suspend" method="post">
                                                     <input class="is-hidden" name="id" value="{{ item.id }}">
                                                     <button type="submit" class="button is-primary">Suspend</button>
+                                                    <button type="button" class="button" onclick="closeModal('suspendModal-{{ item.id }}')">Cancel</button>
                                                 </form>
-                                                <button class="button" onclick="closeModal('suspendModal-{{ item.id }}')">Cancel</button>
                                             </footer>
                                         </div>
                                     </div>
@@ -201,8 +200,8 @@
                                                 <form action="/employees/delete" method="post">
                                                     <input class="is-hidden" name="id" value="{{ item.id }}">
                                                     <button type="submit" class="button is-danger">Delete</button>
+                                                    <button  type="button" class="button" onclick="closeModal('deleteModal-{{ item.id }}')">Cancel</button>
                                                 </form>
-                                                <button class="button" onclick="closeModal('deleteModal-{{ item.id }}')">Cancel</button>
                                             </footer>
                                         </div>
                                     </div>
@@ -252,20 +251,7 @@
                                         XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
                                         XLSX.writeFile(workbook, "employees.xlsx");
                                     }
-                                    setTimeout(function () {
-                                        const errorNote = document.getElementById('errorNotification');
-                                        const successNote = document.getElementById('successNotification');
-                                        if (errorNote) {
-                                            errorNote.style.transition = "opacity 0.5s ease";
-                                            errorNote.style.opacity = 0;
-                                            setTimeout(() => errorNote.remove(), 500);
-                                        }
-                                        if (successNote) {
-                                            successNote.style.transition = "opacity 0.5s ease";
-                                            successNote.style.opacity = 0;
-                                            setTimeout(() => successNote.remove(), 500);
-                                        }
-                                    }, 5000);
+
                                 </script>
                             </div>
                         </div>
@@ -274,9 +260,6 @@
             </div>
         </div>
     </div>
-
-
-
     <script>
         // Disable all form submit buttons after submit
         document.querySelectorAll('form').forEach(form => {
@@ -291,16 +274,31 @@
 
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Parse query params
-            const params = new URLSearchParams(window.location.search);
-            const successMessage = params.get("success");
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                const errorNote = document.getElementById('errorNotification');
+                const successNote = document.getElementById('successNotification');
 
-            if (successMessage) {
-                const msgEl = document.getElementById("successMessage");
-                msgEl.textContent = decodeURIComponent(successMessage);
-                msgEl.style.display = "block";
-            }
+                if (errorNote) {
+                    errorNote.style.transition = "opacity 0.5s ease";
+                    errorNote.style.opacity = 0;
+                    setTimeout(() => errorNote.remove(), 500);
+                }
+                if (successNote) {
+                    successNote.style.transition = "opacity 0.5s ease";
+                    successNote.style.opacity = 0;
+                    setTimeout(() => successNote.remove(), 500);
+                }
+
+                // ✅ Reset URL after hiding notifications
+                const url = new URL(window.location.href);
+                if (url.searchParams.has("success") || url.searchParams.has("error")) {
+                    url.searchParams.delete("success");
+                    url.searchParams.delete("error");
+                    window.history.replaceState({}, document.title, url.toString());
+                }
+            }, 4000); // delay before fade starts
         });
     </script>
+
 {% endblock %}

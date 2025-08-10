@@ -1,20 +1,17 @@
 <?php
 
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class salary extends Model{
-    protected $table = 'salaries';
+class deductions extends Model{
 
+    protected $table = 'deductions';
     protected $fillable = [
         'employee_id',
-        'basic_salary',
-        'pay_frequency',
+        'type',
+        'amount',
     ];
-
 
     public function employee()
     {
