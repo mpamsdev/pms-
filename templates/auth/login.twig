@@ -66,7 +66,7 @@
                                     <a class="has-text-info" href="/auth/forgot-password">Forgot Password?</a>
                                 </p>
                                 <div class="field has-text-centered mt-3">
-                                    <button class="button is-black is-medium is-fullwidth">Login</button>
+                                    <button type="submit" class="button is-black is-medium is-fullwidth">Login</button>
                                 </div>
                                 <hr>
                             </form>
@@ -262,6 +262,18 @@
             setTimeout(() => notif.remove(), 500);
         }
     }, 4000); // 4 seconds before fade out
+</script>
+<script>
+    // Disable all form submit buttons after submit
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function() {
+            const buttons = form.querySelectorAll('button[type="submit"]');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('is-loading'); // Optional Bulma loading spinner
+            });
+        });
+    });
 </script>
 </body>
 </html>

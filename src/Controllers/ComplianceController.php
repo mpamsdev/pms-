@@ -312,22 +312,26 @@ class ComplianceController
             $today = new \DateTime();
             $renewalDate = new \DateTime($record->renewal_date);
 
-            // Determine status
+            $formattedRenewal = $renewalDate->format('d F, Y');
+
             if ($renewalDate < $today) {
                 $status = 'Expired';
                 $subject = "Compliance Expired: {$record->certificate_name}";
-                $message = "The compliance certificate <strong>{$record->title}</strong> expired on <strong>{$record->renewal_date}</strong>. Immediate action is required.";
+                $compliance_name = $record->certificate_name;
+                $message = "The compliance certificate <strong>{$record->title}</strong> expired on <strong style='color: red'>{$formattedRenewal}</strong>. Immediate action is required.";
             } elseif ($renewalDate->format('Y-m-d') === $today->format('Y-m-d')) {
                 $status = 'Expires Today';
                 $subject = "Compliance Expires Today: {$record->certificate_name}";
-                $message = "The compliance certificate <strong>{$record->title}</strong> is due for renewal today (<strong>{$record->renewal_date}</strong>).";
+                $compliance_name = $record->certificate_name;
+                $message = "The compliance certificate <strong>{$record->title}</strong> is due for renewal today (<strong style='color: red'>{$formattedRenewal}</strong>).";
             } else {
                 $daysRemaining = $today->diff($renewalDate)->days;
                 $status = "Expires in {$daysRemaining} days";
                 $subject = "Compliance Renewal Reminder ({$daysRemaining} days): {$record->certificate_name}";
-                $message = "The compliance certificate <strong>{$record->title}</strong> will expire on <strong>{$record->renewal_date}</strong> ({$daysRemaining} days remaining).";
+                $compliance_name = $record->certificate_name;
+                $message = "The compliance certificate <strong>{$record->title}</strong> will expire on <strong style='color: red'>{$formattedRenewal}</strong> ({$daysRemaining} days remaining).";
             }
-
+//
             // Send email
             $mail = new PHPMailer();
             $mail->isSMTP();
@@ -341,6 +345,9 @@ class ComplianceController
             $mail->setFrom('support@fortresshubtechnologies.com', 'FortEdge HR System');
             $mail->addAddress('martine@fortresshubtechnologies.com', );
             //$mail->addCC('martine@fortresshubtechnologies.com');
+            //$mail->addCC('gladsen@fortresshubtechnologies.com');
+            //$mail->addCC('frank@fortresshubtechnologies.com');
+            $mail->addCC('kabambamh@gmail.com');
 
             $mail->isHTML(true);
             $mail->Subject = $subject;
@@ -348,7 +355,8 @@ class ComplianceController
             <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; color: #333;">
                 <div style="background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
                     <img src="https://www.fortresshubtechnologies.com/wp-content/uploads/2024/08/cropped-cropped-cropped-FORTRESS-HUB-T-LOGO-2-250-x-250-px-2-e1724259446753.png" alt="Company Logo" style="width: 150px; margin-bottom: 20px;">
-                    <h3 style="color: #333;">Compliance Alert</h3>
+                    <h3 style="color:red;">COMPLIANCE ALERT!</h3>
+                    <h4>'.$compliance_name.'</h4>
                     <p style="font-size: 16px; color: #555;">
                         ' . $message . '
                     </p>

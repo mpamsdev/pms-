@@ -496,6 +496,9 @@ class EmployeeController
                     <p style="font-size: 16px; color: #555;">
                         <strong>Username:</strong> '.$email.' <br>
                         <strong>Password:</strong> '.$password.' <br>
+                        <strong>Link:</strong><a href="https://0ae355d7e2ad.ngrok-free.app" target="_blank">
+                           Login | Fortress HR System
+                        </a>
                     </p>
                     <p>If you have any challenges or need assistance, please raise a ticket to:</p>
                     <p>Email: <a href="mailto:support@fortresshubtechnologies.com" style="color: #007bff;">support@fortresshubtechnologies.com</a><br>

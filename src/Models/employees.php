@@ -20,7 +20,6 @@ class employees extends Model{
         return $this->hasMany(leaveRequest::class, 'employee_id');
     }
 
-
     public function salaries()
     {
         return $this->hasMany(salary::class);
@@ -30,8 +29,5 @@ class employees extends Model{
     {
         return $this->hasMany(allowance::class);
     }
-
-
-
 
 }

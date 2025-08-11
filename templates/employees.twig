@@ -4,22 +4,51 @@
         <div class="columns">
             <div class="column is-12">
                 <section class="section is-small mt-6">
-                    <nav class="breadcrumb box has-background-warning" aria-label="breadcrumbs">
+                    <nav class="breadcrumb " aria-label="breadcrumbs">
                         <ul>
-                            <li><a class="is-size-5 has-text-white">Home</a></li>
-                            <li><a class="is-size-5 has-text-white">Employees</a></li>
+                            <li><a class="is-size-5 has-text-link">Home</a></li>
+                            <li><a class="is-size-5 has-text-link">Employees</a></li>
                         </ul>
                     </nav>
+                    <hr>
+                    <div class="columns is-multiline">
+                        <div class="column is-3">
+                            <div class="box">
+                               <p>Permanent</p>
+                                <p>4</p>
+                            </div>
+                        </div>
+
+                        <div class="column is-3">
+                            <div class="box">
+                                <p>Contracts</p>
+                                <p>4</p>
+                            </div>
+                        </div>
+
+                        <div class="column is-3">
+                            <div class="box">
+                                <p>Part-Time</p>
+                                <p>4</p>
+                            </div>
+                        </div>
+                        <div class="column is-3">
+                            <div class="box">
+                                <p>Internship</p>
+                                <p>4</p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="columns">
                         <div class="column is-full">
                             <div class="box">
                                 <div class="level mb-4">
                                     <div class="level-left">
-                                        <button class="button is-success" onclick="openModal('addModal')">
+                                        <button class="button is-small is-success" onclick="openModal('addModal')">
                                             <span class="mdi mdi-plus-thick"></span>
-                                            Add Employee
+                                            Add
                                         </button>
-                                        <button class="button is-outlined is-primary ml-2" onclick="exportToExcel()">
+                                        <button class="button is-small is-outlined is-primary ml-2" onclick="exportToExcel()">
                                             <span class="mdi mdi-file-excel "></span>
                                             Excel
                                         </button>
@@ -36,26 +65,24 @@
                                     </div>
                                 {% endif %}
 
-
                                 {% if success %}
                                     <div class="notification is-success" id="successNotification">
                                         {{ success }}
                                     </div>
                                 {% endif %}
 
-
                                 <div class="table-container">
                                     <table id="myTable" class="table is-fullwidth is-hoverable">
                                         <thead>
-                                        <tr>
+                                        <tr class="is-size-7">
                                             <th>Name</th>
                                             <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Department</th>
+{#                                            <th>Phone</th>#}
+{#                                            <th>Department</th>#}
                                             <th>Job Title</th>
-                                            <th>Contract Start</th>
-                                            <th>Contract End</th>
-                                            <th>Years</th>
+{#                                            <th>Contract Start</th>#}
+{#                                            <th>Contract End</th>#}
+                                            <th>Progression</th>
                                             <th>Status</th>
                                             <th></th>
                                             <th></th>
@@ -68,33 +95,38 @@
                                                  <tr>
                                                      <td>{{ employee.name }}</td>
                                                      <td>{{ employee.username }}</td>
-                                                     <td>{{ employee.phone }}</td>
-                                                     <td>{{ employee.department }}</td>
+{#                                                     <td>{{ employee.phone }}</td>#}
+{#                                                     <td>{{ employee.department }}</td>#}
                                                      <td>{{ employee.job_title }}</td>
-                                                     <td>
-                                                         {{ employee.contract_start_date ? employee.contract_start_date|date('Y-m-d') : '-' }}
-                                                     </td>
-                                                     <td>
-                                                         {{ employee.contract_end_date ? employee.contract_end_date|date('Y-m-d') : '-' }}
-                                                     </td>
+{#                                                     <td>#}
+{#                                                         {{ employee.contract_start_date ? employee.contract_start_date|date('Y-m-d') : '-' }}#}
+{#                                                     </td>#}
+{#                                                     <td>#}
+{#                                                         {{ employee.contract_end_date ? employee.contract_end_date|date('Y-m-d') : '-' }}#}
+{#                                                     </td>#}
 
                                                      <td>
                                                          {{ employee.contract_progress }}
                                                      </td>
                                                      <td>{{ employee.status | capitalize}}</td>
                                                      <td>
-                                                         {% if employee.status == 'suspended' %}
-                                                             <!-- Activate button -->
-                                                             <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">
-                                                                 <span class="mdi mdi-account-check"></span>
-                                                             </button>
-                                                         {% else %}
-                                                             <!-- Suspend button -->
-                                                             <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">
-                                                                 <span class="mdi mdi-account-off"></span>
-                                                             </button>
-                                                         {% endif %}
+                                                         <button class="button is-small is-primary" onclick="openModal('viewModal-{{ employee.id }}')">
+                                                             <span class="mdi mdi-eye-circle"></span>
+                                                         </button>
                                                      </td>
+{#                                                     <td>#}
+{#                                                         {% if employee.status == 'suspended' %}#}
+{#                                                             <!-- Activate button -->#}
+{#                                                             <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">#}
+{#                                                                 <span class="mdi mdi-account-check"></span>#}
+{#                                                             </button>#}
+{#                                                         {% else %}#}
+{#                                                             <!-- Suspend button -->#}
+{#                                                             <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">#}
+{#                                                                 <span class="mdi mdi-account-off"></span>#}
+{#                                                             </button>#}
+{#                                                         {% endif %}#}
+{#                                                     </td>#}
                                                      <td>
                                                          <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
                                                              <span class="mdi mdi-pencil"></span>
@@ -118,6 +150,37 @@
                                 </div>
 
                                 {% for item in employees  %}
+                                    <!-- View Modal -->
+                                    <div class="modal" id="viewModal-{{ item.id }}">
+                                        <div class="modal-background" onclick="closeModal('viewModal-{{ item.id }}')"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-warning">
+                                                <p class="modal-card-title has-text-white">View Employee</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('viewModal-{{ item.id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <p><strong>Certificate Name:</strong> {{ item.certificate_name }}</p>
+                                                <p><strong>Renewal Date:</strong> {{ item.renewal_date }}</p>
+                                            </section>
+                                            <footer class="modal-card-foot">
+                                                {% if item.status == 'suspended' %}
+                                                    <!-- Activate button -->
+                                                    <button class="button  is-success" onclick="openModal('activateModal-{{ item.id }}')">
+                                                        <span class="mdi mdi-account-check"></span>
+                                                        Activate
+                                                    </button>
+                                                {% else %}
+                                                    <!-- Suspend button -->
+                                                    <button class="button is-primary" onclick="openModal('suspendModal-{{ item.id }}')">
+                                                        <span class="mdi mdi-account-off"></span>
+                                                        Suspend
+                                                    </button>
+                                                {% endif %}
+                                                <button class="button" onclick="closeModal('viewModal-{{ item.id }}')">Close</button>
+                                            </footer>
+                                        </div>
+                                    </div>
+
                                     <!-- Edit Modal -->
                                     <div id="editModal-{{ item.id }}" class="modal">
                                         <div class="modal-background"></div>
