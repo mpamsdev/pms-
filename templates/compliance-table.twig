@@ -52,7 +52,6 @@
                                     <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                         <thead>
                                         <tr class="is-size-7">
-                                            <th>ID</th>
                                             <th>Certificate Name</th>
                                             <th>Renewal Date</th>
                                             <th>Created At</th>
@@ -74,7 +73,6 @@
                                                             has-background-warning
                                                         {% endif %}
                                                     ">
-                                                    <td>{{ item.compliance_id }}</td>
                                                     <td>{{ item.certificate_name }}</td>
                                                     <td>{{ item.renewal_date | date('d F, Y') }}</td>
                                                     <td>{{ item.created_at|date('d F, Y') }}</td>
@@ -261,6 +259,18 @@
 
             XLSX.writeFile(workbook, "compliance_table.xlsx");
         }
+    </script>
+    <script>
+        // Disable all form submit buttons after submit
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const buttons = form.querySelectorAll('button[type="submit"]');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('is-loading'); // Optional Bulma loading spinner
+                });
+            });
+        });
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
