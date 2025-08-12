@@ -10,7 +10,6 @@
                             <li><a class="is-size-5 has-text-link">Employees</a></li>
                         </ul>
                     </nav>
-                    <hr>
                     <div class="columns is-multiline">
                         <div class="column is-3">
                             <div class="box">
@@ -72,7 +71,7 @@
                                 {% endif %}
 
                                 <div class="table-container">
-                                    <table id="myTable" class="table is-fullwidth is-hoverable">
+                                    <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                         <thead>
                                         <tr class="is-size-7">
                                             <th>Name</th>
@@ -84,61 +83,53 @@
 {#                                            <th>Contract End</th>#}
                                             <th>Progression</th>
                                             <th>Status</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                            <th>View</th>
+                                            <th>Edit</th>
+                                            <th>Delete</th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                          {% if employees | length > 0 %}
                                              {% for employee in employees %}
-                                                 <tr>
+                                                 <tr class="{{ employee.status == 'Suspended' ? 'has-background-danger-dark has-text-white' : '' }}">
                                                      <td>{{ employee.name }}</td>
                                                      <td>{{ employee.username }}</td>
-{#                                                     <td>{{ employee.phone }}</td>#}
-{#                                                     <td>{{ employee.department }}</td>#}
                                                      <td>{{ employee.job_title }}</td>
-{#                                                     <td>#}
-{#                                                         {{ employee.contract_start_date ? employee.contract_start_date|date('Y-m-d') : '-' }}#}
-{#                                                     </td>#}
-{#                                                     <td>#}
-{#                                                         {{ employee.contract_end_date ? employee.contract_end_date|date('Y-m-d') : '-' }}#}
-{#                                                     </td>#}
-
-                                                     <td>
-                                                         {{ employee.contract_progress }}
-                                                     </td>
-                                                     <td>{{ employee.status | capitalize}}</td>
+                                                     <td>{{ employee.contract_progress }}</td>
+                                                     <td>{{ employee.status | capitalize }}</td>
                                                      <td>
                                                          <button class="button is-small is-primary" onclick="openModal('viewModal-{{ employee.id }}')">
                                                              <span class="mdi mdi-eye-circle"></span>
                                                          </button>
                                                      </td>
-{#                                                     <td>#}
-{#                                                         {% if employee.status == 'suspended' %}#}
-{#                                                             <!-- Activate button -->#}
-{#                                                             <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">#}
-{#                                                                 <span class="mdi mdi-account-check"></span>#}
-{#                                                             </button>#}
-{#                                                         {% else %}#}
-{#                                                             <!-- Suspend button -->#}
-{#                                                             <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">#}
-{#                                                                 <span class="mdi mdi-account-off"></span>#}
-{#                                                             </button>#}
-{#                                                         {% endif %}#}
-{#                                                     </td>#}
-                                                     <td>
-                                                         <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
-                                                             <span class="mdi mdi-pencil"></span>
-                                                         </button>
-                                                     </td>
-                                                     <td>
-                                                         <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
-                                                             <span class="mdi mdi-trash-can"></span>
-                                                         </button>
-                                                     </td>
+                                                     {% if employee.status != 'Suspended' %}
+                                                         <td>
+                                                             <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
+                                                                 <span class="mdi mdi-pencil"></span>
+                                                             </button>
+                                                         </td>
+                                                         <td>
+                                                             <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
+                                                                 <span class="mdi mdi-trash-can"></span>
+                                                             </button>
+                                                         </td>
+                                                     {% else %}
+                                                         <td></td>
+                                                         <td></td>
+                                                     {% endif %}
 
+                                                     {#                                                     <td>#}
+{#                                                         <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">#}
+{#                                                             <span class="mdi mdi-pencil"></span>#}
+{#                                                         </button>#}
+{#                                                     </td>#}
+{#                                                     <td>#}
+{#                                                         <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">#}
+{#                                                             <span class="mdi mdi-trash-can"></span>#}
+{#                                                         </button>#}
+{#                                                     </td>#}
                                                  </tr>
+
                                              {% endfor %}
                                          {% else %}
                                              <tr>
@@ -159,8 +150,63 @@
                                                 <button class="delete" aria-label="close" onclick="closeModal('viewModal-{{ item.id }}')"></button>
                                             </header>
                                             <section class="modal-card-body">
-                                                <p><strong>Certificate Name:</strong> {{ item.certificate_name }}</p>
-                                                <p><strong>Renewal Date:</strong> {{ item.renewal_date }}</p>
+                                                <div class="columns">
+                                                    <div class="column is-2">
+                                                        <figure class="image is-96x96" style="margin: 0 auto; /*border: 2px solid dodgerblue; border-radius: 50%/*">
+                                                            <img class="is-rounded" src="/assets/img/fht.png" style="border: 2px solid blue; border-radius: 50%; height: 6em">
+                                                        </figure>
+                                                    </div>
+                                                </div>
+                                                <div class="columns is-multiline">
+                                                    <div class="column is-6">
+                                                        <div class="field">
+                                                            <div class="control">
+                                                                <label class="">Name</label>
+                                                                <input type="text" class="input is-normal" value="{{ item.name }}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="column is-6">
+                                                        <div class="field">
+                                                            <div class="control">
+                                                                <label class="">Email</label>
+                                                                <input type="text" class="input is-normal" value="{{ item.username }}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="column is-6">
+                                                        <div class="field">
+                                                            <div class="control">
+                                                                <label class="">Phone</label>
+                                                                <input type="text" class="input is-normal" value="{{ item.phone }}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="column is-6">
+                                                        <div class="field">
+                                                            <div class="control">
+                                                                <label class="">Position</label>
+                                                                <input type="text" class="input is-normal" value="{{ item.job_title }}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="column is-6">
+                                                        <div class="field">
+                                                            <div class="control">
+                                                                <label class="">Department</label>
+                                                                <input type="text" class="input is-normal" value="{{ item.department }}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="column is-6">
+                                                        <div class="field">
+                                                            <div class="control">
+                                                                <label class="">Contract Type</label>
+                                                                <input type="text" class="input is-normal" value="{{ item.department }}" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </section>
                                             <footer class="modal-card-foot">
                                                 {% if item.status == 'suspended' %}

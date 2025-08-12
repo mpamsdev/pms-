@@ -10,6 +10,9 @@ use App\Models\employees;
 use Illuminate\Pagination\Paginator;
 use Ramsey\Uuid\Uuid;
 use Respect\Validation\Validator as v;
+use App\Models\salary;
+use App\Models\allowance;
+use App\Models\deductions;
 
 class PayrollController{
 
@@ -41,13 +44,25 @@ class PayrollController{
 
         // Fetch all compliance records
         //$salaryData = payroll::all();
+        // Fetch all employees
+        $employeeData = employees::all();
+        $allowance = allowance::all();
+        $deductions = deductions::all();
+        $salary = salary::all();
+        //var_dump($employeeData);
+
         return $this->view->render($response, 'salary-manager.twig', [
             'title' => 'Salary Management',
             'username' => $_SESSION['username'],
             'userid' => $_SESSION['userid'],
             'profile_picture' => $_SESSION['profile_picture'],
             'userData' => $_SESSION['userData'],
-            //'salary_data' => $salaryData,
+            'salaries' => $salary,
+            'employees' => $employeeData,
+            'allowance' => $allowance,
+            'deductions' => $deductions,
         ]);
     }
+
+
 }

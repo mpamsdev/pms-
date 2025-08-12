@@ -4,12 +4,19 @@
         <div class="columns">
             <div class="column is-12">
                 <section class="section is-small mt-6">
-                    <nav class="breadcrumb box has-background-warning" aria-label="breadcrumbs">
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
                         <ul>
-                            <li><a class="is-size-5 has-text-white">Home</a></li>
-                            <li><a class="is-size-5 has-text-white">Compliance</a></li>
+                            <li><a class="is-size-5 has-text-link">Home</a></li>
+                            <li><a class="is-size-5 has-text-link">Compliance</a></li>
                         </ul>
                     </nav>
+                    <div class="columns is-multiline">
+                        <div class="column is-5">
+                            <div class="box">
+
+                            </div>
+                        </div>
+                    </div>
                     <div class="columns">
                         <div class="column is-full">
                             <div class="box">
@@ -42,7 +49,7 @@
                                 {% endif %}
 
                                 <div class="table-container">
-                                    <table id="myTable" class="table is-fullwidth is-hoverable">
+                                    <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                         <thead>
                                         <tr class="is-size-7">
                                             <th>ID</th>
@@ -57,13 +64,25 @@
                                         </thead>
                                         <tbody>
                                         {% if compliance | length > 0 %}
+                                            {% set today = "now"|date('Y-m-d') %}
+                                            {% set fiveDaysLater = ("now"|date_modify("+5 days"))|date('Y-m-d') %}
                                             {% for item in compliance %}
-                                                <tr>
+                                                <tr class="
+                                                        {% if item.renewal_date < today %}
+                                                            has-background-danger has-text-white
+                                                        {% elseif item.renewal_date <= fiveDaysLater %}
+                                                            has-background-warning
+                                                        {% endif %}
+                                                    ">
                                                     <td>{{ item.compliance_id }}</td>
                                                     <td>{{ item.certificate_name }}</td>
-                                                    <td>{{ item.renewal_date }}</td>
-                                                    <td>{{ item.created_at }}</td>
-                                                    <td>{{ item.updated_at }}</td>
+                                                    <td>{{ item.renewal_date | date('d F, Y') }}</td>
+                                                    <td>{{ item.created_at|date('d F, Y') }}</td>
+                                                    <td>
+                                                        {{ (item.updated_at and item.updated_at != '0000-00-00 00:00:00')
+                                                        ? item.updated_at|date('d F, Y')
+                                                        : '-' }}
+                                                    </td>
                                                     <td>
                                                         <button class="button is-small is-primary" onclick="openModal('viewModal-{{ item.compliance_id }}')">
                                                             <span class="mdi mdi-eye-circle"></span>
@@ -190,6 +209,9 @@
                                                 <div class="field is-grouped is-grouped-left">
                                                     <p class="control">
                                                         <button type="submit" class="button is-success">Save</button>
+                                                    </p>
+                                                    <p class="control">
+                                                        <button type="button" class="button" onclick="closeModal('addModal')">Cancel</button>
                                                     </p>
                                                 </div>
                                             </form>

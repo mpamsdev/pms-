@@ -4,10 +4,10 @@
         <div class="columns">
             <div class="column is-12">
                 <section class="section is-small mt-6">
-                    <nav class="breadcrumb box has-background-warning" aria-label="breadcrumbs">
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
                         <ul>
-                            <li><a class="is-size-5 has-text-white">Home</a></li>
-                            <li><a class="is-size-5 has-text-white">{{ title }}</a></li>
+                            <li><a class="is-size-5 has-text-link">Home</a></li>
+                            <li><a class="is-size-5 has-text-link">{{ title }}</a></li>
                         </ul>
                     </nav>
                         <div class="columns is-multiline">
@@ -17,9 +17,9 @@
                                     <hr>
                                     <div class="level mb-4">
                                         <div class="level-left">
-                                            <button class="button is-small is-success " onclick="openModal('addModal')">
+                                            <button class="button is-small is-success " onclick="openModal('allowanceModal')">
                                                 <span class="mdi mdi-plus"></span>
-                                                Add
+                                                Add Allowance
                                             </button>
                                         </div>
                                     </div>
@@ -41,41 +41,25 @@
                                     {% endif %}
 
                                     <div class="table-container">
-                                        <table id="myTable" class="table is-fullwidth is-hoverable">
+                                        <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                             <thead>
                                             <tr class="is-size-7">
-                                                <th>Employee</th>
-                                                <th>Basic Pay</th>
-                                                <th>Total Allowance</th>
-                                                <th>Total Deductions</th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
+                                                <th>Employee ID</th>
+                                                <th>Type</th>
+                                                <th>Amount</th>
+                                                <th>Create At</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {% for employee in employees %}
+                                            {% for item in allowances %}
                                                 <tr>
-                                                    <td>{{ employee.id }}</td>
-                                                    <td>{{ employee.name }}</td>
-                                                    <td>{{ employee.username }}</td>
-                                                    <td>{{ employee.phone }}</td>
-                                                    <td>{{ employee.department }}</td>
-                                                    <td>{{ employee.job_title }}</td>
-                                                    <td>{{ employee.status }}</td>
-                                                    <td>
-                                                        {% if employee.status == 'suspended' %}
-                                                            <!-- Activate button -->
-                                                            <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">
-                                                                <span class="mdi mdi-account-check"></span>
-                                                            </button>
-                                                        {% else %}
-                                                            <!-- Suspend button -->
-                                                            <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">
-                                                                <span class="mdi mdi-account-off"></span>
-                                                            </button>
-                                                        {% endif %}
-                                                    </td>
+                                                    <td>{{ item.employee_id }}</td>
+                                                    <td>{{ item.type }}</td>
+                                                    <td>{{ item.amount }}</td>
+                                                    <td>{{ item.amount }}</td>
+                                                    <td>{{ item.created_at | date('d F, Y') }}</td>
                                                     <td>
                                                         <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
                                                             <span class="mdi mdi-pencil"></span>
@@ -113,48 +97,6 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Activate Confirmation Modal -->
-                                                <div id="activateModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Confirm Re-activation</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('activateModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to Re-activate <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/activate" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-primary">Activate</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('activateModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Suspend Confirmation Modal -->
-                                                <div id="suspendModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Confirm Suspension</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('suspendModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to freeze <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/suspend" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-primary">Suspend</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('suspendModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-
                                                 <!-- Delete Confirmation Modal -->
                                                 <div id="deleteModal-{{ employee.id }}" class="modal">
                                                     <div class="modal-background"></div>
@@ -181,26 +123,29 @@
                                     </div>
 
                                     <!-- Add Modal -->
-                                    <div id="addModal" class="modal">
+                                    <div id="allowanceModal" class="modal">
                                         <div class="modal-background"></div>
                                         <div class="modal-card">
                                             <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Allowance</p>
-                                                <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
+                                                <p class="modal-card-title has-text-white">Allowance Record</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('allowanceModal')"></button>
                                             </header>
                                             <section class="modal-card-body">
                                                 <form action="/payroll/allowance" method="post">
-                                                    {% include 'partials/allowance_form_fields.twig' with { employee: {} } %}
-
+                                                    {% include 'partials/allowance_form_fields.twig' with { employee: {}, allowance: {}  } %}
                                                     <div class="field is-grouped is-grouped-left">
                                                         <p class="control">
                                                             <button type="submit" class="button is-success">Save</button>
+                                                        </p>
+                                                        <p class="control">
+                                                            <button type="button" class="button is-light" onclick="closeModal('allowanceModal')">Cancel</button>
                                                         </p>
                                                     </div>
                                                 </form>
                                             </section>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
 
@@ -211,13 +156,9 @@
                                     <hr>
                                     <div class="level mb-4">
                                         <div class="level-left">
-                                            <button class="button is-success" onclick="openModal('addModal')">
-                                                <span class="mdi mdi-cash-multiple"></span>
-                                                Add Salary
-                                            </button>
-                                            <button class="button is-outlined is-primary ml-2" onclick="exportToExcel()">
-                                                <span class="mdi mdi-file-excel "></span>
-                                                Excel
+                                            <button class="button is-small is-success" onclick="openModal('deductionModal')">
+                                                <span class="mdi mdi-plus"></span>
+                                                Add Deduction
                                             </button>
                                         </div>
                                     </div>
@@ -239,41 +180,24 @@
                                     {% endif %}
 
                                     <div class="table-container">
-                                        <table id="myTable" class="table is-fullwidth is-hoverable">
+                                        <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                             <thead>
                                             <tr class="is-size-7">
                                                 <th>Employee</th>
-                                                <th>Basic Pay</th>
-                                                <th>Total Allowance</th>
-                                                <th>Total Deductions</th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
+                                                <th>Type</th>
+                                                <th>Amount</th>
+                                                <th>Created At</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {% for employee in employees %}
+                                            {% for deduction in deductions %}
                                                 <tr>
-                                                    <td>{{ employee.id }}</td>
-                                                    <td>{{ employee.name }}</td>
-                                                    <td>{{ employee.username }}</td>
-                                                    <td>{{ employee.phone }}</td>
-                                                    <td>{{ employee.department }}</td>
-                                                    <td>{{ employee.job_title }}</td>
-                                                    <td>{{ employee.status }}</td>
-                                                    <td>
-                                                        {% if employee.status == 'suspended' %}
-                                                            <!-- Activate button -->
-                                                            <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">
-                                                                <span class="mdi mdi-account-check"></span>
-                                                            </button>
-                                                        {% else %}
-                                                            <!-- Suspend button -->
-                                                            <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">
-                                                                <span class="mdi mdi-account-off"></span>
-                                                            </button>
-                                                        {% endif %}
-                                                    </td>
+                                                    <td>{{ deduction.employee_id }}</td>
+                                                    <td>{{ deduction.type }}</td>
+                                                    <td>{{ deduction.amount }}</td>
+                                                    <td>{{ deduction.created_at | date('d F, Y') }}</td>
                                                     <td>
                                                         <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
                                                             <span class="mdi mdi-pencil"></span>
@@ -288,23 +212,23 @@
                                                 </tr>
 
                                                 <!-- Edit Modal -->
-                                                <div id="editModal-{{ employee.id }}" class="modal">
+                                                <div id="editModal-{{ deduction.id }}" class="modal">
                                                     <div class="modal-background"></div>
                                                     <div class="modal-card">
                                                         <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Edit Salary</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ employee.id }}')"></button>
+                                                            <p class="modal-card-title has-text-white">Edit Deduction</p>
+                                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ deduction.id }}')"></button>
                                                         </header>
                                                         <section class="modal-card-body">
-                                                            <form action="/dashboard/salary/update" method="post">
-                                                                <input type="hidden" name="id" value="{{ employee.id }}">
-                                                                {% include 'partials/salary_form_fields.twig' with { employee: employee } %}
+                                                            <form action="/payroll/deduction/update" method="post">
+                                                                <input type="hidden" name="id" value="{{ deduction.id }}">
+                                                                {% include 'partials/salary_form_fields.twig' with { employee: employees, deduction: deductions } %}
                                                                 <div class="field is-grouped is-grouped-left">
                                                                     <p class="control">
                                                                         <button type="submit" class="button is-success">Update</button>
                                                                     </p>
                                                                     <p class="control">
-                                                                        <button type="button" class="button" onclick="closeModal('editModal-{{ employee.id }}')">Cancel</button>
+                                                                        <button type="button" class="button" onclick="closeModal('editModal-{{ deduction.id }}')">Cancel</button>
                                                                     </p>
                                                                 </div>
                                                             </form>
@@ -312,65 +236,24 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Activate Confirmation Modal -->
-                                                <div id="activateModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Confirm Re-activation</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('activateModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to Re-activate <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/activate" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-primary">Activate</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('activateModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Suspend Confirmation Modal -->
-                                                <div id="suspendModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Confirm Suspension</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('suspendModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to freeze <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/suspend" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-primary">Suspend</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('suspendModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
 
                                                 <!-- Delete Confirmation Modal -->
-                                                <div id="deleteModal-{{ employee.id }}" class="modal">
+                                                <div id="deleteModal-{{ deduction.id }}" class="modal">
                                                     <div class="modal-background"></div>
                                                     <div class="modal-card">
                                                         <header class="modal-card-head has-background-danger">
                                                             <p class="modal-card-title has-text-white">Confirm Deletion</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ employee.id }}')"></button>
+                                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ deduction.id }}')"></button>
                                                         </header>
                                                         <section class="modal-card-body">
-                                                            <p>Are you sure you want to delete <strong>{{ employee.name }}</strong>?</p>
+                                                            <p>Are you sure you want to delete deduction No. <strong>{{ deduction.id }}</strong>?</p>
                                                         </section>
                                                         <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/delete" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
+                                                            <form action="/payroll/deduction/delete" method="post">
+                                                                <input class="is-hidden" name="id" value="{{ deduction.id }}">
                                                                 <button type="submit" class="button is-danger">Delete</button>
                                                             </form>
-                                                            <button class="button" onclick="closeModal('deleteModal-{{ employee.id }}')">Cancel</button>
+                                                            <button class="button" onclick="closeModal('deleteModal-{{ deduction.id }}')">Cancel</button>
                                                         </footer>
                                                     </div>
                                                 </div>
@@ -380,20 +263,22 @@
                                     </div>
 
                                     <!-- Add Modal -->
-                                    <div id="addModal" class="modal">
+                                    <div id="deductionModal" class="modal">
                                         <div class="modal-background"></div>
                                         <div class="modal-card">
                                             <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Add Employee</p>
-                                                <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
+                                                <p class="modal-card-title has-text-white">Deduction Record</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('deductionModal')"></button>
                                             </header>
                                             <section class="modal-card-body">
-                                                <form action="/dashboard/salary/add" method="post">
-                                                    {% include 'partials/salary_form_fields.twig' with { employee: {} } %}
-
+                                                <form action="/payroll/deduction/add" method="post">
+                                                    {% include 'partials/salary_form_fields.twig' with { employee: {}, allowance: {}, deduction: {} } %}
                                                     <div class="field is-grouped is-grouped-left">
                                                         <p class="control">
                                                             <button type="submit" class="button is-success">Save</button>
+                                                        </p>
+                                                        <p class="control">
+                                                            <button type="button" class="button is-light" onclick="closeModal('deductionModal')">Cancel</button>
                                                         </p>
                                                     </div>
                                                 </form>
@@ -402,6 +287,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <!--Full Salary Table-->
                             <div class="column is-full">
                                 <div class="box">
@@ -437,41 +323,28 @@
                                     {% endif %}
 
                                     <div class="table-container">
-                                        <table id="myTable" class="table is-fullwidth is-hoverable">
+                                        <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                             <thead>
                                             <tr class="is-size-7">
                                                 <th>Employee</th>
                                                 <th>Basic Pay</th>
                                                 <th>Total Allowance</th>
                                                 <th>Total Deductions</th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
+                                                <th>Pay Frequency</th>
+                                                <th>View</th>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            {% for employee in employees %}
+                                            {% for salary in salaries %}
                                                 <tr>
-                                                    <td>{{ employee.id }}</td>
-                                                    <td>{{ employee.name }}</td>
-                                                    <td>{{ employee.username }}</td>
-                                                    <td>{{ employee.phone }}</td>
-                                                    <td>{{ employee.department }}</td>
-                                                    <td>{{ employee.job_title }}</td>
-                                                    <td>{{ employee.status }}</td>
-                                                    <td>
-                                                        {% if employee.status == 'suspended' %}
-                                                            <!-- Activate button -->
-                                                            <button class="button is-small is-success" onclick="openModal('activateModal-{{ employee.id }}')">
-                                                                <span class="mdi mdi-account-check"></span>
-                                                            </button>
-                                                        {% else %}
-                                                            <!-- Suspend button -->
-                                                            <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ employee.id }}')">
-                                                                <span class="mdi mdi-account-off"></span>
-                                                            </button>
-                                                        {% endif %}
-                                                    </td>
+                                                    <td>{{ salary.name }}</td>
+                                                    <td>{{ salary.basic_salary }}</td>
+                                                    <td>{{ salary.total_allowance }}</td>
+                                                    <td>{{ salary.total_deduction }}</td>
+                                                    <td>{{ salary.pay_frequency }}</td>
+                                                    <td>{{ salary.created_at | date('d F, Y')}}</td>
                                                     <td>
                                                         <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
                                                             <span class="mdi mdi-pencil"></span>
@@ -582,7 +455,7 @@
                                         <div class="modal-background"></div>
                                         <div class="modal-card">
                                             <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Add Employee</p>
+                                                <p class="modal-card-title has-text-white">Salary Record</p>
                                                 <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
                                             </header>
                                             <section class="modal-card-body">
