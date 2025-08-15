@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '92a2d53367ca5d0a8ee5c9ca04d589993bd88799',
+        'reference' => '77ae6045e0f6308f32a250edb3fcfc51277ac0a2',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '92a2d53367ca5d0a8ee5c9ca04d589993bd88799',
+            'reference' => '77ae6045e0f6308f32a250edb3fcfc51277ac0a2',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -418,6 +418,15 @@
             'replaced' => array(
                 0 => '4.9.0',
             ),
+        ),
+        'slim/flash' => array(
+            'pretty_version' => '0.4.0',
+            'version' => '0.4.0.0',
+            'reference' => '9aaff5fded3b54f4e519ec3d4ac74d3d1f2cbbbc',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../slim/flash',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'slim/psr7' => array(
             'pretty_version' => '1.7.1',

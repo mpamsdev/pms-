@@ -80,8 +80,21 @@ return function (App $app) {
         $group->post('/delete', PayrollController::class . ':delete');
         $group->post('/activate', PayrollController::class . ':activate');
         $group->get('/salary', PayrollController::class . ':salary');
+        $group->post('/salary/add', PayrollController::class . ':addSalary');
         $group->post('/history', PayrollController::class . ':history');
+
         $group->post('/allowance', PayrollController::class . ':allowance');
+        $group->post('/allowance/update', PayrollController::class . ':updateAllowance');
+        $group->get('/allowances/list', PayrollController::class . ':allowanceList');
+        $group->post('/allowance/delete', PayrollController::class . ':deleteAllowanceRecord');
+
+        $group->post('/deduction', PayrollController::class . ':deductions');
+        $group->post('/deduction/update', PayrollController::class . ':updateDeductions');
+        $group->post('/deduction/delete', PayrollController::class . ':deleteDeductionRecord');
+
+        $group->get('/salary/totals/{employee_id}', PayrollController::class . ':totals');
+        $group->post('/salary/update', PayrollController::class . ':updateSalary');
+        $group->post('/salary/delete', PayrollController::class . ':deleteSalaryRecord');
     });
 
     //Leave Routes

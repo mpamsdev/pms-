@@ -12,6 +12,7 @@ use App\Middlewares\CorsMiddleware;
 use App\Middlewares\RegistrationStepMiddleware;
 
 use Slim\Views\Twig;
+use Slim\Flash\Messages;
 
 
 $container = new Container();
@@ -28,6 +29,7 @@ $app->addBodyParsingMiddleware();
 $container->set('view', function() {
     return Twig::create(__DIR__ . '/../templates', ['cache' => false]);
 });
+
 
 // Load environment variables
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');

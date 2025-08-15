@@ -43,11 +43,11 @@
                             <div class="box">
                                 <div class="level mb-4">
                                     <div class="level-left">
-                                        <button class="button is-small is-success" onclick="openModal('addModal')">
+                                        <button class="button is-rounded is-success" onclick="openModal('addModal')">
                                             <span class="mdi mdi-plus-thick"></span>
-                                            Add
+                                            Add Employee
                                         </button>
-                                        <button class="button is-small is-outlined is-primary ml-2" onclick="exportToExcel()">
+                                        <button class="button is-rounded is-outlined is-primary ml-2" onclick="exportToExcel()">
                                             <span class="mdi mdi-file-excel "></span>
                                             Excel
                                         </button>
@@ -76,11 +76,7 @@
                                         <tr class="is-size-7">
                                             <th>Name</th>
                                             <th>Email</th>
-{#                                            <th>Phone</th>#}
-{#                                            <th>Department</th>#}
                                             <th>Job Title</th>
-{#                                            <th>Contract Start</th>#}
-{#                                            <th>Contract End</th>#}
                                             <th>Progression</th>
                                             <th>Status</th>
                                             <th>View</th>
@@ -110,7 +106,7 @@
                                                          </td>
                                                          <td>
                                                              <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
-                                                                 <span class="mdi mdi-trash-can"></span>
+                                                                 <span class="mdi mdi-delete"></span>
                                                              </button>
                                                          </td>
                                                      {% else %}
@@ -118,16 +114,6 @@
                                                          <td></td>
                                                      {% endif %}
 
-                                                     {#                                                     <td>#}
-{#                                                         <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">#}
-{#                                                             <span class="mdi mdi-pencil"></span>#}
-{#                                                         </button>#}
-{#                                                     </td>#}
-{#                                                     <td>#}
-{#                                                         <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">#}
-{#                                                             <span class="mdi mdi-trash-can"></span>#}
-{#                                                         </button>#}
-{#                                                     </td>#}
                                                  </tr>
 
                                              {% endfor %}
@@ -157,12 +143,13 @@
                                                         </figure>
                                                     </div>
                                                 </div>
+                                                <hr>
                                                 <div class="columns is-multiline">
                                                     <div class="column is-6">
                                                         <div class="field">
                                                             <div class="control">
                                                                 <label class="">Name</label>
-                                                                <input type="text" class="input is-normal" value="{{ item.name }}" readonly>
+                                                                <input type="text" class="input is-small" value="{{ item.name }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -170,7 +157,7 @@
                                                         <div class="field">
                                                             <div class="control">
                                                                 <label class="">Email</label>
-                                                                <input type="text" class="input is-normal" value="{{ item.username }}" readonly>
+                                                                <input type="text" class="input is-small" value="{{ item.username }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -178,7 +165,7 @@
                                                         <div class="field">
                                                             <div class="control">
                                                                 <label class="">Phone</label>
-                                                                <input type="text" class="input is-normal" value="{{ item.phone }}" readonly>
+                                                                <input type="text" class="input is-small" value="{{ item.phone }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -186,7 +173,7 @@
                                                         <div class="field">
                                                             <div class="control">
                                                                 <label class="">Position</label>
-                                                                <input type="text" class="input is-normal" value="{{ item.job_title }}" readonly>
+                                                                <input type="text" class="input is-small" value="{{ item.job_title }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -194,7 +181,7 @@
                                                         <div class="field">
                                                             <div class="control">
                                                                 <label class="">Department</label>
-                                                                <input type="text" class="input is-normal" value="{{ item.department }}" readonly>
+                                                                <input type="text" class="input is-small" value="{{ item.department }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -202,7 +189,7 @@
                                                         <div class="field">
                                                             <div class="control">
                                                                 <label class="">Contract Type</label>
-                                                                <input type="text" class="input is-normal" value="{{ item.department }}" readonly>
+                                                                <input type="text" class="input is-small" value="{{ item.department }}" readonly>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -211,18 +198,18 @@
                                             <footer class="modal-card-foot">
                                                 {% if item.status == 'suspended' %}
                                                     <!-- Activate button -->
-                                                    <button class="button  is-success" onclick="openModal('activateModal-{{ item.id }}')">
+                                                    <button class="button is-rounded is-success" onclick="openModal('activateModal-{{ item.id }}')">
                                                         <span class="mdi mdi-account-check"></span>
                                                         Activate
                                                     </button>
                                                 {% else %}
                                                     <!-- Suspend button -->
-                                                    <button class="button is-primary" onclick="openModal('suspendModal-{{ item.id }}')">
+                                                    <button class="button is-rounded is-primary" onclick="openModal('suspendModal-{{ item.id }}')">
                                                         <span class="mdi mdi-account-off"></span>
                                                         Suspend
                                                     </button>
                                                 {% endif %}
-                                                <button class="button" onclick="closeModal('viewModal-{{ item.id }}')">Close</button>
+                                                <button type="button" class="button is-rounded" onclick="closeModal('viewModal-{{ item.id }}')">Close</button>
                                             </footer>
                                         </div>
                                     </div>
@@ -241,10 +228,12 @@
                                                     {% include 'partials/employee_form_fields.twig' with { employee: employee } %}
                                                     <div class="field is-grouped is-grouped-left">
                                                         <p class="control">
-                                                            <button type="submit" class="button is-success">Update</button>
+                                                            <button type="submit" class="button is-rounded is-success">
+                                                                <span class="mdi mdi-account-off mr-1"></span>  Update
+                                                            </button>
                                                         </p>
                                                         <p class="control">
-                                                            <button type="button" class="button" onclick="closeModal('editModal-{{ item.id }}')">Cancel</button>
+                                                            <button type="button" class="button is-rounded " onclick="closeModal('editModal-{{ item.id }}')">Cancel</button>
                                                         </p>
                                                     </div>
                                                 </form>
@@ -266,8 +255,10 @@
                                             <footer class="modal-card-foot">
                                                 <form action="/employees/activate" method="post">
                                                     <input class="is-hidden" name="id" value="{{ item.id }}">
-                                                    <button type="submit" class="button is-primary">Activate</button>
-                                                    <button type="button" class="button" onclick="closeModal('activateModal-{{ item.id }}')">Cancel</button>
+                                                    <button type="submit" class="button is-rounded is-primary">
+                                                        <span class="mdi mdi-account-check"></span> Activate
+                                                    </button>
+                                                    <button type="button" class="button is-rounded" onclick="closeModal('activateModal-{{ item.id }}')">Cancel</button>
                                                 </form>
                                             </footer>
                                         </div>
@@ -287,8 +278,10 @@
                                             <footer class="modal-card-foot">
                                                 <form action="/employees/suspend" method="post">
                                                     <input class="is-hidden" name="id" value="{{ item.id }}">
-                                                    <button type="submit" class="button is-primary">Suspend</button>
-                                                    <button type="button" class="button" onclick="closeModal('suspendModal-{{ item.id }}')">Cancel</button>
+                                                    <button type="submit" class="button is-rounded is-primary">
+                                                        <span class="mdi mdi-account-off mr-1"></span> Suspend
+                                                    </button>
+                                                    <button type="button" class="button is-rounded" onclick="closeModal('suspendModal-{{ item.id }}')">Cancel</button>
                                                 </form>
                                             </footer>
                                         </div>
@@ -308,8 +301,10 @@
                                             <footer class="modal-card-foot">
                                                 <form action="/employees/delete" method="post">
                                                     <input class="is-hidden" name="id" value="{{ item.id }}">
-                                                    <button type="submit" class="button is-danger">Delete</button>
-                                                    <button  type="button" class="button" onclick="closeModal('deleteModal-{{ item.id }}')">Cancel</button>
+                                                    <button type="submit" class="button is-rounded is-danger">
+                                                        <span class="mdi mdi-delete mr-1"></span> Delete
+                                                    </button>
+                                                    <button  type="button" class="button is-rounded" onclick="closeModal('deleteModal-{{ item.id }}')">Cancel</button>
                                                 </form>
                                             </footer>
                                         </div>
@@ -330,7 +325,12 @@
                                                 {% include 'partials/employee_form_fields.twig' with { employee: {}, prefix: 'add' } %}
                                                 <div class="field is-grouped is-grouped-left">
                                                     <p class="control">
-                                                        <button type="submit" class="button is-success">Save</button>
+                                                        <button type="submit" class="button is-rounded is-success">
+                                                            <span class="mdi mdi-content-save mr-1"></span>  Save
+                                                        </button>
+                                                    </p>
+                                                    <p class="control">
+                                                        <button  type="button" class="button is-rounded" onclick="closeModal('addModal')">Cancel</button>
                                                     </p>
                                                 </div>
                                             </form>

@@ -30,6 +30,39 @@ class PayrollController{
 
         session_start();
 
+        function getFlashMessages(array $queryParams): array
+        {
+            $types = ['allowance', 'deduction', 'salary'];
+            $messages = [];
+
+            foreach ($types as $type) {
+                // Errors
+                $errorKey = $type . 'Errors';
+                $messages[$errorKey] = [];
+
+                if (!empty($queryParams[$errorKey])) {
+                    $decoded = json_decode($queryParams[$errorKey], true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                        $messages[$errorKey] = $decoded;
+                    }
+                }
+
+                // Success
+                $successKey = $type . 'Success';
+                $messages[$successKey] = $queryParams[$successKey] ?? null;
+            }
+
+            // Generic success message
+            $messages['success'] = $queryParams['success'] ?? null;
+
+            return $messages;
+        }
+
+
+//        $allowanceErrors = getErrorsFromQuery('allowanceErrors');
+//        $deductionErrors = getErrorsFromQuery('deductionErrors');
+//        $salaryErrors    = getErrorsFromQuery('salaryErrors');
+
         // Auth check
         if (!isset($_SESSION['userid']) || !isset($_SESSION['username'])) {
             return $response->withHeader('Location', '/')->withStatus(302);
@@ -49,7 +82,11 @@ class PayrollController{
         $allowance = allowance::all();
         $deductions = deductions::all();
         $salary = salary::all();
-        //var_dump($employeeData);
+        //var_dump($allowance);
+
+        $queryParams = $request->getQueryParams();
+        $flashMessages = getFlashMessages($queryParams);
+
 
         return $this->view->render($response, 'salary-manager.twig', [
             'title' => 'Salary Management',
@@ -59,10 +96,599 @@ class PayrollController{
             'userData' => $_SESSION['userData'],
             'salaries' => $salary,
             'employees' => $employeeData,
-            'allowance' => $allowance,
+            'allowances' => $allowance,
             'deductions' => $deductions,
+            //'success' => $success,
+            'allowanceErrors' => $flashMessages['allowanceErrors'],
+            'allowanceSuccess' => $flashMessages['allowanceSuccess'],
+            'deductionErrors' => $flashMessages['deductionErrors'],
+            'deductionSuccess' => $flashMessages['deductionSuccess'],
+            'salaryErrors' => $flashMessages['salaryErrors'],
+            'salarySuccess' => $flashMessages['salarySuccess'],
+            'success' => $flashMessages['success'],
         ]);
     }
+
+
+// Save Allowances
+    public function allowance(Request $request, Response $response, $args)
+    {
+        session_start();
+
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+
+            $type = trim($data['type'] ?? '');
+            $amount = trim($data['amount'] ?? '');
+            $employee_id = trim($data['employee_id'] ?? '');
+
+            // Validation rules
+            $validator = [
+                'type' => v::notEmpty()->stringType(),
+                'amount' => v::notEmpty(),
+                'employee_id' => v::notEmpty()->digit()
+            ];
+
+            // Validate
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
+            }
+
+            // If validation fails → return JSON error
+            if (!empty($errors)) {
+                $payload = ['errors' => $errors];
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Save record
+            $create = allowance::create([
+                'employee_id' => $employee_id,
+                'type' => $type,
+                'amount' => $amount
+            ]);
+
+            if ($create) {
+                $message = 'Allowance record added successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=allowance-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to add allowance record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=allowance-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+    }
+
+    public function updateAllowance(Request $request, Response $response, $args)
+    {
+        session_start();
+
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+
+            $type = trim($data['type'] ?? '');
+            $amount = trim($data['amount'] ?? '');
+            $employee_id = trim($data['employee_id'] ?? '');
+            $allowance_id = trim($data['allowance_id'] ?? '');
+
+            // Validation rules
+            $validator = [
+                'type' => v::notEmpty()->stringType(),
+                'amount' => v::notEmpty(),
+                'employee_id' => v::notEmpty()->digit()
+            ];
+
+            // Validate
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
+            }
+
+            // If validation fails → return JSON error
+            if (!empty($errors)) {
+                $payload = ['errors' => $errors];
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Save record
+            $update = allowance::where('id', $allowance_id)->update([
+                'employee_id' => $employee_id,
+                'type' => $type,
+                'amount' => $amount
+            ]);
+
+            if ($update) {
+                $message = 'Allowance record updated successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=allowance-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to update allowance record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=allowance-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+    }
+
+    //Get All allowance data
+    public function allowanceList(Request $request, Response $response, $args)
+    {
+        //Get all allowance data from the database
+        session_start();
+        $allowance = allowance::orderBy('created_at', 'desc')->get();
+
+        $response->getBody()->write(json_encode($allowance));
+        return $response
+            ->withStatus(200)
+            ->withHeader('Content-Type', 'application/json');
+    }
+
+    public function deleteAllowanceRecord(Request $request, Response $response, $args){
+        session_start();
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+            $allowance_id = trim($data['allowance_id'] ?? '');
+
+            // Validation rules
+            $validator = [
+                'allowance_id' => v::notEmpty()->digit()
+            ];
+
+            // Validate
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
+            }
+
+            // If validation fails → return JSON error
+            if (!empty($errors)) {
+                $payload = ['errors' => $errors];
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Save record
+            // Perform delete
+            $delete = allowance::where('id', $allowance_id)->delete();
+
+            if ($delete) {
+                $message = 'Allowance record deleted successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=allowance-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to delete allowance record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=allowance-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+    }
+
+    // Save Deductions
+    public function deductions(Request $request, Response $response, $args)
+    {
+        session_start();
+
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+
+            $type = trim($data['type'] ?? '');
+            $amount = trim($data['amount'] ?? '');
+            $employee_id = trim($data['employee_id'] ?? '');
+
+            // Validation rules
+            $validator = [
+                'type' => v::notEmpty()->stringType(),
+                'amount' => v::notEmpty(),
+                'employee_id' => v::notEmpty()->digit()
+            ];
+
+            // Validate
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
+            }
+
+            // If validation fails → return JSON error
+            if (!empty($errors)) {
+                $payload = ['errors' => $errors];
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Save record
+            $create = deductions::create([
+                'employee_id' => $employee_id,
+                'type' => $type,
+                'amount' => $amount
+            ]);
+
+            if ($create) {
+                $message = 'Deduction record added successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=deduction-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to add deduction record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=deduction-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+    }
+
+    // Save Deductions
+    public function updateDeductions(Request $request, Response $response, $args)
+    {
+        session_start();
+
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+
+            $type = trim($data['type'] ?? '');
+            $amount = trim($data['amount'] ?? '');
+            $employee_id = trim($data['employee_id'] ?? '');
+            $deduction_id = trim($data['deduction_id']);
+
+            // Validation rules
+            $validator = [
+                'type' => v::notEmpty()->stringType(),
+                'amount' => v::notEmpty(),
+                'employee_id' => v::notEmpty()->digit(),
+                'deduction_id' => v::notEmpty()->digit()
+            ];
+
+            // Validate
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
+            }
+
+            // If validation fails → return JSON error
+            if (!empty($errors)) {
+                $payload = ['errors' => $errors];
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Save record
+            $update = deductions::where('id',$deduction_id)->update([
+                'employee_id' => $employee_id,
+                'type' => $type,
+                'amount' => $amount
+            ]);
+
+            if ($update) {
+                $message = 'Deduction record updated successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=deduction-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to update deduction record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=deduction-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+    }
+
+    //Delete deduction records
+    public function deleteDeductionRecord(Request $request, Response $response, $args){
+        session_start();
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+            $deduction_id = trim($data['deduction_id'] ?? '');
+
+            // Validation rules
+            $validator = [
+                'deduction_id' => v::notEmpty()->digit()
+            ];
+
+            // Validate
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
+            }
+
+            // If validation fails → return JSON error
+            if (!empty($errors)) {
+                $payload = ['errors' => $errors];
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Save record
+            // Perform delete
+            $delete = deductions::where('id', $deduction_id)->delete();
+
+            if ($delete) {
+                $message = 'Deduction record deleted successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=deduction-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to delete Deduction record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=deduction-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+    }
+
+    //Show all deductions
+    public function deductionList(Request $request, Response $response, $args){
+        session_start();
+        $allowance = allowance::orderBy('created_at', 'desc')->get();
+
+        $response->getBody()->write(json_encode($allowance));
+        return $response
+            ->withStatus(200)
+            ->withHeader('Content-Type', 'application/json');
+    }
+
+    //Get totals
+    public function totals(Request $request, Response $response, $args)
+    {
+        $employeeId = (int)$args['employee_id'];
+
+        // Sum allowances
+        $totalAllowance = allowance::where('employee_id', $employeeId)->sum('amount');
+
+        // Sum deductions
+        $totalDeductions = deductions::where('employee_id', $employeeId)->sum('amount');
+
+        $data = [
+            'total_allowance' => $totalAllowance,
+            'total_deductions' => $totalDeductions
+        ];
+
+        $response->getBody()->write(json_encode($data));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    //Add Salary
+    public function addSalary(Request $request, Response $response, $args)
+    {
+        session_start();
+
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+
+            $employee_id   = trim($data['employee_id'] ?? '');
+            $basic_pay     = (float)($data['basic_pay'] ?? 0);
+            $pay_frequency = trim($data['pay_frequency'] ?? '');
+
+            $errors = [];
+
+            // Basic validation
+            if (empty($employee_id) || !ctype_digit($employee_id)) {
+                $errors[] = 'Employee ID is required or invalid.';
+            }
+            if (empty($basic_pay) || !is_numeric($basic_pay)) {
+                $errors[] = 'Basic pay is required or invalid.';
+            }
+            if (empty($pay_frequency)) {
+                $errors[] = 'Pay frequency is required.';
+            }
+
+            // Check if salary exists
+            if ($employee_id && salary::where('employee_id', $employee_id)->exists()) {
+                $errors[] = 'This employee already has a salary record.';
+            }
+
+            if (!empty($errors)) {
+                // Redirect back with errors
+                $query = http_build_query([
+                    'tab' => 'salary-tab',
+                    'error' => implode(', ', $errors)
+                ]);
+                return $response
+                    ->withHeader('Location', '/payroll/salary?' . $query)
+                    ->withStatus(302);
+            }
+
+            // Calculate totals
+            $totalAllowance = allowance::where('employee_id', $employee_id)->sum('amount');
+            $totalDeduction = deductions::where('employee_id', $employee_id)->sum('amount');
+            $gross_pay = $basic_pay + $totalAllowance;
+            $net_pay = $gross_pay - $totalDeduction;
+
+            // Save salary
+            $create = salary::create([
+                'employee_id'     => $employee_id,
+                'basic_salary'    => $basic_pay,
+                'total_allowance' => $totalAllowance,
+                'total_deductions' => $totalDeduction,
+                'gross_pay'       => $gross_pay,
+                'net_pay'         => $net_pay,
+                'pay_frequency'   => $pay_frequency,
+            ]);
+
+            if ($create) {
+                $message = 'Salary record added successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=salary-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to add salary record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=salary-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+
+        // GET request: render the page
+        $employeeData = employees::all();
+        $allowanceData = allowance::all();
+        $deductionData = deductions::all();
+        $salaryData = salary::all();
+
+        return $this->view->render($response, 'salary-manager.twig', [
+            'title' => 'Salary Management',
+            'username' => $_SESSION['username'],
+            'userid' => $_SESSION['userid'],
+            'profile_picture' => $_SESSION['profile_picture'],
+            'userData' => $_SESSION['userData'],
+            'salaries' => $salaryData,
+            'employees' => $employeeData,
+            'allowances' => $allowanceData,
+            'deductions' => $deductionData,
+        ]);
+    }
+
+    //Add Salary
+    public function updateSalary(Request $request, Response $response, $args)
+    {
+        session_start();
+
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+
+            $employee_id   = trim($data['employee_id'] ?? '');
+            $basic_pay     = (float)($data['basic_pay'] ?? 0);
+            $pay_frequency = trim($data['pay_frequency'] ?? '');
+            $salary_id = trim($data['salary_id']);
+
+            $errors = [];
+
+            // Basic validation
+            if (empty($employee_id) || !ctype_digit($employee_id)) {
+                $errors[] = 'Employee ID is required or invalid.';
+            }
+            if (empty($basic_pay) || !is_numeric($basic_pay)) {
+                $errors[] = 'Basic pay is required or invalid.';
+            }
+            if (empty($pay_frequency)) {
+                $errors[] = 'Pay frequency is required.';
+            }
+
+            if (!empty($errors)) {
+                // Redirect back with errors
+                $query = http_build_query([
+                    'tab' => 'salary-tab',
+                    'error' => implode(', ', $errors)
+                ]);
+                return $response
+                    ->withHeader('Location', '/payroll/salary?' . $query)
+                    ->withStatus(302);
+            }
+
+            // Calculate totals
+            $totalAllowance = allowance::where('employee_id', $employee_id)->sum('amount');
+            $totalDeduction = deductions::where('employee_id', $employee_id)->sum('amount');
+            $gross_pay = $basic_pay + $totalAllowance;
+            $net_pay = $gross_pay - $totalDeduction;
+
+            // Save salary
+            $create = salary::where('id', $salary_id)->update([
+                'employee_id'     => $employee_id,
+                'basic_salary'    => $basic_pay,
+                'total_allowance' => $totalAllowance,
+                'total_deductions' => $totalDeduction,
+                'gross_pay'       => $gross_pay,
+                'net_pay'         => $net_pay,
+                'pay_frequency'   => $pay_frequency,
+            ]);
+
+            if ($create) {
+                $message = 'Salary record updated successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=salary-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to update salary record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=salary-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+
+        // GET request: render the page
+        $employeeData = employees::all();
+        $allowanceData = allowance::all();
+        $deductionData = deductions::all();
+        $salaryData = salary::all();
+
+        return $this->view->render($response, 'salary-manager.twig', [
+            'title' => 'Salary Management',
+            'username' => $_SESSION['username'],
+            'userid' => $_SESSION['userid'],
+            'profile_picture' => $_SESSION['profile_picture'],
+            'userData' => $_SESSION['userData'],
+            'salaries' => $salaryData,
+            'employees' => $employeeData,
+            'allowances' => $allowanceData,
+            'deductions' => $deductionData,
+        ]);
+    }
+
+    //Delete salary record
+    public function deleteSalaryRecord(Request $request, Response $response, $args){
+        session_start();
+        if ($request->getMethod() === 'POST') {
+            $data = $request->getParsedBody();
+            $salary_id = trim($data['salary_id'] ?? '');
+
+            // Validation rules
+            $validator = [
+                'salary_id' => v::notEmpty()->digit()
+            ];
+
+            // Validate
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[] = ucfirst(str_replace('_', ' ', $field)) . ' is required or invalid.';
+                }
+            }
+
+            // If validation fails → return JSON error
+            if (!empty($errors)) {
+                $payload = ['errors' => $errors];
+                $response->getBody()->write(json_encode($payload));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
+            // Save record
+            // Perform delete
+            $delete = salary::where('id', $salary_id)->delete();
+
+            if ($delete) {
+                $message = 'Salary record deleted successfully.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=salary-tab&success=' . urlencode($message))
+                    ->withStatus(302);
+            } else {
+                $message = 'Failed to delete Salary record.';
+                return $response
+                    ->withHeader('Location', '/payroll/salary?tab=salary-tab&error=' . urlencode($message))
+                    ->withStatus(302);
+            }
+        }
+    }
+
+
+
+
 
 
 }

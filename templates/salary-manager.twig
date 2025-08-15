@@ -10,481 +10,504 @@
                             <li><a class="is-size-5 has-text-link">{{ title }}</a></li>
                         </ul>
                     </nav>
-                        <div class="columns is-multiline">
-                            <div class="column is-6">
-                                <div class="box">
-                                    <p>Allowances</p>
-                                    <hr>
-                                    <div class="level mb-4">
-                                        <div class="level-left">
-                                            <button class="button is-small is-success " onclick="openModal('allowanceModal')">
-                                                <span class="mdi mdi-plus"></span>
-                                                Add Allowance
-                                            </button>
-                                        </div>
-                                    </div>
+                    <div class="tabs box is-centered is-medium mb-6">
+                        <ul>
+                            <li class="is-active" data-tab="salary-tab">
+                                <a>
+                                    <span class="icon is-small"><i class="mdi mdi-currency-usd"></i></span>
+                                    <span>Salary</span>
+                                </a>
+                            </li>
+                            <li data-tab="allowance-tab">
+                                <a>
+                                    <span class="icon is-small"><i class="mdi mdi-bank-plus"></i></span>
+                                    <span>Allowances</span>
+                                </a>
+                            </li>
+                            <li data-tab="deduction-tab">
+                                <a>
+                                    <span class="icon is-small"><i class="mdi mdi-bank-minus"></i></span>
+                                    <span>Deductions</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
 
-                                    {% if errors|length > 0 %}
-                                        <div class="notification is-danger" id="errorNotification">
-                                            <ul>
-                                                {% for error in errors %}
-                                                    <li>{{ error }}</li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-
-                                    {% if success %}
-                                        <div class="notification is-success" id="successNotification">
-                                            {{ success }}
-                                        </div>
-                                    {% endif %}
-
-                                    <div class="table-container">
-                                        <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
-                                            <thead>
-                                            <tr class="is-size-7">
-                                                <th>Employee ID</th>
-                                                <th>Type</th>
-                                                <th>Amount</th>
-                                                <th>Create At</th>
-                                                <th>Edit</th>
-                                                <th>Delete</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for item in allowances %}
-                                                <tr>
-                                                    <td>{{ item.employee_id }}</td>
-                                                    <td>{{ item.type }}</td>
-                                                    <td>{{ item.amount }}</td>
-                                                    <td>{{ item.amount }}</td>
-                                                    <td>{{ item.created_at | date('d F, Y') }}</td>
-                                                    <td>
-                                                        <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-pencil"></span>
-                                                        </button>
-                                                    </td>
-                                                    <td>
-                                                        <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-trash-can"></span>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-
-                                                <!-- Edit Modal -->
-                                                <div id="editModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Edit Salary</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <form action="/dashboard/salary/update" method="post">
-                                                                <input type="hidden" name="id" value="{{ employee.id }}">
-                                                                {% include 'partials/salary_form_fields.twig' with { employee: employee } %}
-                                                                <div class="field is-grouped is-grouped-left">
-                                                                    <p class="control">
-                                                                        <button type="submit" class="button is-success">Update</button>
-                                                                    </p>
-                                                                    <p class="control">
-                                                                        <button type="button" class="button" onclick="closeModal('editModal-{{ employee.id }}')">Cancel</button>
-                                                                    </p>
-                                                                </div>
-                                                            </form>
-                                                        </section>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Delete Confirmation Modal -->
-                                                <div id="deleteModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-danger">
-                                                            <p class="modal-card-title has-text-white">Confirm Deletion</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to delete <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/delete" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-danger">Delete</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('deleteModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-                                            {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    <!-- Add Modal -->
-                                    <div id="allowanceModal" class="modal">
-                                        <div class="modal-background"></div>
-                                        <div class="modal-card">
-                                            <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Allowance Record</p>
-                                                <button class="delete" aria-label="close" onclick="closeModal('allowanceModal')"></button>
-                                            </header>
-                                            <section class="modal-card-body">
-                                                <form action="/payroll/allowance" method="post">
-                                                    {% include 'partials/allowance_form_fields.twig' with { employee: {}, allowance: {}  } %}
-                                                    <div class="field is-grouped is-grouped-left">
-                                                        <p class="control">
-                                                            <button type="submit" class="button is-success">Save</button>
-                                                        </p>
-                                                        <p class="control">
-                                                            <button type="button" class="button is-light" onclick="closeModal('allowanceModal')">Cancel</button>
-                                                        </p>
-                                                    </div>
-                                                </form>
-                                            </section>
-                                        </div>
-                                    </div>
-
+                    <!--Full Salary Table-->
+                    <div id="salary-tab" class="tab-content">
+                        <div class="box">
+                            <p>Salary</p>
+                            <hr>
+                            <div class="level mb-4">
+                                <div class="level-left">
+                                    <button class="button is-rounded is-success" onclick="openModal('addModal')">
+                                        <span class="mdi mdi-cash-multiple"></span>
+                                        Add Salary
+                                    </button>
+                                    <button class="button is-outlined is-rounded is-primary ml-2" onclick="exportToExcel()">
+                                        <span class="mdi mdi-file-excel "></span>
+                                        Excel
+                                    </button>
                                 </div>
                             </div>
+                            {% if salaryErrors is defined and salaryErrors|length > 0 %}
+                                <div class="notification is-danger">
+                                    <ul>
+                                        {% for error in salaryErrors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            {% if success %}
+                                <div class="notification is-success" id="successNotification">
+                                    {{ success }}
+                                </div>
+                            {% endif %}
+                            <div class="table-container">
+                                <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
+                                    <thead>
+                                    <tr class="is-size-7">
+                                        <th>Employee</th>
+                                        <th>Basic Pay</th>
+                                        <th>Total Allowance</th>
+                                        <th>Total Deductions</th>
+                                        <th>Gross Pay</th>
+                                        <th>Net Pay</th>
+                                        <th>Pay Frequency</th>
+                                        <th>Created At</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for salary in salaries %}
+                                        <tr>
+                                            <td>
+                                                {% set emp = employees | filter(e => e.id == salary.employee_id) | first %}
+                                                {{ emp ? emp.name : 'N/A' }}
+                                            </td>
+                                            <td>{{ salary.basic_salary | number_format(2, '.', ',') }}</td>
+                                            <td>{{ salary.total_allowance | number_format (2,'.', ',')}}</td>
+                                            <td>{{ salary.total_deductions | number_format (2,'.', ',') }}</td>
+                                            <td>{{ salary.gross_pay | number_format (2,'.', ',') }}</td>
+                                            <td>{{ salary.net_pay | number_format (2,'.', ',') }}</td>
+                                            <td>{{ salary.pay_frequency | capitalize }}</td>
+                                            <td>{{ salary.created_at | date('d F, Y')}}</td>
+                                            <td>
+                                                <button class="button is-small is-info" onclick="openModal('editModal-{{salary.id }}')">
+                                                    <span class="mdi mdi-pencil"></span>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="button is-small is-danger" onclick="openModal('deleteModal-{{salary.id }}')">
+                                                    <span class="mdi mdi-delete"></span>
+                                                </button>
+                                            </td>
 
-                            <!--Deductions-->
-                            <div class="column is-6">
-                                <div class="box">
-                                    <p>Deductions</p>
-                                    <hr>
-                                    <div class="level mb-4">
-                                        <div class="level-left">
-                                            <button class="button is-small is-success" onclick="openModal('deductionModal')">
-                                                <span class="mdi mdi-plus"></span>
-                                                Add Deduction
-                                            </button>
-                                        </div>
-                                    </div>
+                                        </tr>
 
-                                    {% if errors|length > 0 %}
-                                        <div class="notification is-danger" id="errorNotification">
-                                            <ul>
-                                                {% for error in errors %}
-                                                    <li>{{ error }}</li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-
-                                    {% if success %}
-                                        <div class="notification is-success" id="successNotification">
-                                            {{ success }}
-                                        </div>
-                                    {% endif %}
-
-                                    <div class="table-container">
-                                        <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
-                                            <thead>
-                                            <tr class="is-size-7">
-                                                <th>Employee</th>
-                                                <th>Type</th>
-                                                <th>Amount</th>
-                                                <th>Created At</th>
-                                                <th>Edit</th>
-                                                <th>Delete</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for deduction in deductions %}
-                                                <tr>
-                                                    <td>{{ deduction.employee_id }}</td>
-                                                    <td>{{ deduction.type }}</td>
-                                                    <td>{{ deduction.amount }}</td>
-                                                    <td>{{ deduction.created_at | date('d F, Y') }}</td>
-                                                    <td>
-                                                        <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-pencil"></span>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% for item in salaries %}
+                                <!-- Edit Modal -->
+                                <div id="editModal-{{ item.id }}" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-warning">
+                                            <p class="modal-card-title has-text-white">Edit Salary</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{item.id }}')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <form action="/payroll/salary/update" method="post">
+                                                <input type="hidden" name="salary_id" value="{{item.id }}">
+                                                {% include 'partials/salary_form_fields.twig' with { employee: employees, salary: salaries } %}
+                                                <hr>
+                                                <div class="field is-grouped is-grouped-left">
+                                                    <p class="control">
+                                                        <button type="submit" class="button is-rounded is-success">
+                                                            <span class="mdi mdi-content-save-move mr-1"></span>  Update
                                                         </button>
-                                                    </td>
-                                                    <td>
-                                                        <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-trash-can"></span>
-                                                        </button>
-                                                    </td>
-
-                                                </tr>
-
-                                                <!-- Edit Modal -->
-                                                <div id="editModal-{{ deduction.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Edit Deduction</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ deduction.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <form action="/payroll/deduction/update" method="post">
-                                                                <input type="hidden" name="id" value="{{ deduction.id }}">
-                                                                {% include 'partials/salary_form_fields.twig' with { employee: employees, deduction: deductions } %}
-                                                                <div class="field is-grouped is-grouped-left">
-                                                                    <p class="control">
-                                                                        <button type="submit" class="button is-success">Update</button>
-                                                                    </p>
-                                                                    <p class="control">
-                                                                        <button type="button" class="button" onclick="closeModal('editModal-{{ deduction.id }}')">Cancel</button>
-                                                                    </p>
-                                                                </div>
-                                                            </form>
-                                                        </section>
-                                                    </div>
+                                                    </p>
+                                                    <p class="control">
+                                                        <button type="button" class="button is-rounded" onclick="closeModal('editModal-{{ item.id }}')">Cancel</button>
+                                                    </p>
                                                 </div>
-
-
-                                                <!-- Delete Confirmation Modal -->
-                                                <div id="deleteModal-{{ deduction.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-danger">
-                                                            <p class="modal-card-title has-text-white">Confirm Deletion</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ deduction.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to delete deduction No. <strong>{{ deduction.id }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/payroll/deduction/delete" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ deduction.id }}">
-                                                                <button type="submit" class="button is-danger">Delete</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('deleteModal-{{ deduction.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-                                            {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    <!-- Add Modal -->
-                                    <div id="deductionModal" class="modal">
-                                        <div class="modal-background"></div>
-                                        <div class="modal-card">
-                                            <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Deduction Record</p>
-                                                <button class="delete" aria-label="close" onclick="closeModal('deductionModal')"></button>
-                                            </header>
-                                            <section class="modal-card-body">
-                                                <form action="/payroll/deduction/add" method="post">
-                                                    {% include 'partials/salary_form_fields.twig' with { employee: {}, allowance: {}, deduction: {} } %}
-                                                    <div class="field is-grouped is-grouped-left">
-                                                        <p class="control">
-                                                            <button type="submit" class="button is-success">Save</button>
-                                                        </p>
-                                                        <p class="control">
-                                                            <button type="button" class="button is-light" onclick="closeModal('deductionModal')">Cancel</button>
-                                                        </p>
-                                                    </div>
-                                                </form>
-                                            </section>
-                                        </div>
+                                            </form>
+                                        </section>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!--Full Salary Table-->
-                            <div class="column is-full">
-                                <div class="box">
-                                    <p>Salary</p>
-                                    <hr>
-                                    <div class="level mb-4">
-                                        <div class="level-left">
-                                            <button class="button  is-success" onclick="openModal('addModal')">
-                                                <span class="mdi mdi-cash-multiple"></span>
-                                                Add Salary
-                                            </button>
-                                            <button class="button is-outlined is-primary ml-2" onclick="exportToExcel()">
-                                                <span class="mdi mdi-file-excel "></span>
-                                                Excel
-                                            </button>
-                                        </div>
+                                <!-- Delete Confirmation Modal -->
+                                <div id="deleteModal-{{ item.id }}" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-danger">
+                                            <p class="modal-card-title has-text-white">Confirm Deletion</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ employee.id }}')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <p>Are you sure you want to delete salary belonging to
+                                                <strong>
+                                                    {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                    {{ emp ? emp.name : 'N/A' }}
+                                                </strong>?
+                                            </p>
+                                        </section>
+                                        <footer class="modal-card-foot">
+                                            <form action="/payroll/salary/delete" method="post">
+                                                <input class="is-hidden" name="salary_id" value="{{item.id }}">
+                                                <button type="submit" class="button is-rounded is-danger">
+                                                    <span class="mdi mdi-delete mr-1"></span> Delete
+                                                </button>
+                                                <button type="button" class="button is-rounded" onclick="closeModal('deleteModal-{{ item.id }}')">Cancel</button>
+                                            </form>
+
+                                        </footer>
                                     </div>
+                                </div>
+                            {% endfor %}
+                            <!-- Add Modal -->
+                            <div id="addModal" class="modal">
+                                <div class="modal-background"></div>
+                                <div class="modal-card">
+                                    <header class="modal-card-head has-background-warning">
+                                        <p class="modal-card-title has-text-white">Salary Record</p>
+                                        <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
+                                    </header>
+                                    <section class="modal-card-body">
+                                        <form action="/payroll/salary/add" method="POST">
+                                            {% include 'partials/salary_form_fields.twig' with { employee: {}, salary: {} } %}
 
-                                    {% if errors|length > 0 %}
-                                        <div class="notification is-danger" id="errorNotification">
-                                            <ul>
-                                                {% for error in errors %}
-                                                    <li>{{ error }}</li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-
-                                    {% if success %}
-                                        <div class="notification is-success" id="successNotification">
-                                            {{ success }}
-                                        </div>
-                                    {% endif %}
-
-                                    <div class="table-container">
-                                        <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
-                                            <thead>
-                                            <tr class="is-size-7">
-                                                <th>Employee</th>
-                                                <th>Basic Pay</th>
-                                                <th>Total Allowance</th>
-                                                <th>Total Deductions</th>
-                                                <th>Pay Frequency</th>
-                                                <th>View</th>
-                                                <th>Edit</th>
-                                                <th>Delete</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for salary in salaries %}
-                                                <tr>
-                                                    <td>{{ salary.name }}</td>
-                                                    <td>{{ salary.basic_salary }}</td>
-                                                    <td>{{ salary.total_allowance }}</td>
-                                                    <td>{{ salary.total_deduction }}</td>
-                                                    <td>{{ salary.pay_frequency }}</td>
-                                                    <td>{{ salary.created_at | date('d F, Y')}}</td>
-                                                    <td>
-                                                        <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-pencil"></span>
-                                                        </button>
-                                                    </td>
-                                                    <td>
-                                                        <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
-                                                            <span class="mdi mdi-trash-can"></span>
-                                                        </button>
-                                                    </td>
-
-                                                </tr>
-
-                                                <!-- Edit Modal -->
-                                                <div id="editModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Edit Salary</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <form action="/dashboard/salary/update" method="post">
-                                                                <input type="hidden" name="id" value="{{ employee.id }}">
-                                                                {% include 'partials/salary_form_fields.twig' with { employee: employee } %}
-                                                                <div class="field is-grouped is-grouped-left">
-                                                                    <p class="control">
-                                                                        <button type="submit" class="button is-success">Update</button>
-                                                                    </p>
-                                                                    <p class="control">
-                                                                        <button type="button" class="button" onclick="closeModal('editModal-{{ employee.id }}')">Cancel</button>
-                                                                    </p>
-                                                                </div>
-                                                            </form>
-                                                        </section>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Activate Confirmation Modal -->
-                                                <div id="activateModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Confirm Re-activation</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('activateModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to Re-activate <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/activate" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-primary">Activate</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('activateModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Suspend Confirmation Modal -->
-                                                <div id="suspendModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-warning">
-                                                            <p class="modal-card-title has-text-white">Confirm Suspension</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('suspendModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to freeze <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/suspend" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-primary">Suspend</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('suspendModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Delete Confirmation Modal -->
-                                                <div id="deleteModal-{{ employee.id }}" class="modal">
-                                                    <div class="modal-background"></div>
-                                                    <div class="modal-card">
-                                                        <header class="modal-card-head has-background-danger">
-                                                            <p class="modal-card-title has-text-white">Confirm Deletion</p>
-                                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ employee.id }}')"></button>
-                                                        </header>
-                                                        <section class="modal-card-body">
-                                                            <p>Are you sure you want to delete <strong>{{ employee.name }}</strong>?</p>
-                                                        </section>
-                                                        <footer class="modal-card-foot">
-                                                            <form action="/dashboard/salary/delete" method="post">
-                                                                <input class="is-hidden" name="id" value="{{ employee.id }}">
-                                                                <button type="submit" class="button is-danger">Delete</button>
-                                                            </form>
-                                                            <button class="button" onclick="closeModal('deleteModal-{{ employee.id }}')">Cancel</button>
-                                                        </footer>
-                                                    </div>
-                                                </div>
-                                            {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    <!-- Add Modal -->
-                                    <div id="addModal" class="modal">
-                                        <div class="modal-background"></div>
-                                        <div class="modal-card">
-                                            <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Salary Record</p>
-                                                <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
-                                            </header>
-                                            <section class="modal-card-body">
-                                                <form action="/dashboard/salary/add" method="post">
-                                                    {% include 'partials/salary_form_fields.twig' with { employee: {} } %}
-
-                                                    <div class="field is-grouped is-grouped-left">
-                                                        <p class="control">
-                                                            <button type="submit" class="button is-success">Save</button>
-                                                        </p>
-                                                    </div>
-                                                </form>
-                                            </section>
-                                        </div>
-                                    </div>
+                                            <hr>
+                                            <div class="field is-grouped is-grouped-left">
+                                                <p class="control">
+                                                    <button type="submit" class="button is-rounded is-success">
+                                                        <span class="mdi mdi-content-save mr-1"> </span>
+                                                        Save
+                                                    </button>
+                                                </p>
+                                                <p class="control">
+                                                    <button type="button" class="button is-rounded" onclick="closeModal('addModal')">
+                                                        Cancel
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        </form>
+                                    </section>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!--ALLOWANCE-->
+                    <div id="allowance-tab" class="tab-content is-hidden">
+                        <div class="box">
+                            <p>Allowances</p>
+                            <hr>
+                            <div class="level mb-4">
+                                <div class="level-left">
+                                    <button class="button is-normal is-rounded is-success " onclick="openModal('allowanceModal')">
+                                        <span class="mdi mdi-plus"></span>
+                                        Add Allowance
+                                    </button>
+                                </div>
+                            </div>
+                            {# Inside allowance-tab section #}
+                            {% if allowanceerrors|length > 0 %}
+                                <div class="notification is-danger" id="errorNotification">
+                                    <ul>
+                                        {% for error in errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            {% if allowanceSuccess %}
+                                <div class="notification is-success" id="successNotification">
+                                    {{ allowanceSuccess }}
+                                </div>
+                            {% endif %}
+
+                            <div class="table-container">
+                                <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
+                                    <thead >
+                                    <tr class="is-size-7">
+                                        <th>Employee ID</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Create At</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if allowances | length > 0 %}
+                                        {% for item in allowances %}
+                                            <tr>
+                                                <td>{{ item.employee_id }}</td>
+                                                <td>{{ item.type }}</td>
+                                                <td>{{ item.amount | number_format(2, '.', ',') }}</td>
+                                                <td>{{ item.created_at | date('d F, Y') }}</td>
+                                                <td>
+                                                    <button class="button is-small is-info" onclick="openModal('editAllowanceModal-{{item.id }}')">
+                                                        <span class="mdi mdi-pencil"></span>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class="button is-small is-danger" onclick="openModal('deleteAllowanceModal-{{item.id }}')">
+                                                        <span class="mdi mdi-delete"></span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6" class="has-text-centered">No allowance record added</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            {% for allowance in allowances %}
+                                <!-- Edit Modal -->
+                                <div id="editAllowanceModal-{{ allowance.id }}" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-warning">
+                                            <p class="modal-card-title has-text-white">Edit Allowance</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('editAllowanceModal-{{ allowance.id }}')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <form action="/payroll/allowance/update" method="post">
+                                                <input type="hidden" name="id" value="{{ allowance.id }}">
+                                                {% include 'partials/allowance_form_fields.twig' with {employee: employees, allowance: allowance } %}
+                                                <div class="field is-grouped is-grouped-left">
+                                                    <p class="control">
+                                                        <button type="submit" class="button is-rounded is-success">
+                                                            <span class="mdi mdi-content-save-move mr-1"></span>  Update
+                                                        </button>
+                                                    </p>
+                                                    <p class="control">
+                                                        <button type="button" class="button is-rounded" onclick="closeModal('editAllowanceModal-{{ allowance.id }}')">Cancel</button>
+                                                    </p>
+                                                </div>
+                                            </form>
+                                        </section>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div id="deleteAllowanceModal-{{ allowance.id }}" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-danger">
+                                            <p class="modal-card-title has-text-white">Confirm Deletion</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('deleteAllowanceModal-{{ allowance.id }}')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <p>Are you sure you want to delete allowance item No. <strong>{{ allowance.id }}</strong>?</p>
+                                        </section>
+                                        <footer class="modal-card-foot">
+                                            <form action="/payroll/allowance/delete" method="post">
+                                                <input class="is-hidden" name="allowance_id" value="{{ allowance.id }}">
+                                                <button type="submit" class="button is-rounded is-danger">
+                                                    <span class="mdi mdi-delete mr-1"></span>  Delete
+                                                </button>
+                                                <button type="button" class="button is-rounded" onclick="closeModal('deleteAllowanceModal-{{ allowance.id }}')">Cancel</button>
+                                            </form>
+
+                                        </footer>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                            <!-- Add Modal -->
+                            <div id="allowanceModal" class="modal">
+                                <div class="modal-background"></div>
+                                <div class="modal-card">
+                                    <header class="modal-card-head has-background-warning">
+                                        <p class="modal-card-title has-text-white">Allowance Record</p>
+                                        <button class="delete" aria-label="close" onclick="closeModal('allowanceModal')"></button>
+                                    </header>
+                                    <section class="modal-card-body">
+                                        <form action="/payroll/allowance" method="post" >
+                                            {% include 'partials/allowance_form_fields.twig' with { employee: {}, allowance: {}  } %}
+                                            <hr>
+                                            <div class="field is-grouped is-grouped-left">
+                                                <p class="control">
+                                                    <button type="submit" class="button is-rounded is-success">
+                                                        <span class="mdi mdi-content-save mr-1"></span> Save
+                                                    </button>
+                                                </p>
+                                                <p class="control">
+                                                    <button type="button" class="button is-rounded is-light" onclick="closeModal('allowanceModal')">Cancel</button>
+                                                </p>
+                                            </div>
+                                        </form>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Deductions-->
+                    <div id="deduction-tab" class="tab-content is-hidden">
+                        <div class="box">
+                            <p>Deductions</p>
+                            <hr>
+                            <div class="level mb-4">
+                                <div class="level-left">
+                                    <button class="button is-rounded is-success" onclick="openModal('deductionModal')">
+                                        <span class="mdi mdi-plus"></span>
+                                        Add Deduction
+                                    </button>
+                                </div>
+                            </div>
+
+                            {% if errors|length > 0 %}
+                                <div class="notification is-danger" id="errorNotification">
+                                    <ul>
+                                        {% for error in errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            {% if deductionSuccess %}
+                                <div class="notification is-success" id="successNotification">
+                                    {{ deductionSuccess }}
+                                </div>
+                            {% endif %}
+
+                            <div class="table-container">
+                                <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
+                                    <thead>
+                                    <tr class="is-size-7">
+                                        <th>Employee</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Created At</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for deduction in deductions %}
+                                        <tr>
+                                            <td>{{ deduction.employee_id }}</td>
+                                            <td>{{ deduction.type }}</td>
+                                            <td>{{ deduction.amount | number_format(2,'.',',') }}</td>
+                                            <td>{{ deduction.created_at | date('d F, Y') }}</td>
+                                            <td>
+                                                <button class="button is-small is-info" onclick="openModal('editModal-{{ deduction.id }}')">
+                                                    <span class="mdi mdi-pencil"></span>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ deduction.id }}')">
+                                                    <span class="mdi mdi-delete"></span>
+                                                </button>
+                                            </td>
+
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {% for item in deductions %}
+                                <!-- Edit Modal -->
+                                <div id="editModal-{{ item.id }}" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-warning">
+                                            <p class="modal-card-title has-text-white">Edit Deduction</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('editModal-{{item.id }}')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <form action="/payroll/deduction/update" method="post">
+                                                <input type="hidden" name="id" value="{{ item.id }}">
+                                                {% include 'partials/deduction_form_fields.twig' with { employee: employees, deduction: deduction } %}
+                                                <hr>
+                                                <div class="field is-grouped is-grouped-left">
+                                                    <p class="control">
+                                                        <button type="submit" class="button is-rounded is-success">
+                                                            <span class="mdi mdi-content-save-move mr-1"></span>   Update
+                                                        </button>
+                                                    </p>
+                                                    <p class="control">
+                                                        <button type="button" class="button is-rounded" onclick="closeModal('editModal-{{item.id }}')">Cancel</button>
+                                                    </p>
+                                                </div>
+                                            </form>
+                                        </section>
+                                    </div>
+                                </div>
+
+
+                                <!-- Delete Confirmation Modal -->
+                                <div id="deleteModal-{{ item.id }}" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-danger">
+                                            <p class="modal-card-title has-text-white">Confirm Deletion</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ item.id }}')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <p>Are you sure you want to delete deduction item No. <strong>{{item.id }}</strong>?</p>
+                                        </section>
+                                        <footer class="modal-card-foot">
+                                            <form action="/payroll/deduction/delete" method="post">
+                                                <input class="is-hidden" name="deduction_id" value="{{item.id }}">
+                                                <button type="submit" class="button is-rounded is-danger">
+                                                    <span class="mdi mdi-delete mr-1"></span>   Delete
+                                                </button>
+                                                <button type="button" class="button is-rounded" onclick="closeModal('deleteModal-{{item.id }}')">Cancel</button>
+                                            </form>
+                                        </footer>
+                                    </div>
+                                </div>
+                            {% endfor %}
+
+                            <!-- Add Modal -->
+                            <div id="deductionModal" class="modal">
+                                <div class="modal-background"></div>
+                                <div class="modal-card">
+                                    <header class="modal-card-head has-background-warning">
+                                        <p class="modal-card-title has-text-white">Deduction Record</p>
+                                        <button class="delete" aria-label="close" onclick="closeModal('deductionModal')"></button>
+                                    </header>
+                                    <section class="modal-card-body">
+                                        <form action="/payroll/deduction" method="post">
+                                            {% include 'partials/deduction_form_fields.twig' with { employee: {}, deduction: {} } %}
+                                            <hr>
+                                            <div class="field is-grouped is-grouped-left">
+                                                <p class="control">
+                                                    <button type="submit" class="button is-rounded is-success">
+                                                        <span class="mdi mdi-content-save mr-1"></span> Save
+                                                    </button>
+                                                </p>
+                                                <p class="control">
+                                                    <button type="button" class="button is-rounded is-light" onclick="closeModal('deductionModal')">Cancel</button>
+                                                </p>
+                                            </div>
+                                        </form>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>
     </div>
     <script>
-        function openModal(id) {
-            document.getElementById(id).classList.add('is-active');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('is-active');
-        }
         function exportToExcel() {
             const table = document.getElementById("myTable");
             const data = [];
@@ -516,6 +539,26 @@
         }, 5000);
     </script>
     <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('is-active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('is-active');
+
+        }
+    </script>
+    <script>
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const buttons = form.querySelectorAll('button[type="submit"]');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('is-loading'); // Optional Bulma loading spinner
+                });
+            });
+        });
+    </script>
+    <script>
         function togglePassword() {
             const input = document.getElementById("password");
             const icon = document.getElementById("toggleIcon");
@@ -530,4 +573,116 @@
             }
         }
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const url = new URL(window.location.href);
+
+            const tabId = url.searchParams.get('tab'); // e.g., 'allowance-tab', 'deductions-tab', 'salary-tab'
+            const successMessage = url.searchParams.get('success');
+            const errorMessage = url.searchParams.get('error');
+
+            if (tabId) {
+                // Activate the tab
+                const tabTrigger = document.querySelector(`[data-tab="${tabId}"]`);
+                if (tabTrigger) {
+                    tabTrigger.click();
+                }
+
+                // Show notification inside the active tab
+                const notification = document.querySelector(`#${tabId}Notification`);
+                const messageEl = document.querySelector(`#${tabId}NotificationMessage`);
+
+                if (notification && messageEl) {
+                    if (successMessage) {
+                        messageEl.innerText = decodeURIComponent(successMessage);
+                        notification.classList.remove('is-hidden', 'is-danger');
+                        notification.classList.add('is-success');
+                    }
+                    else if (errorMessage) {
+                        messageEl.innerText = decodeURIComponent(errorMessage);
+                        notification.classList.remove('is-hidden', 'is-success');
+                        notification.classList.add('is-danger');
+                    }
+                }
+            }
+
+            // Clean up URL parameters so messages don't reappear after refresh
+            ['tab', 'success', 'error'].forEach(key => url.searchParams.delete(key));
+            window.history.replaceState({}, document.title, url.toString());
+        });
+
+
+
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     setTimeout(function () {
+        //         const errorNote = document.getElementById('errorNotification');
+        //         const successNote = document.getElementById('successNotification');
+        //
+        //         if (errorNote) {
+        //             errorNote.style.transition = "opacity 0.5s ease";
+        //             errorNote.style.opacity = 0;
+        //             setTimeout(() => errorNote.remove(), 500);
+        //         }
+        //         if (successNote) {
+        //             successNote.style.transition = "opacity 0.5s ease";
+        //             successNote.style.opacity = 0;
+        //             setTimeout(() => successNote.remove(), 500);
+        //         }
+        //
+        //
+        //         const url = new URL(window.location.href);
+        //
+        //         [...url.searchParams.keys()].forEach(key => {
+        //             // Match 'success', 'error', or anything ending with 'Errors' or 'Success'
+        //             if (/^(success|error)$/i.test(key) || /(Errors|Success)$/i.test(key)) {
+        //                 url.searchParams.delete(key);
+        //             }
+        //         });
+        //
+        //         window.history.replaceState({}, document.title, url.toString());
+        //
+        //     }, 4000); // delay before fade starts
+        // });
+    </script>
+    <script>
+        // Tab switcher logic
+        document.querySelectorAll('.tabs li').forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Clear active state
+                document.querySelectorAll('.tabs li').forEach(el => el.classList.remove('is-active'));
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('is-hidden'));
+
+                // Activate clicked tab
+                this.classList.add('is-active');
+                const targetId = this.getAttribute('data-tab');
+                document.getElementById(targetId).classList.remove('is-hidden');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabId = urlParams.get('tab');
+
+            if (tabId) {
+                const tabTrigger = document.querySelector(`[data-tab="${tabId}"]`);
+                if (tabTrigger) {
+                    tabTrigger.click(); // activate the tab
+                }
+
+                // Optionally, show success or error messages in that tab
+                const success = urlParams.get('success');
+                const error = urlParams.get('error');
+
+                if (success) {
+                    document.getElementById(tabId + '-success').innerText = success;
+                    openModal('successModal'); // if using modals
+                } else if (error) {
+                    document.getElementById(tabId + '-error').innerText = error;
+                    openModal('errorModal'); // if using modals
+                }
+            }
+        });
+
+    </script>
+
 {% endblock %}

@@ -1,134 +1,273 @@
 {% extends 'partials/base.twig' %}
 {% block content %}
-    {#Main section from side bar on the right #}
     <div id="main-content" class="container-fluid">
         <div class="columns">
             <div class="column is-12">
                 <section class="section is-small mt-6">
-                    <nav class="breadcrumb box has-background-dark" aria-label="breadcrumbs">
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
                         <ul>
-                            <li><a class="is-size-5 has-text-white">Home</a></li>
-                            <li><a class=" is-size-5 has-text-white">{{ title }}</a></li>
+                            <li><a class="is-size-5 has-text-link">Home</a></li>
+                            <li><a class="is-size-5 has-text-link">{{ title }}</a></li>
                         </ul>
                     </nav>
-                    <div class="columns is-multiline">
-                        <div class="column is-4">
-                            <div class="card">
-                                <div class="card-image">
-                                    <figure class="image is-4by3" style="margin: 0 auto;">
-                                        <img class="" src="/assets/uploads/profiles/{{ userData.profile_picture }}" />
+                    <div class="tabs box is-centered is-medium mb-6">
+                        <ul>
+                            <li class="is-active" data-tab="salary-tab">
+                                <a>
+                                    <span class="icon is-small"><i class="mdi mdi-account-circle"></i></span>
+                                    <span>Profile</span>
+                                </a>
+                            </li>
+                            <li data-tab="allowance-tab">
+                                <a>
+                                    <span class="icon is-small"><i class="mdi mdi-file-multiple"></i></span>
+                                    <span>Documents</span>
+                                </a>
+                            </li>
+                            <li data-tab="deduction-tab">
+                                <a>
+                                    <span class="icon is-small"><i class="mdi mdi-tune"></i></span>
+                                    <span>Settings</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!--Full Salary Table-->
+                    <div id="salary-tab" class="tab-content">
+                        <div class="box">
+                            <p>Profile Information</p>
+                            <div class="level mb-4 mt-3">
+                                <div class="level-left">
+                                    <button class="button is-rounded is-success" onclick="openModal('addModal')">
+                                        <span class="mdi mdi-printer mr-1"></span>
+                                        Print
+                                    </button>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="columns is-multiline">
+                                <div class="column is-4">
+                                    <figure class="image is-96x96" style="margin: 0 auto; /*border: 2px solid dodgerblue; border-radius: 50%/*">
+                                        <img class="" src="/assets/img/fht.png">
                                     </figure>
                                 </div>
-                                <div class="card-content has-text-centered">
-                                    <p class="mt-4 title is-size-6">
-                                        {{ companyData.company_name ?? userData.firstname ~ ' ' ~ userData.lastname }}
-                                    </p>
-                                    <p>{{ username }}</p>
-                                    <p>{{ companyData.phone ?? userData.phone }}</p>
-                                </div>
                             </div>
-                        </div>
-                        <div class="column is-8">
-                            <div class="box">
-                                <p class="title is-size-6">Personal Details</p>
-                                <hr>
-                                <div class="columns is-multiline">
-                                    <div class="column is-half">
-                                        <p>Name: {{ userData.firstname ~ ' ' ~ userData.lastname }}</p>
-                                        <p>phone: {{ userData.Phone }}</p>
-                                        <p>DOB: {{ userData.dob }}</p>
-                                        <p>Address: {{ userData.address }}</p>
-                                        <p>City: {{ userData.city }}</p>
-                                    </div>
-                                    <div class="column is-half">
-                                        <p>Username: {{userData.username}}</p>
-                                        <p>National Id: {{ userData.nationalCard }}</p>
-                                        <p>Gender: {{ userData.gender }}</p>
-                                        <p>Country: {{ userData.country }}</p>
-                                        <p>Verification:
-                                            {% if(userData.is_verified == 1)  %}
-                                                {{ "Verified" }}
-                                            {% else %}
-                                                {{ "Unverified" }}
-                                            {% endif %}
-                                        </p>
-                                    </div>
+
+                            {% if salaryErrors is defined and salaryErrors|length > 0 %}
+                                <div class="notification is-danger">
+                                    <ul>
+                                        {% for error in salaryErrors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
                                 </div>
-                                <p class="title is-size-6">Occupational Information</p>
-                                <hr>
-                                <div class="columns is-multiline">
-                                    <div class="column is-half">
-                                        <p>Name: {{ userData.firstname ~ ' ' ~ userData.lastname }}</p>
-                                        <p>phone: {{ userData.Phone }}</p>
-                                        <p>DOB: {{ userData.dob }}</p>
-                                        <p>Address: {{ userData.address }}</p>
-                                        <p>City: {{ userData.city }}</p>
-                                    </div>
-                                    <div class="column is-half">
-                                        <p>Username: {{userData.username}}</p>
-                                        <p>National Id: {{ userData.nationalCard }}</p>
-                                        <p>Gender: {{ userData.gender }}</p>
-                                        <p>Country: {{ userData.country }}</p>
-                                        <p>Verification:
-                                            {% if(userData.is_verified == 1)  %}
-                                                {{ "Verified" }}
-                                            {% else %}
-                                                {{ "Unverified" }}
-                                            {% endif %}
-                                        </p>
-                                    </div>
+                            {% endif %}
+                            {% if success %}
+                                <div class="notification is-success" id="successNotification">
+                                    {{ success }}
                                 </div>
-                                <p class="title is-size-6">Next of Kin</p>
-                                <hr>
-                                <div class="columns is-multiline">
-                                    <div class="column is-half">
-                                        <p>Name: {{ userData.firstname ~ ' ' ~ userData.lastname }}</p>
-                                        <p>phone: {{ userData.Phone }}</p>
-                                        <p>DOB: {{ userData.dob }}</p>
-                                        <p>Address: {{ userData.address }}</p>
-                                        <p>City: {{ userData.city }}</p>
-                                    </div>
-                                    <div class="column is-half">
-                                        <p>Username: {{userData.username}}</p>
-                                        <p>National Id: {{ userData.nationalCard }}</p>
-                                        <p>Gender: {{ userData.gender }}</p>
-                                        <p>Country: {{ userData.country }}</p>
-                                        <p>Verification:
-                                            {% if(userData.is_verified == 1)  %}
-                                                {{ "Verified" }}
-                                            {% else %}
-                                                {{ "Unverified" }}
-                                            {% endif %}
-                                        </p>
-                                    </div>
-                                </div>
-                                <p class="title is-size-6">Password Settings</p>
-                                <hr>
-                                <div class="columns is-multiline">
-                                    <div class="column is-half">
-                                        <div class="field">
-                                            <label class=" is-size-7">New password</label>
-                                            <input type="password" id="password" name="password" class="input is-link is-normal" placeholder="Enter new password">
-                                        </div>
-                                    </div>
-                                    <div class="column is-half">
-                                        <div class="field">
-                                            <label class=" is-size-7">Confirm password</label>
-                                            <input type="password" id="confirm_password" name="confirm_password" class="input is-link is-normal" placeholder="Confirm password">
-                                        </div>
-                                    </div>
-                                    <div class="column is-half">
-                                        <input type="hidden" name="userid" value="{{ userData.id }}">
-                                        <button type="submit" id="changePasswordButton"  class="button is-success">Change Password</button>
-                                    </div>
-                                </div>
-                            </div>
+                            {% endif %}
 
                         </div>
                     </div>
 
+                    <!--ALLOWANCE-->
+                    <div id="allowance-tab" class="tab-content is-hidden">
+                        <div class="box">
+                            <p>Personal Documents</p>
+                            <hr>
+
+                        </div>
+                    </div>
+
+                    <!--Deductions-->
+                    <div id="deduction-tab" class="tab-content is-hidden">
+                        <div class="box">
+                            <p>Settings</p>
+                            <hr>
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>
     </div>
+    <script>
+        function exportToExcel() {
+            const table = document.getElementById("myTable");
+            const data = [];
+            for (let row of table.rows) {
+                let rowData = [];
+                for (let i = 0; i < row.cells.length - 1; i++) {
+                    rowData.push(row.cells[i].innerText);
+                }
+                data.push(rowData);
+            }
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
+            XLSX.writeFile(workbook, "employees.xlsx");
+        }
+        setTimeout(function () {
+            const errorNote = document.getElementById('errorNotification');
+            const successNote = document.getElementById('successNotification');
+            if (errorNote) {
+                errorNote.style.transition = "opacity 0.5s ease";
+                errorNote.style.opacity = 0;
+                setTimeout(() => errorNote.remove(), 500);
+            }
+            if (successNote) {
+                successNote.style.transition = "opacity 0.5s ease";
+                successNote.style.opacity = 0;
+                setTimeout(() => successNote.remove(), 500);
+            }
+        }, 5000);
+    </script>
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('is-active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('is-active');
+
+        }
+    </script>
+    <script>
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const buttons = form.querySelectorAll('button[type="submit"]');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('is-loading'); // Optional Bulma loading spinner
+                });
+            });
+        });
+    </script>
+    <script>
+        function togglePassword() {
+            const input = document.getElementById("password");
+            const icon = document.getElementById("toggleIcon");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("mdi-eye-off");
+                icon.classList.add("mdi-eye");
+            } else {
+                input.type = "password";
+                icon.classList.remove("mdi-eye");
+                icon.classList.add("mdi-eye-off");
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const url = new URL(window.location.href);
+
+            const tabId = url.searchParams.get('tab'); // e.g., 'allowance-tab', 'deductions-tab', 'salary-tab'
+            const successMessage = url.searchParams.get('success');
+            const errorMessage = url.searchParams.get('error');
+
+            if (tabId) {
+                // Activate the tab
+                const tabTrigger = document.querySelector(`[data-tab="${tabId}"]`);
+                if (tabTrigger) {
+                    tabTrigger.click();
+                }
+
+                // Show notification inside the active tab
+                const notification = document.querySelector(`#${tabId}Notification`);
+                const messageEl = document.querySelector(`#${tabId}NotificationMessage`);
+
+                if (notification && messageEl) {
+                    if (successMessage) {
+                        messageEl.innerText = decodeURIComponent(successMessage);
+                        notification.classList.remove('is-hidden', 'is-danger');
+                        notification.classList.add('is-success');
+                    }
+                    else if (errorMessage) {
+                        messageEl.innerText = decodeURIComponent(errorMessage);
+                        notification.classList.remove('is-hidden', 'is-success');
+                        notification.classList.add('is-danger');
+                    }
+                }
+            }
+
+            // Clean up URL parameters so messages don't reappear after refresh
+            ['tab', 'success', 'error'].forEach(key => url.searchParams.delete(key));
+            window.history.replaceState({}, document.title, url.toString());
+        });
+
+
+
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     setTimeout(function () {
+        //         const errorNote = document.getElementById('errorNotification');
+        //         const successNote = document.getElementById('successNotification');
+        //
+        //         if (errorNote) {
+        //             errorNote.style.transition = "opacity 0.5s ease";
+        //             errorNote.style.opacity = 0;
+        //             setTimeout(() => errorNote.remove(), 500);
+        //         }
+        //         if (successNote) {
+        //             successNote.style.transition = "opacity 0.5s ease";
+        //             successNote.style.opacity = 0;
+        //             setTimeout(() => successNote.remove(), 500);
+        //         }
+        //
+        //
+        //         const url = new URL(window.location.href);
+        //
+        //         [...url.searchParams.keys()].forEach(key => {
+        //             // Match 'success', 'error', or anything ending with 'Errors' or 'Success'
+        //             if (/^(success|error)$/i.test(key) || /(Errors|Success)$/i.test(key)) {
+        //                 url.searchParams.delete(key);
+        //             }
+        //         });
+        //
+        //         window.history.replaceState({}, document.title, url.toString());
+        //
+        //     }, 4000); // delay before fade starts
+        // });
+    </script>
+    <script>
+        // Tab switcher logic
+        document.querySelectorAll('.tabs li').forEach(tab => {
+            tab.addEventListener('click', function () {
+                // Clear active state
+                document.querySelectorAll('.tabs li').forEach(el => el.classList.remove('is-active'));
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('is-hidden'));
+
+                // Activate clicked tab
+                this.classList.add('is-active');
+                const targetId = this.getAttribute('data-tab');
+                document.getElementById(targetId).classList.remove('is-hidden');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabId = urlParams.get('tab');
+
+            if (tabId) {
+                const tabTrigger = document.querySelector(`[data-tab="${tabId}"]`);
+                if (tabTrigger) {
+                    tabTrigger.click(); // activate the tab
+                }
+
+                // Optionally, show success or error messages in that tab
+                const success = urlParams.get('success');
+                const error = urlParams.get('error');
+
+                if (success) {
+                    document.getElementById(tabId + '-success').innerText = success;
+                    openModal('successModal'); // if using modals
+                } else if (error) {
+                    document.getElementById(tabId + '-error').innerText = error;
+                    openModal('errorModal'); // if using modals
+                }
+            }
+        });
+
+    </script>
+
 {% endblock %}

@@ -55,6 +55,7 @@ class ComposerStaticInit3d5f645ded2a3c2fbfbbe7d055a8a955
             'Symfony\\Component\\Clock\\' => 24,
             'Slim\\Views\\' => 11,
             'Slim\\Psr7\\' => 10,
+            'Slim\\Flash\\' => 11,
             'Slim\\' => 5,
         ),
         'R' => 
@@ -180,6 +181,10 @@ class ComposerStaticInit3d5f645ded2a3c2fbfbbe7d055a8a955
         'Slim\\Psr7\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/psr7/src',
+        ),
+        'Slim\\Flash\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/slim/flash/src',
         ),
         'Slim\\' => 
         array (

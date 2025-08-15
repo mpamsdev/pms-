@@ -12,6 +12,10 @@ class salary extends Model{
     protected $fillable = [
         'employee_id',
         'basic_salary',
+        'total_allowance',
+        'total_deductions',
+        'gross_pay',
+        'net_pay',
         'pay_frequency',
     ];
 

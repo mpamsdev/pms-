@@ -1,162 +1,98 @@
 <div class="field">
-    <label>Name</label>
-    <div class="control">
-        <input class="input is-link" type="text" name="name" value="{{ employee.name ?? '' }}" required>
-    </div>
-</div>
-
-<div class="field">
-    <label>Email</label>
-    <div class="control">
-        <input class="input is-link" type="email" name="username" value="{{ employee.username ?? '' }}" required>
-    </div>
-</div>
-
-<div class="field">
-    <label>Phone</label>
-    <div class="control">
-        <input class="input is-link" type="text" name="phone" value="{{ employee.phone ?? '' }}" required>
-    </div>
-</div>
-<div class="field">
-    <label>Gender</label>
+    <label>Employee</label>
     <div class="control">
         <div class="select is-fullwidth is-link">
-            <select name="gender" required>
-                <option value="">-- Select Gender --</option>
-                <option value="Male" {{ employee.gender == 'Male' ? 'selected' : '' }}>Male</option>
-                <option value="Female" {{ employee.gender == 'Female' ? 'selected' : '' }}>Female</option>
+            <select name="employee_id" id="employeeSelect" class="input" required>
+                <option value="">-- Select Employee --</option>
+                {% for employee in employees %}
+                    <option value="{{ employee.id }}"
+                            {% if item.employee_id is defined and item.employee_id == employee.id %}selected{% endif %}>
+                        {{ employee.name }}
+                    </option>
+                {% endfor %}
             </select>
         </div>
     </div>
 </div>
 <div class="field">
-    <label>Department</label>
+    <label>Basic Pay</label>
+    <div class="control">
+        <input class="input is-link" type="number" name="basic_pay" value="{{ item.basic_salary ?? '' }}" required>
+    </div>
+</div>
+{#<div class="field">#}
+{#    <label>Total Allowance</label>#}
+{#    <div class="control">#}
+{#        <input class="input is-link" type="number" id="totalAllowances" name="total_allowance"  required readonly>#}
+{#    </div>#}
+{#</div>#}
+{#<div class="field">#}
+{#    <label>Total Deductions</label>#}
+{#    <div class="control">#}
+{#        <input class="input is-link" type="number" id="totalDeductions" name="total_deduction"  required readonly>#}
+{#    </div>#}
+{#</div>#}
+<div class="field">
+    <label>Pay Frequency</label>
     <div class="control">
         <div class="select is-fullwidth is-link">
-            <select name="department" required>
-                <option value="">-- Select Department --</option>
-                <option value="Innovation" {{ employee.department == 'Innovation' ? 'selected' : '' }}>Innovation</option>
-                <option value="Cybersecurity" {{ employee.department == 'Cybersecurity' ? 'selected' : '' }}>Cybersecurity</option>
-                <option value="GRC" {{ employee.department == 'GRC' ? 'selected' : '' }}>GRC (Governance, Risk, Compliance)</option>
+            {% set frequencies = ['Monthly', 'Weekly'] %}
+            <select name="pay_frequency" class="input" required>
+                <option value="">-- Select Pay Frequency --</option>
+                {% for freq in frequencies %}
+                    <option value="{{ freq }}"
+                            {% if item.pay_frequency|lower == freq|lower %}selected{% endif %}>
+                        {{ freq }}
+                    </option>
+                {% endfor %}
             </select>
+
         </div>
-    </div>
-</div>
-
-<div class="field">
-    <label>Job Title</label>
-    <div class="control">
-        <input class="input is-link" type="text" name="job_title" value="{{ employee.job_title ?? '' }}">
-    </div>
-</div>
-
-<div class="field">
-    <label>Contract Type</label>
-    <div class="control">
-        <div class="select is-fullwidth is-link">
-            <select name="contract_type" id="contract_type" onchange="toggleContractDates()" required>
-                <option value="">-- Select Contract Type --</option>
-                <option value="Permanent" {{ employee.contract_type == 'Permanent' ? 'selected' : '' }}>Permanent</option>
-                <option value="Contract" {{ employee.contract_type == 'Contract' ? 'selected' : '' }}>Contract</option>
-                <option value="Part-time" {{ employee.contract_type == 'Part-time' ? 'selected' : '' }}>Part-time</option>
-                <option value="Internship" {{ employee.contract_type == 'Internship' ? 'selected' : '' }}>Internship</option>
-            </select>
-        </div>
-    </div>
-</div>
-
-<div id="contract-dates" class="is-hidden">
-    <div class="field">
-        <label>Start Date</label>
-        <div class="control">
-            <input class="input is-link" type="date" name="contract_start_date" value="{{ employee.contract_start_date ?? '' }}">
-        </div>
-    </div>
-
-    <div class="field">
-        <label>End Date</label>
-        <div class="control">
-            <input class="input is-link" type="date" name="contract_end_date" value="{{ employee.contract_end_date ?? '' }}">
-        </div>
-    </div>
-</div>
-
-<div class="field">
-    <label>National ID</label>
-    <div class="control">
-        <input class="input is-link" id="national_id" type="text" name="national_id" value="{{ employee.national_id ?? '' }}">
-    </div>
-</div>
-
-<div class="field">
-    <label>Tax ID (ZRA-TPIN)</label>
-    <div class="control">
-        <input class="input is-link" type="text" name="tax_id" value="{{ employee.tax_id ?? '' }}">
-    </div>
-</div>
-
-<div class="field">
-    <label>Napsa SSN</label>
-    <div class="control">
-        <input class="input is-link" type="text" name="ssn" value="{{ employee.ssn ?? '' }}">
-    </div>
-</div>
-
-<div class="field">
-    <label>NHIMA Number</label>
-    <div class="control">
-        <input class="input is-link" type="text" name="nhima_number" value="{{ employee.nhima_number ?? '' }}">
-    </div>
-</div>
-<input class="is-hidden" name="id" value="{{ employee.id }}">
-<div class="field">
-    <label class="">Password</label>
-    <div class="control has-icons-left has-icons-right">
-        <input id="password" class="input  is-link" type="password" name="password" placeholder="********" required>
-        <span class="icon is-small is-left">
-                                                    <i class="mdi mdi-lock-outline"></i>
-                                                </span>
-        <span class="icon is-small is-right" onclick="togglePassword()">
-                                                    <i class="mdi mdi-eye-off" id="toggleIcon" style="cursor: pointer;"></i>
-                                                </span>
-        {#                                        <input  class="input is-medium is-link " id="password" name="password" type="password" placeholder="Enter your password">#}
-        <small class="errors has-text-danger" id="passwordError"></small>
     </div>
 </div>
 
 <script>
-    function toggleContractDates() {
-        const type = document.getElementById('contract_type').value;
-        const container = document.getElementById('contract-dates');
-        if (type === 'Contract' || type === 'Internship') {
-            container.classList.remove('is-hidden');
-        } else {
-            container.classList.add('is-hidden');
+    document.addEventListener('DOMContentLoaded', function () {
+        const employeeSelect = document.getElementById('employeeSelect');
+        const totalAllowances = document.getElementById('totalAllowances');
+        const totalDeductions = document.getElementById('totalDeductions');
+
+        function fetchTotals(employeeId) {
+            if (!employeeId) {
+                totalAllowances.value = '';
+                totalDeductions.value = '';
+                return;
+            }
+
+            fetch(`http://pms.zm/payroll/salary/totals/${employeeId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    //console.log(data);
+                    totalAllowances.value = data.total_allowance ?? 0;
+                    totalDeductions.value = data.total_deductions ?? 0;
+                })
+                .catch(error => {
+                    console.error('Error fetching totals:', error);
+                    totalAllowances.value = '';
+                    totalDeductions.value = '';
+                });
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        toggleContractDates(); // initialize based on existing data
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const nationalIdInput = document.getElementById('national_id');
-
-        nationalIdInput.addEventListener('input', function () {
-            let value = nationalIdInput.value.replace(/\D/g, '').slice(0, 10); // Only digits, max 10
-
-            if (value.length > 6) {
-                value = value.slice(0, 6) + '/' + value.slice(6);
-            }
-            if (value.length > 9) {
-                value = value.slice(0, 9) + '/' + value.slice(9);
-            }
-
-            nationalIdInput.value = value;
+        // Trigger fetch when employee is selected
+        employeeSelect.addEventListener('change', function () {
+            fetchTotals(this.value);
         });
+
+        // Optional: Auto-fetch if editing existing record
+        {% if item.employee_id is defined %}
+        fetchTotals('{{ item.employee_id }}');
+        {% endif %}
     });
 </script>
+
 

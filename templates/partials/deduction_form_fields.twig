@@ -1,7 +1,7 @@
 <div class="field">
     <label>Type</label>
     <div class="control">
-        <input class="input is-link" type="text" name="name" value="{{ item.name ?? '' }}" required>
+        <input class="input is-link" type="text" name="type" value="{{ item.type ?? '' }}" required>
     </div>
 </div>
 
@@ -19,15 +19,16 @@
             <select name="employee_id" id="employeeSelect" class="input">
                 <option value="">-- Select Employee --</option>
                 {% for employee in employees %}
-                    <option value="{{ employee.id }}">{{ employee.name }}</option>
+                    <option value="{{ employee.id }}"
+                            {% if item.employee_id is defined and item.employee_id == employee.id %}selected{% endif %}>
+                        {{ employee.name }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
     </div>
 </div>
-<!-- Hidden Input -->
-<input type="hidden" name="employee_id" id="employeeIdInput">
-<input class="is-hidden" name="id" value="{{ item.id }}">
+<input class="is-hidden" name="deduction_id" value="{{ item.id }}">
 
 <script>
     function toggleContractDates(prefix) {
