@@ -1,0 +1,39 @@
+<div class="field">
+    <label>Employee</label>
+    <div class="control">
+        <div class="select is-fullwidth is-link">
+            <select name="employee_id" id="employeeSelect" class="input" required>
+                <option value="">-- Select Employee --</option>
+                {% for employee in employees %}
+                    <option value="{{ employee.id }}"
+                            {% if item.employee_id is defined and item.employee_id == employee.id %}selected{% endif %}>
+                        {{ employee.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+<div class="field">
+    <label>Account Number</label>
+    <div class="control">
+        <input class="input is-link" type="text" name="account_number" value="{{ item.account_number ?? '' }}" required>
+    </div>
+</div>
+<div class="field">
+    <label>Bank Name</label>
+    <div class="control">
+        <input class="input is-link" type="text" name="bank_name" value="{{ item.bank_name ?? '' }}" required>
+    </div>
+</div>
+<div class="field">
+    <label>Branch Name</label>
+    <div class="control">
+        <input class="input is-link" type="text" name="branch_name" value="{{ item.branch_name ?? '' }}" required>
+    </div>
+</div>
+
+
+
+
+

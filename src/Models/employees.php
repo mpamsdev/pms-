@@ -30,4 +30,10 @@ class employees extends Model{
         return $this->hasMany(allowance::class);
     }
 
+    // One employee has one payroll record
+    public function payroll()
+    {
+        return $this->hasOne(payroll::class, 'employee_id');
+    }
+
 }

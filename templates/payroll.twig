@@ -47,158 +47,130 @@
                                     <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                         <thead>
                                         <tr class="is-size-7">
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Job Title</th>
-                                            <th>Progression</th>
+                                            <th>Employee Name</th>
+                                            <th>Pay Amount</th>
+                                            <th>Account Number</th>
+                                            <th>Bank Name</th>
+                                            <th>Branch Name</th>
                                             <th>Status</th>
-                                            <th>View</th>
                                             <th>Edit</th>
+                                            <th>Freeze</th>
                                             <th>Delete</th>
+                                            <th>Pay</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                         {% if employees | length > 0 %}
-                                             {% for employee in employees %}
-                                                 <tr class="{{ employee.status == 'Suspended' ? 'has-background-danger-dark has-text-white' : '' }}">
-                                                     <td>{{ employee.name }}</td>
-                                                     <td>{{ employee.username }}</td>
-                                                     <td>{{ employee.job_title }}</td>
-                                                     <td>{{ employee.contract_progress }}</td>
-                                                     <td>{{ employee.status | capitalize }}</td>
-                                                     <td>
-                                                         <button class="button is-small is-primary" onclick="openModal('viewModal-{{ employee.id }}')">
-                                                             <span class="mdi mdi-eye-circle"></span>
-                                                         </button>
-                                                     </td>
-                                                     {% if employee.status != 'Suspended' %}
-                                                         <td>
-                                                             <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
-                                                                 <span class="mdi mdi-pencil"></span>
-                                                             </button>
-                                                         </td>
-                                                         <td>
-                                                             <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ employee.id }}')">
-                                                                 <span class="mdi mdi-delete"></span>
-                                                             </button>
-                                                         </td>
-                                                     {% else %}
-                                                         <td></td>
-                                                         <td></td>
-                                                     {% endif %}
+                                        {% if payrolls | length > 0 %}
+                                            {% for item in payrolls %}
+                                                <tr class="{{ item.status == 'frozen' ? 'has-background-danger-dark has-text-white' : '' }}">
+                                                    <td>
+                                                        {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                        {{ emp ? emp.name : 'N/A' }}
+                                                    </td>
+                                                    <td>K{{item.net_pay | number_format(2,'.',',')}}</td>
+                                                    <td>{{ item.account_number }}</td>
+                                                    <td>{{ item.bank_name }}</td>
+                                                    <td>{{ item.branch_name }}</td>
+                                                    <td>{{ item.status | capitalize }}</td>
 
-                                                 </tr>
+                                                    {% if item.status != 'frozen' %}
+                                                        <td>
+                                                            <button class="button is-small is-info" onclick="openModal('editModal-{{ item.id }}')">
+                                                                <span class="mdi mdi-pencil"></span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <!-- Suspend button -->
+                                                            <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ item.id }}')">
+                                                                <span class="mdi mdi-sync-off"></span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ item.id }}')">
+                                                                <span class="mdi mdi-delete"></span>
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <!-- Pay individually -->
+                                                            <button type="button" class="button is-small is-success" onclick="openModal('payModal-{{ item.id }}')">
+                                                                <span class="mdi mdi-cash"></span> Pay
+                                                            </button>
 
-                                             {% endfor %}
-                                         {% else %}
-                                             <tr>
-                                                 <td colspan="6">No employee records found.</td>
-                                             </tr>
-                                         {% endif %}
+                                                        </td>
+                                                    {% else %}
+                                                        <td>{{ '-' }}</td>
+                                                        <td>
+                                                            {% if item.status == 'frozen' %}
+                                                                <!-- Activate button -->
+                                                                <button class="button is-small is-success" onclick="openModal('activateModal-{{ item.id }}')">
+                                                                    <span class="mdi mdi-sync-circle"></span>
+                                                                </button>
+                                                            {% else %}
+                                                                <!-- Suspend button -->
+                                                                <button class="button is-small is-primary" onclick="openModal('suspendModal-{{ item.id }}')">
+                                                                    <span class="mdi mdi-sync-off"></span>
+                                                                </button>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>{{ '-' }}</td>
+                                                    {% endif %}
+
+                                                </tr>
+
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="12" class="has-text-centered">No payroll records found.</td>
+                                            </tr>
+                                        {% endif %}
                                         </tbody>
                                     </table>
+                                    {% if payrolls | length > 0 %}
+                                        <div class="has-text-right mt-4">
+                                            <button type="button" class="button is-link is-medium is-focused" onclick="openModal('bankModal')">
+                                                <span class="mdi mdi-bank-transfer is-size-3"></span> Pay All
+                                            </button>
+                                        </div>
+                                    {% endif %}
                                 </div>
 
-                                {% for item in employees  %}
-                                    <!-- View Modal -->
-                                    <div class="modal" id="viewModal-{{ item.id }}">
-                                        <div class="modal-background" onclick="closeModal('viewModal-{{ item.id }}')"></div>
-                                        <div class="modal-card">
-                                            <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">View Employee</p>
-                                                <button class="delete" aria-label="close" onclick="closeModal('viewModal-{{ item.id }}')"></button>
-                                            </header>
-                                            <section class="modal-card-body">
-                                                <div class="columns">
-                                                    <div class="column is-2">
-                                                        <figure class="image is-96x96" style="margin: 0 auto; /*border: 2px solid dodgerblue; border-radius: 50%/*">
-                                                            <img class="is-rounded" src="/assets/img/fht.png" style="border: 2px solid blue; border-radius: 50%; height: 6em">
-                                                        </figure>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="columns is-multiline">
-                                                    <div class="column is-6">
-                                                        <div class="field">
-                                                            <div class="control">
-                                                                <label class="">Name</label>
-                                                                <input type="text" class="input is-small" value="{{ item.name }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="column is-6">
-                                                        <div class="field">
-                                                            <div class="control">
-                                                                <label class="">Email</label>
-                                                                <input type="text" class="input is-small" value="{{ item.username }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="column is-6">
-                                                        <div class="field">
-                                                            <div class="control">
-                                                                <label class="">Phone</label>
-                                                                <input type="text" class="input is-small" value="{{ item.phone }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="column is-6">
-                                                        <div class="field">
-                                                            <div class="control">
-                                                                <label class="">Position</label>
-                                                                <input type="text" class="input is-small" value="{{ item.job_title }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="column is-6">
-                                                        <div class="field">
-                                                            <div class="control">
-                                                                <label class="">Department</label>
-                                                                <input type="text" class="input is-small" value="{{ item.department }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="column is-6">
-                                                        <div class="field">
-                                                            <div class="control">
-                                                                <label class="">Contract Type</label>
-                                                                <input type="text" class="input is-small" value="{{ item.department }}" readonly>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </section>
-                                            <footer class="modal-card-foot">
-                                                {% if item.status == 'suspended' %}
-                                                    <!-- Activate button -->
-                                                    <button class="button is-rounded is-success" onclick="openModal('activateModal-{{ item.id }}')">
-                                                        <span class="mdi mdi-account-check"></span>
-                                                        Activate
-                                                    </button>
-                                                {% else %}
-                                                    <!-- Suspend button -->
-                                                    <button class="button is-rounded is-primary" onclick="openModal('suspendModal-{{ item.id }}')">
-                                                        <span class="mdi mdi-account-off"></span>
-                                                        Suspend
-                                                    </button>
-                                                {% endif %}
-                                                <button type="button" class="button is-rounded" onclick="closeModal('viewModal-{{ item.id }}')">Close</button>
-                                            </footer>
-                                        </div>
+                                <!-- Bank Modal -->
+                                <div id="bankModal" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-warning">
+                                            <p class="modal-card-title has-text-white">Pay All</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('bankModal')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <p>
+                                                Are you sure you want to initiate payment of all salaries?
+                                            </p>
+                                        </section>
+                                        <footer class="modal-card-foot">
+                                            <form action="/payroll/pay-all" method="post">
+                                                <button type="submit" class="button is-rounded is-success">
+                                                    <span class="mdi mdi-bank-transfer mr-1"></span> Pay
+                                                </button>
+                                                <button type="button" class="button is-rounded" onclick="closeModal('bankModal')">Cancel</button>
+                                            </form>
+                                        </footer>
                                     </div>
+                                </div>
 
+                                {% for item in payrolls  %}
                                     <!-- Edit Modal -->
                                     <div id="editModal-{{ item.id }}" class="modal">
                                         <div class="modal-background"></div>
                                         <div class="modal-card">
                                             <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Edit Employee</p>
+                                                <p class="modal-card-title has-text-white">Edit Payroll</p>
                                                 <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ item.id }}')"></button>
                                             </header>
                                             <section class="modal-card-body">
-                                                <form action="/employees/update" method="post">
-                                                    <input type="hidden" name="id" value="{{ item.id }}">
-                                                    {% include 'partials/employee_form_fields.twig' with { employee: employee } %}
+                                                <form action="/payroll/update" method="post">
+                                                    <input type="hidden" name="payroll_id" value="{{ item.id }}">
+                                                    {% include 'partials/payroll_form_fields.twig' with { employee: employees} %}
                                                     <div class="field is-grouped is-grouped-left">
                                                         <p class="control">
                                                             <button type="submit" class="button is-rounded is-success">
@@ -214,22 +186,59 @@
                                         </div>
                                     </div>
 
+                                    <!-- Individual Pay Confirmation Modal -->
+                                    <div id="payModal-{{ item.id }}" class="modal">
+                                        <div class="modal-background"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-warning">
+                                                <p class="modal-card-title has-text-white">Confirm Payment</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('payModal-{{ item.id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <p>
+                                                    Are you sure you want to initiate
+                                                    <strong>
+                                                        {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                        {{ emp ? emp.name : 'N/A' }}
+                                                    </strong>'s
+                                                    salary payment?
+                                                </p>
+                                            </section>
+                                            <footer class="modal-card-foot">
+                                                <form action="/payroll/pay/{{ item.id }}" method="post">
+                                                    <input class="is-hidden" name="payroll_id" value="{{ item.id }}">
+                                                    <button type="submit" class="button is-rounded is-success">
+                                                        <span class="mdi mdi-cash mr-1"></span> Pay
+                                                    </button>
+                                                    <button type="button" class="button is-rounded" onclick="closeModal('payModal-{{ item.id }}')">Cancel</button>
+                                                </form>
+                                            </footer>
+                                        </div>
+                                    </div>
+
                                     <!-- Activate Confirmation Modal -->
                                     <div id="activateModal-{{ item.id }}" class="modal">
                                         <div class="modal-background"></div>
                                         <div class="modal-card">
                                             <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Confirm Activation</p>
+                                                <p class="modal-card-title has-text-white">Confirm Unfreeze</p>
                                                 <button class="delete" aria-label="close" onclick="closeModal('activateModal-{{ item.id }}')"></button>
                                             </header>
                                             <section class="modal-card-body">
-                                                <p>Are you sure you want to activate <strong>{{ item.name }}</strong>?</p>
+                                                <p>
+                                                    Are you sure you want to unfreeze
+                                                    <strong>
+                                                        {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                        {{ emp ? emp.name : 'N/A' }}
+                                                    </strong>'s
+                                                    payroll record?
+                                                </p>
                                             </section>
                                             <footer class="modal-card-foot">
-                                                <form action="/employees/activate" method="post">
-                                                    <input class="is-hidden" name="id" value="{{ item.id }}">
+                                                <form action="/payroll/unfreeze" method="post">
+                                                    <input class="is-hidden" name="payroll_id" value="{{ item.id }}">
                                                     <button type="submit" class="button is-rounded is-primary">
-                                                        <span class="mdi mdi-account-check"></span> Activate
+                                                        <span class="mdi mdi-sync-circle"></span> Unfreeze
                                                     </button>
                                                     <button type="button" class="button is-rounded" onclick="closeModal('activateModal-{{ item.id }}')">Cancel</button>
                                                 </form>
@@ -242,17 +251,23 @@
                                         <div class="modal-background"></div>
                                         <div class="modal-card">
                                             <header class="modal-card-head has-background-warning">
-                                                <p class="modal-card-title has-text-white">Confirm Suspension</p>
+                                                <p class="modal-card-title has-text-white">Confirm Freeze</p>
                                                 <button class="delete" aria-label="close" onclick="closeModal('suspendModal-{{ item.id }}')"></button>
                                             </header>
                                             <section class="modal-card-body">
-                                                <p>Are you sure you want to suspend <strong>{{ item.name }}</strong>?</p>
+                                                <p>
+                                                    Are you sure you want to freeze
+                                                    <strong>
+                                                        {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                        {{ emp ? emp.name : 'N/A' }}
+                                                    </strong>'s
+                                                    payroll record?
                                             </section>
                                             <footer class="modal-card-foot">
-                                                <form action="/employees/suspend" method="post">
-                                                    <input class="is-hidden" name="id" value="{{ item.id }}">
+                                                <form action="/payroll/freeze" method="post">
+                                                    <input class="is-hidden" name="payroll_id" value="{{ item.id }}">
                                                     <button type="submit" class="button is-rounded is-primary">
-                                                        <span class="mdi mdi-account-off mr-1"></span> Suspend
+                                                        <span class="mdi mdi-sync-off mr-1"></span> Freeze
                                                     </button>
                                                     <button type="button" class="button is-rounded" onclick="closeModal('suspendModal-{{ item.id }}')">Cancel</button>
                                                 </form>
@@ -269,11 +284,20 @@
                                                 <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{item.id }}')"></button>
                                             </header>
                                             <section class="modal-card-body">
-                                                <p>Are you sure you want to delete <strong>{{ item.name }}</strong>?</p>
+                                                <p>
+                                                    Are you sure you want to delete
+                                                    <strong>
+                                                        {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                        {{ emp ? emp.name : 'N/A' }}
+                                                    </strong>'s
+                                                    payroll record?
+                                                </p>
+                                                <br>
+                                                <small></small>
                                             </section>
                                             <footer class="modal-card-foot">
-                                                <form action="/employees/delete" method="post">
-                                                    <input class="is-hidden" name="id" value="{{ item.id }}">
+                                                <form action="/payroll/delete" method="post">
+                                                    <input class="is-hidden" name="payroll_id" value="{{ item.id }}">
                                                     <button type="submit" class="button is-rounded is-danger">
                                                         <span class="mdi mdi-delete mr-1"></span> Delete
                                                     </button>
@@ -290,12 +314,12 @@
                                     <div class="modal-background"></div>
                                     <div class="modal-card">
                                         <header class="modal-card-head has-background-warning">
-                                            <p class="modal-card-title has-text-white">Add Employee</p>
+                                            <p class="modal-card-title has-text-white">Add Payroll</p>
                                             <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
                                         </header>
                                         <section class="modal-card-body">
-                                            <form action="/employees/add" method="post">
-                                                {% include 'partials/employee_form_fields.twig' with { employee: {}, prefix: 'add' } %}
+                                            <form action="/payroll/add" method="post">
+                                                {% include 'partials/payroll_form_fields.twig' with { employee: {}, prefix: 'add' } %}
                                                 <div class="field is-grouped is-grouped-left">
                                                     <p class="control">
                                                         <button type="submit" class="button is-rounded is-success">

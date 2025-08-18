@@ -87,11 +87,11 @@
                                                 {% set emp = employees | filter(e => e.id == salary.employee_id) | first %}
                                                 {{ emp ? emp.name : 'N/A' }}
                                             </td>
-                                            <td>{{ salary.basic_salary | number_format(2, '.', ',') }}</td>
-                                            <td>{{ salary.total_allowance | number_format (2,'.', ',')}}</td>
-                                            <td>{{ salary.total_deductions | number_format (2,'.', ',') }}</td>
-                                            <td>{{ salary.gross_pay | number_format (2,'.', ',') }}</td>
-                                            <td>{{ salary.net_pay | number_format (2,'.', ',') }}</td>
+                                            <td>K{{ salary.basic_salary | number_format(2, '.', ',') }}</td>
+                                            <td>K{{ salary.total_allowance | number_format (2,'.', ',')}}</td>
+                                            <td>K{{ salary.total_deductions | number_format (2,'.', ',') }}</td>
+                                            <td>K{{ salary.gross_pay | number_format (2,'.', ',') }}</td>
+                                            <td>K{{ salary.net_pay | number_format (2,'.', ',') }}</td>
                                             <td>{{ salary.pay_frequency | capitalize }}</td>
                                             <td>{{ salary.created_at | date('d F, Y')}}</td>
                                             <td>
@@ -236,7 +236,7 @@
                                 <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                     <thead >
                                     <tr class="is-size-7">
-                                        <th>Employee ID</th>
+                                        <th>Employee</th>
                                         <th>Type</th>
                                         <th>Amount</th>
                                         <th>Create At</th>
@@ -248,7 +248,10 @@
                                     {% if allowances | length > 0 %}
                                         {% for item in allowances %}
                                             <tr>
-                                                <td>{{ item.employee_id }}</td>
+                                                <td>
+                                                    {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                    {{ emp ? emp.name : 'N/A' }}
+                                                </td>
                                                 <td>{{ item.type }}</td>
                                                 <td>{{ item.amount | number_format(2, '.', ',') }}</td>
                                                 <td>{{ item.created_at | date('d F, Y') }}</td>
@@ -400,7 +403,10 @@
                                     <tbody>
                                     {% for deduction in deductions %}
                                         <tr>
-                                            <td>{{ deduction.employee_id }}</td>
+                                            <td>
+                                                {% set emp = employees | filter(e => e.id == deduction.employee_id) | first %}
+                                                {{ emp ? emp.name : 'N/A' }}
+                                            </td>
                                             <td>{{ deduction.type }}</td>
                                             <td>{{ deduction.amount | number_format(2,'.',',') }}</td>
                                             <td>{{ deduction.created_at | date('d F, Y') }}</td>

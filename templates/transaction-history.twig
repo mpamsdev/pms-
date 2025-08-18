@@ -1,0 +1,154 @@
+{% extends 'partials/base.twig' %}
+{% block content %}
+    <div id="main-content" class="container-fluid">
+        <div class="columns">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb " aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-link">Home</a></li>
+                            <li><a class="is-size-5 has-text-link">{{ title }}</a></li>
+                        </ul>
+                    </nav>
+
+                    <div class="columns">
+                        <div class="column is-full">
+                            <div class="box">
+                                <div class="level mb-4">
+                                    <div class="level-left">
+{#                                        <button class="button is-rounded is-success" onclick="openModal('addModal')">#}
+{#                                            <span class="mdi mdi-plus-thick"></span>#}
+{#                                            Add#}
+{#                                        </button>#}
+                                        <button class="button is-rounded is-outlined is-primary ml-2" onclick="exportToExcel()">
+                                            <span class="mdi mdi-file-excel "></span>
+                                            Excel
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {% if errors|length > 0 %}
+                                    <div class="notification is-danger" id="errorNotification">
+                                        <ul>
+                                            {% for error in errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+
+                                {% if success %}
+                                    <div class="notification is-success" id="successNotification">
+                                        {{ success }}
+                                    </div>
+                                {% endif %}
+
+                                <div class="table-container">
+                                    <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
+                                        <thead>
+                                        <tr class="is-size-7">
+                                            <th>Trans Id </th>
+                                            <th>Pay Amount</th>
+                                            <th>Reference</th>
+                                            <th>Month</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if payrollsHistory | length > 0 %}
+                                            {% for item in payrollsHistory %}
+                                                <tr class="{{ item.status == 'frozen' ? 'has-background-danger-dark has-text-white' : '' }}">
+                                                    <td>
+                                                        {% set emp = employees | filter(e => e.id == item.employee_id) | first %}
+                                                        {{ emp ? emp.name : 'N/A' }}
+                                                    </td>
+                                                    <td>K{{item.net_pay | number_format(2,'.',',')}}</td>
+                                                    <td>{{ item.account_number }}</td>
+                                                    <td>{{ item.bank_name }}</td>
+                                                    <td>{{ item.branch_name }}</td>
+                                                    <td>{{ item.status | capitalize }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="12" class="has-text-centered">No payroll  history found.</td>
+                                            </tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <script>
+                                    function openModal(id) {
+                                        document.getElementById(id).classList.add('is-active');
+                                    }
+                                    function closeModal(id) {
+                                        document.getElementById(id).classList.remove('is-active');
+                                    }
+                                    function exportToExcel() {
+                                        const table = document.getElementById("myTable");
+                                        const data = [];
+                                        for (let row of table.rows) {
+                                            let rowData = [];
+                                            for (let i = 0; i < row.cells.length - 1; i++) {
+                                                rowData.push(row.cells[i].innerText);
+                                            }
+                                            data.push(rowData);
+                                        }
+                                        const worksheet = XLSX.utils.aoa_to_sheet(data);
+                                        const workbook = XLSX.utils.book_new();
+                                        XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
+                                        XLSX.writeFile(workbook, "employees.xlsx");
+                                    }
+
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Disable all form submit buttons after submit
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const buttons = form.querySelectorAll('button[type="submit"]');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('is-loading'); // Optional Bulma loading spinner
+                });
+            });
+        });
+
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                const errorNote = document.getElementById('errorNotification');
+                const successNote = document.getElementById('successNotification');
+
+                if (errorNote) {
+                    errorNote.style.transition = "opacity 0.5s ease";
+                    errorNote.style.opacity = 0;
+                    setTimeout(() => errorNote.remove(), 500);
+                }
+                if (successNote) {
+                    successNote.style.transition = "opacity 0.5s ease";
+                    successNote.style.opacity = 0;
+                    setTimeout(() => successNote.remove(), 500);
+                }
+
+                // ✅ Reset URL after hiding notifications
+                const url = new URL(window.location.href);
+                if (url.searchParams.has("success") || url.searchParams.has("error")) {
+                    url.searchParams.delete("success");
+                    url.searchParams.delete("error");
+                    window.history.replaceState({}, document.title, url.toString());
+                }
+            }, 4000); // delay before fade starts
+        });
+    </script>
+
+{% endblock %}

@@ -74,14 +74,15 @@ return function (App $app) {
     //Payroll Routes
     $app->group('/payroll', function ($group){
         $group->get('', PayrollController::class . ':index');
-        $group->post('/add', PayrollController::class . ':add');
-        $group->post('/update', PayrollController::class . ':update');
-        $group->post('/suspend', PayrollController::class . ':suspend');
-        $group->post('/delete', PayrollController::class . ':delete');
-        $group->post('/activate', PayrollController::class . ':activate');
+        $group->post('/add', PayrollController::class . ':addPayroll');
+        $group->post('/update', PayrollController::class . ':updatePayroll');
+        $group->post('/freeze', PayrollController::class . ':freezePayrollRecord');
+        $group->post('/unfreeze', PayrollController::class . ':unfreezePayrollRecord');
+        $group->post('/delete', PayrollController::class . ':deletePayrollRecord');
         $group->get('/salary', PayrollController::class . ':salary');
         $group->post('/salary/add', PayrollController::class . ':addSalary');
-        $group->post('/history', PayrollController::class . ':history');
+        $group->get('/history', PayrollController::class . ':history');
+        $group->get('/payslip', PayrollController::class . ':payslip');
 
         $group->post('/allowance', PayrollController::class . ':allowance');
         $group->post('/allowance/update', PayrollController::class . ':updateAllowance');
