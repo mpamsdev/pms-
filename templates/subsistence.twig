@@ -1,0 +1,325 @@
+{% extends 'partials/base.twig' %}
+{% block content %}
+    <div id="main-content" class="container-fluid">
+        <div class="columns">
+            <div class="column is-12">
+                <section class="section is-small mt-6">
+                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                        <ul>
+                            <li><a class="is-size-5 has-text-link">Home</a></li>
+                            <li><a class="is-size-5 has-text-link">Compliance</a></li>
+                        </ul>
+                    </nav>
+                    <div class="columns">
+                        <div class="column is-full">
+                            <div class="box">
+                                <div class="level mb-4">
+                                    <div class="level-left">
+                                        <button class="button is-rounded is-success" onclick="openModal('addModal')">
+                                            <span class="mdi mdi-plus-thick"></span>
+                                            Add
+                                        </button>
+                                        <button class="button is-rounded is-outlined is-primary ml-2" onclick="exportToExcel()">
+                                            <span class="mdi mdi-file-excel "></span>
+                                            Excel
+                                        </button>
+                                    </div>
+                                </div>
+                                {% if errors|length > 0 %}
+                                    <div class="notification is-danger" id="errorNotification">
+                                        <ul>
+                                            {% for error in errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+
+                                {% if success %}
+                                    <div class="notification is-success" id="successNotification">
+                                        {{ success }}
+                                    </div>
+                                {% endif %}
+
+                                <div class="table-container">
+                                    <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
+                                        <thead>
+                                        <tr class="is-size-7">
+                                            <th>Certificate Name</th>
+                                            <th>Renewal Date</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% if compliance | length > 0 %}
+                                            {% set today = "now"|date('Y-m-d') %}
+                                            {% set fiveDaysLater = ("now"|date_modify("+5 days"))|date('Y-m-d') %}
+                                            {% for item in compliance %}
+                                                <tr class="
+                                                        {% if item.renewal_date < today %}
+                                                            has-background-danger has-text-white
+                                                        {% elseif item.renewal_date <= fiveDaysLater %}
+                                                            has-background-warning
+                                                        {% endif %}
+                                                    ">
+                                                    <td>{{ item.certificate_name }}</td>
+                                                    <td>{{ item.renewal_date | date('d F, Y') }}</td>
+                                                    <td>{{ item.created_at|date('d F, Y') }}</td>
+                                                    <td>
+                                                        {{ (item.updated_at and item.updated_at != '0000-00-00 00:00:00')
+                                                        ? item.updated_at|date('d F, Y')
+                                                        : '-' }}
+                                                    </td>
+                                                    <td>
+                                                        <button class="button is-small is-primary" onclick="openModal('viewModal-{{ item.compliance_id }}')">
+                                                            <span class="mdi mdi-eye-circle"></span>
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button class="button is-small is-info" onclick="openModal('editModal-{{ item.compliance_id }}')">
+                                                            <span class="mdi mdi-pencil"></span>
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button class="button is-small is-danger" onclick="openModal('deleteModal-{{ item.compliance_id }}')">
+                                                            <span class="mdi mdi-delete"></span>
+                                                        </button>
+                                                    </td>
+
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr><td colspan="6">No compliance records found.</td></tr>
+                                        {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% for item in compliance %}
+                                    <!-- View Modal -->
+                                    <div class="modal" id="viewModal-{{ item.compliance_id }}">
+                                        <div class="modal-background" onclick="closeModal('viewModal-{{ item.compliance_id }}')"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-warning">
+                                                <p class="modal-card-title has-text-white">View Compliance</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('viewModal-{{ item.compliance_id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <p><strong>Certificate Name:</strong> {{ item.certificate_name }}</p>
+                                                <p><strong>Renewal Date:</strong> {{ item.renewal_date }}</p>
+                                            </section>
+                                            <footer class="modal-card-foot">
+                                                <button class="button is-rounded" onclick="closeModal('viewModal-{{ item.compliance_id }}')">Close</button>
+                                            </footer>
+                                        </div>
+                                    </div>
+
+                                    <!-- Edit Modal -->
+                                    <div id="editModal-{{ item.compliance_id }}" class="modal">
+                                        <div class="modal-background"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-warning">
+                                                <p class="modal-card-title has-text-white">Edit Certificate</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('editModal-{{ item.compliance_id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <form action="/compliance/update" method="post">
+                                                    <div class="field">
+                                                        <label>Certificate Name</label>
+                                                        <div class="control">
+                                                            <input class="input is-link" type="text" name="certificate_name" value="{{ item.certificate_name }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="field">
+                                                        <label>Renewal Date</label>
+                                                        <div class="control">
+                                                            <input class="input is-link" type="date" name="renewal_date" value="{{ item.renewal_date }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" name="id" value="{{ item.compliance_id }}">
+                                                    <div class="field is-grouped is-grouped-left">
+                                                        <p class="control">
+                                                            <button type="submit" class="button is-rounded is-success">
+                                                                <span class="mdi mdi-content-save-move mr-1"></span>  Update
+                                                            </button>
+                                                        </p>
+                                                        <p class="control">
+                                                            <button type="button" class="button is-rounded " onclick="closeModal('editModal-{{ item.compliance_id }}')">Cancel</button>
+                                                        </p>
+                                                    </div>
+                                                </form>
+                                            </section>
+                                        </div>
+                                    </div>
+
+                                    <!-- Delete Modal -->
+                                    <div id="deleteModal-{{ item.compliance_id }}" class="modal">
+                                        <div class="modal-background"></div>
+                                        <div class="modal-card">
+                                            <header class="modal-card-head has-background-danger">
+                                                <p class="modal-card-title has-text-white">Confirm Delete</p>
+                                                <button class="delete" aria-label="close" onclick="closeModal('deleteModal-{{ item.compliance_id }}')"></button>
+                                            </header>
+                                            <section class="modal-card-body">
+                                                <p>Are you sure you want to delete <strong>{{ item.certificate_name }}</strong>?</p>
+                                            </section>
+                                            <footer class="modal-card-foot">
+                                                <form action="/compliance/delete" method="post">
+                                                    <input type="hidden" name="id" value="{{ item.compliance_id }}">
+                                                    <button class="button is-rounded is-danger" type="submit">
+                                                        <span class="mdi mdi-delete mr-1"></span> Delete
+                                                    </button>
+                                                    <button type="button" class="button is-rounded" onclick="closeModal('deleteModal-{{ item.compliance_id }}')">Cancel</button>
+                                                </form>
+                                            </footer>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                                <!-- Add Modal -->
+                                <div id="addModal" class="modal">
+                                    <div class="modal-background"></div>
+                                    <div class="modal-card">
+                                        <header class="modal-card-head has-background-warning">
+                                            <p class="modal-card-title has-text-white">Add Compliance</p>
+                                            <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
+                                        </header>
+                                        <section class="modal-card-body">
+                                            <form action="/compliance/subsistence" method="post">
+                                                <div class="field">
+                                                    <label class="">Name of Officer</label>
+                                                    <div class="control">
+                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="">Position/Designation</label>
+                                                    <div class="control">
+                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="">Destination</label>
+                                                    <div class="control">
+                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="">Purpose</label>
+                                                    <div class="control">
+                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="">Number of Nights</label>
+                                                    <div class="control">
+                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="field">
+                                                    <label class="">Amount Pay Day</label>
+                                                    <div class="control">
+                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="field is-grouped is-grouped-left">
+                                                    <p class="control">
+                                                        <button type="submit" class="button is-rounded is-success">
+                                                            <span class="mdi mdi-content-save mr-1"></span>  Save
+                                                        </button>
+                                                    </p>
+                                                    <p class="control">
+                                                        <button type="button" class="button is-rounded" onclick="closeModal('addModal')">Cancel</button>
+                                                    </p>
+                                                </div>
+                                            </form>
+                                        </section>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    function openModal(id) {
+                                        document.getElementById(id).classList.add('is-active');
+                                    }
+                                    function closeModal(id) {
+                                        document.getElementById(id).classList.remove('is-active');
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('is-active');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('is-active');
+        }
+    </script>
+    <script>
+        function exportToExcel() {
+            const table = document.getElementById("myTable");
+            const data = [];
+
+            for (let row of table.rows) {
+                let rowData = [];
+                for (let i = 0; i < row.cells.length - 1; i++) { // Skip last column
+                    rowData.push(row.cells[i].innerText);
+                }
+                data.push(rowData);
+            }
+
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+            XLSX.writeFile(workbook, "compliance_table.xlsx");
+        }
+    </script>
+    <script>
+        // Disable all form submit buttons after submit
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const buttons = form.querySelectorAll('button[type="submit"]');
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('is-loading'); // Optional Bulma loading spinner
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                const errorNote = document.getElementById('errorNotification');
+                const successNote = document.getElementById('successNotification');
+
+                if (errorNote) {
+                    errorNote.style.transition = "opacity 0.5s ease";
+                    errorNote.style.opacity = 0;
+                    setTimeout(() => errorNote.remove(), 500);
+                }
+                if (successNote) {
+                    successNote.style.transition = "opacity 0.5s ease";
+                    successNote.style.opacity = 0;
+                    setTimeout(() => successNote.remove(), 500);
+                }
+
+                // ✅ Reset URL after hiding notifications
+                const url = new URL(window.location.href);
+                if (url.searchParams.has("success") || url.searchParams.has("error")) {
+                    url.searchParams.delete("success");
+                    url.searchParams.delete("error");
+                    window.history.replaceState({}, document.title, url.toString());
+                }
+            }, 4000); // delay before fade starts
+        });
+    </script>
+{% endblock %}

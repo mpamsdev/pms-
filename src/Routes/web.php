@@ -59,6 +59,9 @@ return function (App $app) {
         $group->post('/delete', ComplianceController::class . ':deleteRecord');
         $group->post('/update', ComplianceController::class . ':updateRecord');
         $group->post('/check-compliance', ComplianceController::class . ':checkCompliance');
+
+        //Subsistence
+        $group->get('/subsistence', ComplianceController::class . ':subsistence');
     });
 
     //Employee Routes

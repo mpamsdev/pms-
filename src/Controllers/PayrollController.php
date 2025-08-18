@@ -14,8 +14,7 @@ use App\Models\salary;
 use App\Models\allowance;
 use App\Models\deductions;
 use App\Models\payroll;
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use Mpdf\Mpdf;
 
 class PayrollController{
 
@@ -160,79 +159,129 @@ class PayrollController{
 
             if ($create) {
                 // Fetch employee
+
+                // ----------------------------
+                // Generate payslip with mPDF
+                // ----------------------------
+
+                $payslip_no = "FHT-" . str_pad($create->employee_id, 5, '0', STR_PAD_LEFT);
+
                 $employee = employees::find($employee_id);
+                $basic_pay = Salary::where('employee_id', $employee_id)->value('basic_salary');
+                $allowances = allowance::where('employee_id', $employee_id)->get();
+                $deductions = deductions::where('employee_id', $employee_id)->get();
 
-                // Generate payslip PDF
-                $options = new Options();
-                $options->set('defaultFont', 'DejaVu Sans');
-                $dompdf = new Dompdf($options);
+                $currentMonth = date('F'); // Returns full month name, e.g., "August"
 
-                $payslip_no = "PS-" . str_pad($create->id, 5, '0', STR_PAD_LEFT);
+                $gross_pay = $basic_pay;
+                foreach ($allowances as $a) $gross_pay += $a->amount;
+
+                $total_deductions = 0;
+                foreach ($deductions as $d) $total_deductions += $d->amount;
+
+                $net_pay = $gross_pay - $total_deductions;
+
+// Build allowances HTML
+                $allowances_html = "";
+                foreach ($allowances as $a) {
+                    $allowances_html .= "<tr><td>{$a->type}</td><td align='right'>" . number_format($a->amount, 2) . "</td><td>-</td></tr>";
+                }
+
+// Build deductions HTML
+                $deductions_html = "";
+                foreach ($deductions as $d) {
+                    $deductions_html .= "<tr><td>{$d->type}</td><td>-</td><td align='right'>" . number_format($d->amount, 2) . "</td></tr>";
+                }
+
 
                 $html = "
-            <div style='text-align:center;'>
-                <img src='/public/assets/img/fht.png' height='80' alt='Company Logo'>
-                <h2>Payslip</h2>
-            </div>
-            <p><strong>Date:</strong> " . date('d M Y') . "</p>
-            <p><strong>Name:</strong> {$employee->name}</p>
-            <p><strong>Bank:</strong> {$bank_name}</p>
-            <p><strong>Account No.:</strong> {$account_number}</p>
-            <p><strong>Payslip No.:</strong> {$payslip_no}</p>
+<div style='text-align:center; margin-top: 20rem; font-family: \"Olswald\", sans-serif;'>
+    <img src='/public/assets/img/fht.png' height='120' alt='Company Logo'>
+    <h5>
+        Synod Complex, Mosi-oa-Tunya Road, <br>
+        Woodlands, Lusaka
+    </h5>
+    <hr style='border:3px solid #000; width: 50%'>
+    <h2>E-Payslip</h2>
+    <h3>{$employee->name}</h3>
+</div>
 
-            <table width='100%' border='1' cellspacing='0' cellpadding='5'>
-                <tr>
-                    <th>Item / Description</th>
-                    <th>Allowances</th>
-                    <th>Deductions</th>
-                </tr>
-                <tr>
-                    <td>Basic Pay</td>
-                    <td>{$basic_pay}</td>
-                    <td>-</td>
-                </tr>";
+<!-- Header Info in single row -->
+<div style='font-size:11px; margin-bottom:3em; font-family: \"Olswald\", sans-serif;'>
+    <table width='100%' style='border-collapse:collapse;'>
+        <tr>
+            <td><strong>Date:</strong> " . date('d M Y') . "</td>
+            <td><strong>Bank:</strong> {$bank_name}</td>
+            <td><strong>Payslip #:</strong> {$payslip_no}</td>
+            <td><strong>Month:</strong> {$currentMonth}</td>
+        </tr>
+    </table>
+</div>
 
-                foreach ($allowances as $allowance) {
-                    $html .= "<tr>
-                    <td>{$allowance->type}</td>
-                    <td>{$allowance->amount}</td>
-                    <td>-</td>
-                </tr>";
+<table width='100%' border='1' cellspacing='0' cellpadding='5' style='border-collapse:collapse; font-size:12px; font-family: \"Olswald\", sans-serif;'>
+    <tr>
+        <th>Item / Description</th>
+        <th>Allowances</th>
+        <th>Deductions</th>
+    </tr>
+    <tr>
+        <td>Basic Pay</td>
+        <td align='right'>" . number_format($basic_pay, 2) . "</td>
+        <td>-</td>
+    </tr>
+    {$allowances_html}
+    {$deductions_html}
+    <tr>
+        <td><strong>Gross Pay</strong></td>
+        <td colspan='2' align='right'><strong>" . number_format($gross_pay, 2) . "</strong></td>
+    </tr>
+    <tr>
+        <td><strong>Net Pay</strong></td>
+        <td colspan='2' align='right'><strong>" . number_format($net_pay, 2) . "</strong></td>
+    </tr>
+</table>
+<p>Total Net Payable:ZMW" . number_format($net_pay, 2) . " </p>
+<!-- Footer horizontal line -->
+<hr style='border:3px solid #000; margin-top:2em;'>
+<div style='text-align:center; font-family: \"Olswald\", sans-serif; font-size:10px;'>
+    <p>This is a system-generated payslip. Kindly report any under/over payments</p>
+</div>
+";
+
+
+// Create mPDF instance
+                $baseDir = dirname(__DIR__, 2);
+
+// Define temp and payslip dirs
+                $tempDir = $baseDir . '/public/assets/uploads/tmp';
+                $payslipDir = $baseDir . '/public/assets/uploads/payslips/';
+
+
+// Absolute logo path for watermark
+                $logoPath = $baseDir . '/public/assets/img/fht.png';
+// Ensure directories exist
+                if (!is_dir($tempDir)) {
+                    mkdir($tempDir, 0777, true);
+                }
+                if (!is_dir($payslipDir)) {
+                    mkdir($payslipDir, 0777, true);
                 }
 
-                foreach ($deductions as $deduction) {
-                    $html .= "<tr>
-                    <td>{$deduction->type}</td>
-                    <td>-</td>
-                    <td>{$deduction->amount}</td>
-                </tr>";
+// Create mPDF instance with writable tempDir
+                $mpdf = new Mpdf(['tempDir' => $tempDir]);
+
+// ✅ Add watermark logo
+                if (file_exists($logoPath)) {
+                    $mpdf->SetWatermarkImage($logoPath, 0.15, [130, 120], 'F', true, 45, 90);
+                    $mpdf->showWatermarkImage = true;
                 }
 
-                $html .= "
-                <tr>
-                    <td><strong>Gross Pay</strong></td>
-                    <td colspan='2'>{$gross_pay}</td>
-                </tr>
-                <tr>
-                    <td><strong>Net Pay</strong></td>
-                    <td colspan='2'>{$net_pay}</td>
-                </tr>
-            </table>";
+// ✅ Write the HTML into the PDF
+                $mpdf->WriteHTML($html);
 
-                $dompdf->loadHtml($html);
-                $dompdf->setPaper('A4', 'portrait');
-                $dompdf->render();
+                $filePath = $payslipDir . $payslip_no . ".pdf";
+                $mpdf->Output($filePath, \Mpdf\Output\Destination::FILE);
 
-                // Save PDF file
-                $pdfOutput = $dompdf->output();
-
-                $uploadDir = dirname(__DIR__, 2). '/public/assets/uploads/payslips/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true); // create dir if not exists
-                }
-
-                $filePath = $uploadDir . $payslip_no . ".pdf";
-                file_put_contents($filePath, $pdfOutput);
 
                 $message = 'Payroll record added successfully.';
                 return $response
@@ -290,6 +339,15 @@ class PayrollController{
             }
 
             $net_pay = salary::where('employee_id', $employee_id)->value('net_pay');
+
+            // Fetch salary details
+            $basic_pay = salary::where('employee_id', $employee_id)->value('basic_salary') ?? 0;
+            // Fetch allowances and deductions
+            $allowances = allowance::where('employee_id', $employee_id)->get();
+            $deductions = deductions::where('employee_id', $employee_id)->get();
+
+            $total_allowances = $allowances->sum('amount');
+            $total_deductions = $deductions->sum('amount');
             // Save record
             $update = payroll::where('id', $payroll_id)->update([
                 'employee_id' => $employee_id,
@@ -300,6 +358,127 @@ class PayrollController{
             ]);
 
             if ($update) {
+                // ----------------------------
+                // Generate payslip with mPDF
+                // ----------------------------
+
+                $payslip_no = "FHT-" . str_pad($update->employee_id, 5, '0', STR_PAD_LEFT);
+
+                $employee = employees::find($employee_id);
+                $basic_pay = salary::where('employee_id', $employee_id)->value('basic_salary');
+                $allowances = allowance::where('employee_id', $employee_id)->get();
+                $deductions = deductions::where('employee_id', $employee_id)->get();
+
+                $currentMonth = date('F'); // Returns full month name, e.g., "August"
+
+                $gross_pay = $basic_pay;
+                foreach ($allowances as $a) $gross_pay += $a->amount;
+
+                $total_deductions = 0;
+                foreach ($deductions as $d) $total_deductions += $d->amount;
+
+                $net_pay = $gross_pay - $total_deductions;
+
+// Build allowances HTML
+                $allowances_html = "";
+                foreach ($allowances as $a) {
+                    $allowances_html .= "<tr><td>{$a->type}</td><td align='left'>" . number_format($a->amount, 2) . "</td><td>-</td></tr>";
+                }
+
+// Build deductions HTML
+                $deductions_html = "";
+                foreach ($deductions as $d) {
+                    $deductions_html .= "<tr><td>{$d->type}</td><td>-</td><td align='left'>" . number_format($d->amount, 2) . "</td></tr>";
+                }
+
+
+                $html = "
+<div style='text-align:center; margin-top: 20rem; font-family: \"Olswald\", sans-serif;'>
+    <img src='/public/assets/img/fht.png' height='120' alt='Company Logo'>
+    <h5>
+        Synod Complex, Mosi-oa-Tunya Road, <br>
+        Woodlands, Lusaka
+    </h5>
+    <h2>E-Payslip</h2>
+    <h3 align='left'>Name:{$employee->name}</h3>
+</div>
+
+<!-- Header Info in single row -->
+<div style='font-size:10px; margin-bottom:3em; font-family: \"Olswald\", sans-serif;'>
+    <table width='100%' style='border-collapse:collapse;'>
+        <tr>
+            <td><strong>Date:</strong> " . date('d M Y') . "</td>
+            <td><strong>Bank:</strong> {$bank_name}</td>
+            <td><strong>Payslip #:</strong> {$payslip_no}</td>
+            <td><strong>Month:</strong> {$currentMonth}</td>
+        </tr>
+    </table>
+</div>
+
+<table width='100%' border='1' cellspacing='0' cellpadding='3' style='border-collapse:collapse; font-size:10px; font-family: \"Olswald\", sans-serif;'>
+    <tr>
+        <th align='left'>Item / Description</th>
+        <th align='left'>Allowances</th>
+        <th align='left'>Deductions</th>
+    </tr>
+    <tr>
+        <td>Basic Pay</td>
+        <td align='left'>" . number_format($basic_pay, 2) . "</td>
+        <td>-</td>
+    </tr>
+    {$allowances_html}
+    {$deductions_html}
+    <tr>
+        <td><strong>Gross Pay</strong></td>
+        <td colspan='2' align='left'><strong>" . number_format($gross_pay, 2) . "</strong></td>
+    </tr>
+    <tr>
+        <td><strong>Net Pay</strong></td>
+        <td colspan='2' align='left'><strong>" . number_format($net_pay, 2) . "</strong></td>
+    </tr>
+</table>
+<p><strong>Total Net Payable:</strong>ZMW" . number_format($net_pay, 2) . " </p>
+<!-- Footer horizontal line -->
+<hr style='border:3px solid #000; margin-top:2em;'>
+<div style='text-align:center; font-family: \"Olswald\", sans-serif; font-size:10px; margin-top: -3em'>
+    <p>This is a system-generated payslip. Kindly report any under/over payments</p>
+</div>
+";
+
+
+// Create mPDF instance
+                $baseDir = dirname(__DIR__, 2);
+
+// Define temp and payslip dirs
+                $tempDir = $baseDir . '/public/assets/uploads/tmp';
+                $payslipDir = $baseDir . '/public/assets/uploads/payslips/';
+
+
+// Absolute logo path for watermark
+                $logoPath = $baseDir . '/public/assets/img/fht.png';
+// Ensure directories exist
+                if (!is_dir($tempDir)) {
+                    mkdir($tempDir, 0777, true);
+                }
+                if (!is_dir($payslipDir)) {
+                    mkdir($payslipDir, 0777, true);
+                }
+
+// Create mPDF instance with writable tempDir
+                $mpdf = new Mpdf(['tempDir' => $tempDir]);
+
+// ✅ Add watermark logo
+                if (file_exists($logoPath)) {
+                    $mpdf->SetWatermarkImage($logoPath, 0.15, [130, 120], 'F', true, 45, 90);
+                    $mpdf->showWatermarkImage = true;
+                }
+
+// ✅ Write the HTML into the PDF
+                $mpdf->WriteHTML($html);
+
+                $filePath = $payslipDir . $payslip_no . ".pdf";
+                $mpdf->Output($filePath, \Mpdf\Output\Destination::FILE);
+
                 $message = 'Payroll record updated successfully.';
                 return $response
                     ->withHeader('Location', '/payroll?success=' . urlencode($message))

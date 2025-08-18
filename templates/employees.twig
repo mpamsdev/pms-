@@ -60,7 +60,7 @@
                                         <tbody>
                                          {% if employees | length > 0 %}
                                              {% for employee in employees %}
-                                                 <tr class="{{ employee.status == 'Suspended' ? 'has-background-danger-dark has-text-white' : '' }}">
+                                                 <tr class="{{ employee.status == 'suspended' ? 'has-background-danger-dark has-text-white' : '' }}">
                                                      <td>{{ employee.name }}</td>
                                                      <td>{{ employee.username }}</td>
                                                      <td>{{ employee.job_title }}</td>
@@ -71,7 +71,7 @@
                                                              <span class="mdi mdi-eye-circle"></span>
                                                          </button>
                                                      </td>
-                                                     {% if employee.status != 'Suspended' %}
+                                                     {% if employee.status != 'suspended' %}
                                                          <td>
                                                              <button class="button is-small is-info" onclick="openModal('editModal-{{ employee.id }}')">
                                                                  <span class="mdi mdi-pencil"></span>

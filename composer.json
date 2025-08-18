@@ -15,7 +15,7 @@
     "illuminate/pagination": "^12.20",
     "predis/predis": "^3.2",
     "slim/flash": "^0.4.0",
-    "dompdf/dompdf": "^3.1"
+    "mpdf/mpdf": "^8.2"
   },
 
   "autoload": {
