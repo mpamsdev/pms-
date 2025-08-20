@@ -61,7 +61,7 @@ return function (App $app) {
         $group->post('/check-compliance', ComplianceController::class . ':checkCompliance');
 
         //Subsistence
-        $group->get('/subsistence', ComplianceController::class . ':subsistence');
+        $group->map(['GET','POST'], '/subsistence', ComplianceController::class . ':subsistence');
     });
 
     //Employee Routes

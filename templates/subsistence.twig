@@ -7,7 +7,7 @@
                     <nav class="breadcrumb" aria-label="breadcrumbs">
                         <ul>
                             <li><a class="is-size-5 has-text-link">Home</a></li>
-                            <li><a class="is-size-5 has-text-link">Compliance</a></li>
+                            <li><a class="is-size-5 has-text-link">{{ title }}</a></li>
                         </ul>
                     </nav>
                     <div class="columns">
@@ -45,17 +45,17 @@
                                     <table id="myTable" class="table is-fullwidth is-hoverable is-striped is-bordered is-narrow">
                                         <thead>
                                         <tr class="is-size-7">
-                                            <th>Certificate Name</th>
-                                            <th>Renewal Date</th>
-                                            <th>Created At</th>
+                                            <th>Officer Name</th>
+                                            <th>Position</th>
+                                            <th>Destination</th>
                                             <th>Updated At</th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                            <th>Purpose</th>
+                                            <th>No. of Nights</th>
+                                            <th> Amount/Day</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% if compliance | length > 0 %}
+                                        {% if subsistence | length > 0 %}
                                             {% set today = "now"|date('Y-m-d') %}
                                             {% set fiveDaysLater = ("now"|date_modify("+5 days"))|date('Y-m-d') %}
                                             {% for item in compliance %}
@@ -93,7 +93,7 @@
                                                 </tr>
                                             {% endfor %}
                                         {% else %}
-                                            <tr><td colspan="6">No compliance records found.</td></tr>
+                                            <tr><td colspan="6" class="has-text-centered">No Subsistence records found</td></tr>
                                         {% endif %}
                                         </tbody>
                                     </table>
@@ -184,7 +184,7 @@
                                     <div class="modal-background"></div>
                                     <div class="modal-card">
                                         <header class="modal-card-head has-background-warning">
-                                            <p class="modal-card-title has-text-white">Add Compliance</p>
+                                            <p class="modal-card-title has-text-white">Add Subsistence</p>
                                             <button class="delete" aria-label="close" onclick="closeModal('addModal')"></button>
                                         </header>
                                         <section class="modal-card-body">
@@ -192,37 +192,37 @@
                                                 <div class="field">
                                                     <label class="">Name of Officer</label>
                                                     <div class="control">
-                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                        <input class="input is-link" type="text" id="name" name="officer_name" required>
                                                     </div>
                                                 </div>
                                                 <div class="field">
                                                     <label class="">Position/Designation</label>
                                                     <div class="control">
-                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                        <input class="input is-link" type="text" id="position_name" name="position" required>
                                                     </div>
                                                 </div>
                                                 <div class="field">
                                                     <label class="">Destination</label>
                                                     <div class="control">
-                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                        <input class="input is-link" type="text" id="destination" name="destination" required>
                                                     </div>
                                                 </div>
                                                 <div class="field">
                                                     <label class="">Purpose</label>
                                                     <div class="control">
-                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                        <input class="input is-link" type="text" id="purpose" name="purpose" required>
                                                     </div>
                                                 </div>
                                                 <div class="field">
                                                     <label class="">Number of Nights</label>
                                                     <div class="control">
-                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                        <input class="input is-link" type="text" id="number_of_nights" name="number_of_nights" required>
                                                     </div>
                                                 </div>
                                                 <div class="field">
                                                     <label class="">Amount Pay Day</label>
                                                     <div class="control">
-                                                        <input class="input is-link" type="text" id="certificate_name" name="certificate_name" required>
+                                                        <input class="input is-link" type="text" id="amount_pay_day" name="amount_pay_day" required>
                                                     </div>
                                                 </div>
                                                 <div class="field is-grouped is-grouped-left">

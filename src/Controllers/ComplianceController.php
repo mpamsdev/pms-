@@ -305,6 +305,89 @@ class ComplianceController
         return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
     }
 
+    //Subsistence
+    public function subsistence(Request $request, Response $response, $args)
+    {
+        session_start();
+
+        $success = $request->getQueryParams()['success'] ?? null;
+        // Auth check
+        if (!isset($_SESSION['userid']) || !isset($_SESSION['username'])) {
+            return $response->withHeader('Location', '/')->withStatus(302);
+        }
+
+        // Session expiry check
+        if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time']) > $_SESSION['session_timeout']) {
+            session_unset();
+            session_destroy();
+            return $response->withHeader('Location', '/')->withStatus(302);
+        }
+
+        $data = $request->getParsedBody();
+
+        //Check if request is POST
+        if ($request->getMethod() === 'POST'){
+            $name_of_officer = trim($data['name_of_officer'] ?? '');
+            $position = trim($data['position'] ?? '');
+            $destination = trim($data['destination'] ?? '');
+            $purpose = trim($data['purpose'] ?? '');
+            $number_of_nights = trim($data['number_of_nights'] ?? '');
+            $amount_per_day = trim($data['amount_per_day'] ?? '');
+
+            $validator = [
+                'name_of_officer' => v::stringType()->notEmpty(),
+                'position' => v::stringType()->notEmpty(),
+                'destination' => v::stringType()->notEmpty(),
+                'purpose' => v::stringType()->notEmpty(),
+                'number_of_nights' => v::stringType()->notEmpty(),
+                'amount_per_day' => v::stringType()->notEmpty(),
+            ];
+
+            // Validate ID
+            $errors = [];
+            foreach ($validator as $field => $rule) {
+                if (!$rule->validate($$field)) {
+                    $errors[$field] = ucfirst($field) . ' is required or invalid.';
+                }
+            }
+
+            if (!empty($errors)){
+                $complianceData = compliance::all();
+                return $this->view->render($response, 'subsistence.twig', [
+                    'title' => 'Subsistence Form',
+                    'errors' => $errors,
+                    'compliance' => $complianceData,
+                    'username' => $_SESSION['username'],
+                    'userid' => $_SESSION['userid'],
+                    'profile_picture' => $_SESSION['profile_picture'],
+                    'userData' => $_SESSION['userData'],
+                ]);
+            }
+
+            //Perform creation of subsistence
+            $deleted = compliance::create([
+                'name' => $name_of_officer,
+            ]);
+
+            $message = $deleted ? 'Record deleted successfully.' : 'Record not found or already deleted.';
+            // Redirect to GET /employees to prevent POST resubmission
+            return $response
+                ->withHeader('Location', '/compliance?success='.$message)
+                ->withStatus(302);
+        }
+        // Reload compliance data after deletion
+        $complianceData = compliance::all();
+        return $this->view->render($response, 'subsistence.twig', [
+            'title' => 'Subsistence Form',
+            //'success' => $message,
+            'compliance' => $complianceData,
+            'username' => $_SESSION['username'],
+            'userid' => $_SESSION['userid'],
+            'profile_picture' => $_SESSION['profile_picture'],
+            'userData' => $_SESSION['userData'],
+        ]);
+    }
+
 
     private function sendEmail($record)
     {

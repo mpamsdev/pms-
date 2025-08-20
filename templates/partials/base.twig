@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title|default('Chalom Investments') }}</title>
+    <title>{{ title }}</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
@@ -142,8 +142,24 @@
                             <span class="menu-item-label has-text-white">E-Quotation Tool</span>
                         </a>
                     </li>
+
+                </ul>
+            </li>
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownAccounting()">
+                    <span class="icon"><i class="mdi mdi-finance has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Accounting Tools</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="accounting-dropdown" class="menu-list is-hidden">
                     <li>
-                        <a href="/subsistence" class="has-icon pt-2 pb-2 is-size-6">
+                        <a href="/accounting/advance" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-square-edit-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Request for Advance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/compliance/subsistence" class="has-icon pt-2 pb-2 is-size-6">
                             <span class="icon"><i class="mdi mdi-format-list-checks has-text-white"></i></span>
                             <span class="menu-item-label has-text-white">Subsistence Claim</span>
                         </a>
@@ -154,19 +170,10 @@
                             <span class="menu-item-label has-text-white">Petty-Cash Tool</span>
                         </a>
                     </li>
-                </ul>
-            </li>
-            <li>
-                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownUsers()">
-                    <span class="icon"><i class="mdi mdi-account-group has-text-white is-size-5"></i></span>
-                    <span class="menu-item-label has-text-white">Employee Manager</span>
-                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
-                </a>
-                <ul id="users-dropdown" class="menu-list is-hidden">
                     <li>
-                        <a href="/employees" class="has-icon pt-2 pb-2 is-size-6">
-                            <span class="icon"><i class="mdi mdi-account-multiple-outline has-text-white"></i></span>
-                            <span class="menu-item-label has-text-white">Employees</span>
+                        <a href="/dashboard/" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-percent has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Gratuity Calculator</span>
                         </a>
                     </li>
                 </ul>
@@ -199,6 +206,22 @@
                     </li>
                 </ul>
             </li>
+            <li>
+                <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownUsers()">
+                    <span class="icon"><i class="mdi mdi-account-group has-text-white is-size-5"></i></span>
+                    <span class="menu-item-label has-text-white">Employee Manager</span>
+                    <span class="icon"><i id="dropdown-icon" class="mdi mdi-chevron-down has-text-white"></i></span>
+                </a>
+                <ul id="users-dropdown" class="menu-list is-hidden">
+                    <li>
+                        <a href="/employees" class="has-icon pt-2 pb-2 is-size-6">
+                            <span class="icon"><i class="mdi mdi-account-multiple-outline has-text-white"></i></span>
+                            <span class="menu-item-label has-text-white">Employees</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
             <li>
                 <a class="has-icon pt-4 pb-4 is-size-6 dropdown-toggle" onclick="toggleDropdownReports()">
                     <span class="icon"><i class="mdi mdi-bank has-text-white is-size-5"></i></span>
@@ -424,6 +447,14 @@
     }
     function toggleDropdownLeave() {
         const dropdown = document.getElementById('leave-dropdown');
+        const icon = document.getElementById('dropdown-icon');
+        dropdown.classList.toggle('is-hidden');
+        icon.classList.toggle('mdi-chevron-down');
+        icon.classList.toggle('mdi-chevron-up');
+    }
+
+    function toggleDropdownAccounting() {
+        const dropdown = document.getElementById('accounting-dropdown');
         const icon = document.getElementById('dropdown-icon');
         dropdown.classList.toggle('is-hidden');
         icon.classList.toggle('mdi-chevron-down');
