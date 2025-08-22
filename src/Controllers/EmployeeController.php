@@ -96,10 +96,8 @@ class EmployeeController
     public function addEmployee(Request $request, Response $response, $args)
     {
         session_start();
-
         if ($request->getMethod() === 'POST') {
             $data = $request->getParsedBody();
-
             // Validation rules
             $validator = [
                 'name' => v::notEmpty()->length(1, 100),
@@ -115,7 +113,6 @@ class EmployeeController
                 'nhima_number' => v::notEmpty(),
                 'password'     => v::stringType()->length(6, null)
             ];
-
             // Validate fields
             $errors = [];
             foreach ($validator as $field => $rule) {
@@ -131,6 +128,10 @@ class EmployeeController
                 $errors['contract_end_date'] = 'End date is invalid.';
             }
 
+            if (employees::WHERE('email', $data['username'])->exists()) {
+                $errors = "Employee with this email ".$data['username']." is already registered!";
+            }
+
             if (!empty($errors)) {
                 $employeeData = employees::all();
                 return $this->view->render($response, 'employees.twig', [
@@ -143,6 +144,11 @@ class EmployeeController
                     'userData' => $_SESSION['userData'],
                 ]);
             }
+
+            //Generate a unique 6 digits number
+//            do{
+//                $employeeNumber;
+//            }
 
             // Save employee record
            $create = employees::create([

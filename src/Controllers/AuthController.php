@@ -49,18 +49,21 @@ class AuthController
         }
 
         // Try to find user in the `users` table
-        $user = employees::where('username', $email)->first();
+        $user = employees::where('email', $email)->first();
 
         if ($user && password_verify($password, $user->password)) {
             if ($user->status === 'suspended') {
                 // Show error message for suspended account
-                $_SESSION['error'] = 'Your account has been suspended. Please contact support.';
-                return $response->withHeader('Location', '/')->withStatus(302);
+                $error = 'Your account has been suspended. Please contact support or system administrator.';
+                return $this->view->render($response, 'auth/login.twig', [
+                    'title' => 'FortEdge | Login',
+                    'errors' => $error
+                ]);
             }
 
             // Proceed with login for active users
             $_SESSION['userid'] = $user->employee_number;
-            $_SESSION['username'] = $user->username;
+            $_SESSION['username'] = $user->email;
             $_SESSION['profile_picture'] = $user->profile_picture;
             $_SESSION['role'] = 'user';
             $_SESSION['login_time'] = time();
@@ -75,8 +78,12 @@ class AuthController
         if ($admin && password_verify($password, $admin->password)) {
 
             if ($admin->status === 'suspended') {
-                $_SESSION['error'] = 'Admin account suspended. Contact system administrator.';
-                return $response->withHeader('Location', '/')->withStatus(302);
+                // Show error message for suspended account
+                $error = 'Admin account suspended. Contact system administrator.';
+                return $this->view->render($response, 'auth/login.twig', [
+                    'title' => 'FortEdge | Login',
+                    'errors' => $error
+                ]);
             }
 
             $_SESSION['userid'] = $admin->uuid;

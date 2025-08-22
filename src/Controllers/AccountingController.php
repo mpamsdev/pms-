@@ -25,4 +25,6 @@ class AccountingController
         $this->view = $view;
         //$this->db = $db;
     }
+
+
 }

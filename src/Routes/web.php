@@ -1,6 +1,7 @@
 <?php
 
 use App\Controllers\AccountController;
+use App\Controllers\AccountingController;
 use App\Controllers\LeaveController;
 use Slim\App;
 use App\Controllers\HomeController;
@@ -111,6 +112,16 @@ return function (App $app) {
         $group->map(['GET', 'POST'], '/{uuid}/delete', LeaveController::class . ':delete');
         $group->map(['GET', 'POST'], '/{uuid}/update', LeaveController::class . ':update');
     });
+
+    //Accounting Routes
+    $app->group('accounting', function ($group){
+        $group->get('', AccountingController::class . ':index');
+        $group->map(['GET', 'POST'],'/advance', AccountingController::class . ':advance');
+        $group->map(['GET', 'POST'], '/subsistence', AccountingController::class . ':subsistence');
+        $group->map(['GET', 'POST'], '/petty-cash', AccountingController::class . ':pettyCash');
+        $group->map(['GET', 'POST'], 'gratuity', AccountingController::class . ':gratuity');
+    });
+
 
     $app->get('/manifest.json', function ($request, $response) {
         $response->getBody()->write(file_get_contents(__DIR__ . '/public/manifest.json'));
